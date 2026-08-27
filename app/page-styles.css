@@ -1,0 +1,133 @@
+/* ========================================
+   Global Page Styles - Crafto CHC
+   Consolidated from all page-specific <style> blocks
+   ======================================== */
+
+/* --- Home Page: Interactive Banner Hover --- */
+.interactive-banner-style-05 p {
+  transition: all 0.4s ease;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+.interactive-banner-style-05:hover p {
+  max-height: 200px;
+  opacity: 1;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.interactive-banner-style-05 span {
+  transition: all 0.4s ease;
+}
+.interactive-banner-style-05:hover span {
+  transform: translateY(-5px);
+}
+
+/* --- Home Page: Section What We Do --- */
+.section-what-we-do {
+  position: relative;
+  overflow: hidden;
+}
+.section-what-we-do::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,244,253,0.9) 100%);
+  z-index: -1;
+}
+
+/* --- Ball Cursor Color --- */
+#ball-cursor {
+  background-color: rgba(81, 20, 214, 0.25) !important;
+}
+#ball-cursor:before,
+#ball-cursor:after {
+  display: none !important;
+}
+
+/* --- Team Style 05 Hover Effects --- */
+.team-style-05 img {
+  transition: all 0.4s ease;
+}
+.team-style-05:hover img {
+  filter: grayscale(100%);
+  opacity: 0.4;
+}
+.team-style-05 .team-content {
+  background-color: rgba(81, 20, 214, 0.6);
+  transition: all 0.4s ease;
+}
+.team-style-05 .team-content p {
+  color: #ffffff;
+}
+
+/* --- Header Light Nav Link Overrides (for pages with dark hero backgrounds) --- */
+.header-light .navbar-nav .nav-link {
+  color: #ffffff !important;
+}
+.header-light .navbar-nav .nav-link:hover {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.header-light .header-icon .icon > a {
+  color: #ffffff !important;
+}
+.header-light .header-icon .icon > a:hover {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* --- Swiper Slide Height Fixes --- */
+.swiper-slide {
+  height: auto !important;
+}
+.swiper-wrapper {
+  align-items: stretch;
+}
+.swiper-slide .services-box-style-03 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.swiper-slide .services-box-style-03 .position-relative {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.swiper-slide .services-box-style-03 .bg-white {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.swiper-slide .services-box-style-03 .bg-white > div:first-child {
+  flex: 1;
+  overflow: hidden;
+}
+.swiper-slide .services-box-style-03 .bg-white > div:last-child {
+  margin-top: auto;
+}
+
+/* --- Core Capabilities Heading --- */
+.core-capabilities-heading {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 50px;
+}
+
+/* --- Clients Style 08 (Oracle HCM Core Capabilities) --- */
+.clients-style-08 .swiper-slide a {
+  pointer-events: none;
+  cursor: default;
+}
+.clients-style-08 .swiper-slide p {
+  opacity: 1;
+  margin-top: 10px;
+}
+.clients-style-08 .swiper-slide img {
+  transition: transform 0.3s ease;
+}
+.clients-style-08 .swiper-slide:hover img {
+  transform: scale(1.15);
+}
