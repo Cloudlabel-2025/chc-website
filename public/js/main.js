@@ -221,7 +221,7 @@
     // Close on outside area
     $(document).on('click', 'body', function (e) {
         // Close all menu
-        if (!($(e.target).closest('.navbar-nav').length || $(e.target).closest('.navbar-full-screen-menu-inner').length)) {
+        if (!($(e.target).closest('.navbar-nav').length || $(e.target).closest('.navbar-toggler').length || $(e.target).closest('.navbar-full-screen-menu-inner').length)) {
             setTimeout(function () {
                 $('.navbar-collapse.collapse').collapse('hide');
             }, 100);

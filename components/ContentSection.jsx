@@ -1,8 +1,8 @@
 export default function ContentSection() {
   return (
-    <section id="down-section" className="position-relative overflow-hidden">
+    <section id="down-section" className="chc-content-section position-relative overflow-hidden">
       <img src="/images/demo-modern-business-elements-02.png" alt="" className="position-absolute right-20px top-70px animation-rotation d-none d-md-block" />
-      <div className="container">
+      <div className="container-fluid px-5 lg-px-10">
         <div className="row align-items-center justify-content-center">
           <div className="col-xxl-7 col-lg-6 position-relative md-mb-15 sm-mb-20">
             <div className="w-70 lg-w-80" data-animation-delay="50" data-shadow-animation="true">

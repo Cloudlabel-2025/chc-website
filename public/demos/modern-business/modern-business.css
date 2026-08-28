@@ -158,6 +158,22 @@ footer .footer-logo img {
     font-size: 4.5rem;
     line-height: 3.4rem;
 }
+/* responsive overrides */
+@media (max-width: 767px) {
+    header .navbar-brand img {
+        max-height: 45px;
+    }
+    .navbar .navbar-nav .dropdown.dropdown-with-icon .dropdown-menu {
+        width: 100%;
+    }
+    .page-title-extra-large h1 {
+        font-size: 2.5rem;
+        line-height: 2rem;
+    }
+    .mb-minus-70px {
+        margin-bottom: -20px;
+    }
+}
 /* media query responsive */
 @media (max-width: 1600px) {
     .box-layout {

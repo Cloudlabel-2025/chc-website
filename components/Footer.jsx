@@ -1,11 +1,14 @@
 export default function Footer() {
   return (
-    <footer className="cover-background pb-0 overflow-visible" style={{ backgroundImage: "url('/images/demo-modern-business-footer-bg.jpg')" }}>
-      <img src="/images/chc-spin-support.png" alt="" className="position-absolute right-150px md-right-50px top-minus-60px d-sm-block" style={{ width: '98px', height: 'auto', borderRadius: '50%', marginTop: '25px', marginRight: '28px' }} />
-      <img src="/images/chc-spinner.png" alt="" className="position-absolute right-150px md-right-50px top-minus-60px animation-rotation d-none d-sm-block" style={{ width: '150px', height: 'auto' }} />
+    <footer className="chc-site-footer cover-background pb-0 overflow-visible position-relative" style={{ backgroundImage: "url('/images/demo-modern-business-footer-bg.jpg')" }}>
+      <div className="opacity-very-light bg-black"></div>
+      <div className="position-absolute right-150px md-right-50px xs-right-20px top-minus-60px footer-spinner-wrap" style={{ width: '150px', height: '150px' }} aria-hidden="true">
+        <img src="/images/chc-spin-support.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '98px', height: 'auto', borderRadius: '50%' }} />
+        <img src="/images/chc-spinner.png" alt="" className="animation-rotation" style={{ position: 'absolute', top: '50%', left: '50%', marginTop: '-75px', marginLeft: '-75px', width: '150px', height: 'auto' }} />
+      </div>
 
       <div className="container overflow-hidden">
-        <div className="row position-relative z-index-9">
+        <div className="row position-relative z-index-9 chc-footer-grid">
           <div className="col-12 col-xl-3 col-md-6 d-flex flex-column lg-mb-30px sm-mb-20px order-1">
             <a href="/" className="footer-logo mb-25px xs-mb-20px d-inline-block">
               <img src="/images/chc-logo.png" alt="" />
@@ -14,7 +17,7 @@ export default function Footer() {
               <ul className="small-icon light">
                 <li><a className="facebook" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-facebook-f"></i></a></li>
                 <li><a className="instagram" href="http://www.instagram.com" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-instagram"></i></a></li>
-                <li><a className="twitter" href="http://www.twitter.com" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-x-twitter"></i></a></li>
+                <li><a className="youtube" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-youtube"></i></a></li>
                 <li><a className="linkedin" href="http://www.linkedin.com" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-linkedin-in"></i></a></li>
               </ul>
             </div>

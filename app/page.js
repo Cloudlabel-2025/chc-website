@@ -3,12 +3,21 @@ export const metadata = {
   description: 'CHC provides cost-effective Oracle HCM, application development and technology delivery services through senior-led teams.',
 }
 
+const heroImage = "/images/Oracle-hcm-hero.png"
+
 export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px" style={{ backgroundImage: "url('/images/Oracle-hcm-hero.png')", paddingBottom: '673px' }}>
-        <div className="opacity-very-light bg-black"></div>
+      <section className="chc-home-hero cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px">
+        <img
+          src={heroImage}
+          alt=""
+          className="chc-hero-background"
+          fetchPriority="high"
+          aria-hidden="true"
+        />
+        <div className="hero-overlay-animated"></div>
         <div className="shape-image-animation bottom-0 p-0 w-100 d-none d-md-block">
           <svg xmlns="http://www.w3.org/2000/svg" width="3000" height="400" viewBox="0 180 2500 200" fill="#ffffff">
             <path className="st1" d="M 0 250 C 1200 400 1200 50 3000 250 L 3000 550 L 0 550 L 0 250">
@@ -16,13 +25,13 @@ export default function HomePage() {
             </path>
           </svg>
         </div>
-        <div className="container h-100">
+        <div className="container-fluid h-100">
           <div className="row align-items-center h-100">
             <div className="col-xl-6 col-lg-8 col-md-10 position-relative z-index-1" data-anime='{ "el": "childs", "translateY": [0, 0], "perspective": [1200,1200], "scale": [1.05, 1], "rotateX": [30, 0], "opacity": [0,1], "duration": 800, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="ps-25px pe-25px pt-5px pb-5px mb-25px text-uppercase text-white fs-12 ls-1px fw-600 border-radius-100px bg-gradient-dark-gray-transparent d-flex w-70 sm-w-100"><i className="bi bi-megaphone text-white icon-small me-10px"></i>Grow your business with us</span>
               <h1 className="text-white fw-600 ls-minus-2px mb-25px">Technology delivery with a social conscience.</h1>
               <div><p className="fw-300 fs-18 w-85 sm-w-95 text-white opacity-6">CHC provides cost-effective Oracle HCM, application development and technology delivery services through senior-led teams. Our model combines experienced technology leadership with structured development of emerging talent&mdash;helping clients deliver important work while creating meaningful technology careers.</p></div>
-              <a href="/about" target="blank" className="btn btn-extra-large btn-switch-text btn-gradient-purple-pink btn-rounded me-10px ls-0px mt-15px home-marketplace">
+              <a href="/about" className="btn btn-extra-large btn-switch-text btn-gradient-purple-pink btn-rounded me-10px ls-0px mt-15px home-marketplace">
                 <span>
                   <span className="btn-double-text" data-text="About">About</span>
                 </span>
@@ -38,17 +47,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className="box-layout">
-        {/* About/Intro Section */}
-        <section className="position-relative overflow-hidden">
+      {/* About/Intro Section */}
+        <section className="chc-home-intro position-relative overflow-hidden">
           <img src="/images/demo-modern-business-elements-02.png" alt="" className="position-absolute right-10px top-70px lg-top-40px animation-rotation d-none d-md-block" />
-          <div className="container">
+          <div className="container-fluid px-5 lg-px-10">
             <div className="row align-items-center justify-content-center mb-5 sm-mb-0">
               <div className="col-lg-6 position-relative md-mb-15 sm-mb-25">
                 <div className="w-70 xs-w-80" data-animation-delay="50" data-shadow-animation="true" style={{ aspectRatio: '470/566' }}>
                   <img src="/images/home-first-section.jpg" alt="" className="border-radius-10px w-100 h-100" style={{ objectFit: 'cover' }} />
-                  <img src="/images/chc-spin-support.png" alt="" className="position-absolute left-60px bottom-minus-60px d-none d-md-block" style={{ width: '100px', height: 'auto', borderRadius: '50%', marginBottom: '24px', marginLeft: '24px' }} />
-                  <img src="/images/chc-spinner.png" alt="" className="position-absolute left-60px bottom-minus-60px animation-rotation d-none d-md-block" style={{ width: '150px', height: 'auto' }} />
+                  <div className="position-absolute left-60px bottom-minus-60px hero-spinner-wrap" style={{ width: '150px', height: '150px' }} aria-hidden="true">
+                    <img src="/images/chc-spin-support.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100px', height: 'auto', borderRadius: '50%' }} />
+                    <img src="/images/chc-spinner.png" alt="" className="animation-rotation" style={{ position: 'absolute', top: '50%', left: '50%', marginTop: '-75px', marginLeft: '-75px', width: '150px', height: 'auto' }} />
+                  </div>
                 </div>
                 <div className="w-50 overflow-hidden position-absolute right-20px xs-right-15px xs-w-60 bottom-minus-50px" data-shadow-animation="true" data-animation-delay="250" data-bottom-top="transform: translateY(50px)" data-top-bottom="transform: translateY(-50px)" style={{ aspectRatio: '350/419' }}>
                   <img src="/images/home-content-2.jpg" alt="" className="border-radius-10px w-100 h-100 box-shadow-quadruple-large" style={{ objectFit: 'cover' }} />
@@ -147,22 +157,14 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Why CHC Section */}
-        <section className="cover-background border-radius-10px overflow-visible" style={{ backgroundImage: "url('/images/demo-modern-business-services-bg-01.jpg')" }}>
-          <div className="container-fluid overflow-hidden">
-            <div className="row" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-            </div>
+        {/* Stack Cards Section */}
+        <section className="chc-why-section">
+          <div className="container-fluid px-5 lg-px-10">
             <div className="row justify-content-center mb-3">
               <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-anime='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
                 <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">Why CHC?</h2>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Stack Cards Section */}
-        <section>
-          <div className="container">
             <div className="row">
               <div className="col-12">
                 <div className="stack-card cards" data-scale="true" data-top-space="35">
@@ -239,7 +241,6 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-      </div>
     </>
   )
 }

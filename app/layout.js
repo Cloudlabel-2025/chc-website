@@ -3,6 +3,7 @@ import './globals.css'
 import './page-styles.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import RouteReload from '@/components/RouteReload'
 
 export const metadata = {
   title: 'CHC - Technology Delivery with a Social Conscience',
@@ -29,10 +30,14 @@ export default function RootLayout({ children }) {
         <link rel="stylesheet" href="/demos/modern-business/modern-business.css" />
       </head>
       <body data-mobile-nav-style="classic" className="background-position-center-top">
+        <RouteReload />
+        <a className="chc-skip-link" href="#main-content">Skip to main content</a>
         <div className="box-layout">
           <Header />
         </div>
-        {children}
+        <main id="main-content" className="chc-page-content">
+          {children}
+        </main>
         <Footer />
         <div className="crafto-progressive-blur crafto-progressive-blur-bottom" blur-bottom="yes" style={{ '--progressive-blur-height': '15vh' }}></div>
         <Script src="/js/jquery.js" strategy="beforeInteractive" />

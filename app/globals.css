@@ -1,3 +1,8 @@
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   background-image: url('/images/vertical-line-bg.svg');
 }

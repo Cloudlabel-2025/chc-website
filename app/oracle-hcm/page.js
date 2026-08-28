@@ -1,4 +1,3 @@
-import Hero from '@/components/Hero'
 import ContentSection from '@/components/ContentSection'
 
 export const metadata = {
@@ -9,12 +8,32 @@ export const metadata = {
 export default function OracleHCMPage() {
   return (
     <>
-      <Hero title="Oracle HCM" subtitle="CHC provides senior-led Oracle HCM delivery supported by trained functional and technical consultants." />
-      <div className="box-layout">
+      <section className="chc-page-hero cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px">
+        <img src="/images/Oracle-hcm-hero.png" alt="" className="chc-hero-background" fetchPriority="high" aria-hidden="true" />
+        <div className="hero-overlay-animated"></div>
+        <div className="shape-image-animation bottom-0 p-0 w-100 d-none d-md-block">
+          <svg xmlns="http://www.w3.org/2000/svg" width="3000" height="400" viewBox="0 180 2500 200" fill="#ffffff">
+            <path className="st1" d="M 0 250 C 1200 400 1200 50 3000 250 L 3000 550 L 0 550 L 0 250">
+              <animate attributeName="d" dur="5s" values="M 0 250 C 1200 400 1200 50 3000 250 L 3000 550 L 0 550 L 0 250;M 0 250 C 400 50 400 400 3000 250 L 3000 550 L 0 550 L 0 250;M 0 250 C 1200 400 1200 50 3000 250 L 3000 550 L 0 550 L 0 250" repeatCount="indefinite" />
+            </path>
+          </svg>
+        </div>
+        <div className="row align-items-center justify-content-center position-relative z-index-1 h-350px sm-h-250px">
+          <div className="col-md-6 text-center position-relative page-title-extra-large" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+            <h1 className="alt-font d-inline-block fw-700 ls-0px text-white mb-15px">Oracle HCM</h1>
+            <p className="mx-auto w-50 xl-w-70 md-w-100 mb-0 text-white opacity-6">CHC provides senior-led Oracle HCM delivery supported by trained functional and technical consultants.</p>
+          </div>
+          <div className="down-section text-center" data-anime='{ "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
+            <a href="#down-section" className="section-link">
+              <div className="text-white"><i className="bi bi-arrow-down-short icon-very-medium animation-float"></i></div>
+            </a>
+          </div>
+        </div>
+      </section>
         <ContentSection />
 
         <section className="border-bottom border-color-extra-medium-gray half-section" data-anime='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-          <div className="container">
+          <div className="container-fluid px-5 lg-px-10">
             <div className="row">
               <div className="col-12 text-center mt-10px mb-30px">
                 <div className="alt-font core-capabilities-heading text-dark-gray ls-minus-05px">Core Capabilities</div>
@@ -46,7 +65,7 @@ export default function OracleHCMPage() {
 
         <section className="position-relative">
           <div id="particles-03" data-particle="true" data-particle-options='{"particles": {"number": {"value": 5,"density": {"enable": true,"value_area": 1000}},"color":{"value":["#b7b9be", "#dd6531"]},"shape": {"type": "circle","stroke":{"width":0,"color":"#000000"}},"opacity": {"value": 0.5,"random": false,"anim": {"enable": false,"speed": 1,"sync": false}},"size": {"value": 8,"random": true,"anim": {"enable": false,"sync": true}},"move": {"enable": true,"speed":2,"direction": "right","random": false,"straight": false}},"interactivity": {"detect_on": "canvas","events": {"onhover": {"enable": false,"mode": "repulse"},"onclick": {"enable": false,"mode": "push"},"resize": true}},"retina_detect": false}' className="position-absolute h-100 top-0 left-0 z-index-minus-1"></div>
-          <div className="container">
+          <div className="container-fluid px-5 lg-px-10">
             <div className="row justify-content-center mb-3">
               <div className="col-lg-7 text-center" data-anime='{  "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
                 <span className="fw-600 ls-1px fs-16 alt-font mb-5px d-inline-block text-uppercase text-base-color">Oracle</span>
@@ -99,7 +118,7 @@ export default function OracleHCMPage() {
         </section>
 
         <section className="overflow-hidden bg-very-light-gray position-relative">
-          <div className="container">
+          <div className="container-fluid px-5 lg-px-10">
             <div className="row align-items-center mb-5 sm-mb-30px text-center text-lg-start" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <div className="col-lg-5 md-mb-30px">
                 <h3 className="text-dark-gray fw-700 ls-minus-2px mb-0"> Looking for Oracle Delivery Capacity? </h3>
@@ -153,7 +172,6 @@ export default function OracleHCMPage() {
             </div>
           </div>
         </section>
-      </div>
     </>
   )
 }
