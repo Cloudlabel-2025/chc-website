@@ -1,0 +1,262 @@
+// CHC CMS — Prisma Schema
+// Normalized: User → Session, Page → Section → ContentBlock, MediaAsset, Nav, Footer, SEO, Audit
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  role          UserRole  @default(ADMIN)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  sessions      Session[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Tracks failed login attempts for rate limiting
+model LoginAttempt {
+  id          String   @id @default(cuid())
+  identifier  String   // email or IP
+  attemptedAt DateTime @default(now())
+  success     Boolean  @default(false)
+
+  @@index([identifier, attemptedAt])
+  @@map("login_attempts")
+}
+
+model RateLimitBucket {
+  key         String   @id
+  windowStart DateTime
+  count       Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@map("rate_limit_buckets")
+}
+
+enum UserRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ─── Media ───────────────────────────────────────────────────────────────────
+
+model MediaAsset {
+  id           String      @id @default(cuid())
+  filename     String      // original filename
+  storageKey   String      @unique // S3/R2 object key
+  publicUrl    String      // CDN/public URL
+  mimeType     String
+  sizeBytes    Int
+  width        Int?
+  height       Int?
+  altText      String      @default("")
+  uploadedById String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  contentBlocks ContentBlock[]
+
+  @@map("media_assets")
+}
+
+// ─── Pages & Content ─────────────────────────────────────────────────────────
+
+model Page {
+  id          String      @id @default(cuid())
+  slug        String      @unique // e.g. "home", "about", "oracle-hcm"
+  title       String      // internal label
+  isPublished Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdById String
+  updatedById String
+
+  sections    Section[]
+  seoMeta     SeoMeta?
+
+  @@map("pages")
+}
+
+model Section {
+  id          String        @id @default(cuid())
+  pageId      String
+  sectionKey  String        // e.g. "hero", "intro", "why-chc", "what-we-do"
+  sortOrder   Int           @default(0)
+  isVisible   Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  createdById String
+  updatedById String
+
+  page        Page          @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  blocks      ContentBlock[]
+
+  @@unique([pageId, sectionKey])
+  @@map("sections")
+}
+
+// A ContentBlock is a single typed field within a section.
+// fieldKey maps to the field-rules config (single source of truth).
+// For repeatable items (team members, service cards, etc.) parentId links children to a parent block.
+model ContentBlock {
+  id           String        @id @default(cuid())
+  sectionId    String
+  fieldKey     String        // e.g. "heroTitle", "heroImage", "teamMember"
+  blockType    BlockType
+  textValue    String?       // for text/richtext/url fields
+  mediaAssetId String?       // for image fields
+  sortOrder    Int           @default(0)
+  isPublished  Boolean       @default(false)
+  parentId     String?       // for repeatable child items
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  createdById  String
+  updatedById  String
+
+  section      Section       @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  mediaAsset   MediaAsset?   @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+  parent       ContentBlock? @relation("BlockChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children     ContentBlock[] @relation("BlockChildren")
+
+  @@index([sectionId, fieldKey])
+  @@map("content_blocks")
+}
+
+enum BlockType {
+  TEXT
+  RICH_TEXT
+  IMAGE
+  URL
+  SELECT
+}
+
+// ─── Navigation ──────────────────────────────────────────────────────────────
+
+model NavigationItem {
+  id          String    @id @default(cuid())
+  label       String
+  href        String
+  sortOrder   Int       @default(0)
+  badge       String?   // e.g. "Hot"
+  icon        String?   // e.g. "bi bi-card-text" — used by dropdown children
+  description String?   // short description shown in dropdown
+  parentId    String?   // for dropdown children
+  isVisible   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  updatedById String
+
+  parent      NavigationItem?  @relation("NavChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children    NavigationItem[] @relation("NavChildren")
+
+  @@map("navigation_items")
+}
+
+// ─── Footer ──────────────────────────────────────────────────────────────────
+
+// Single-row config table for footer fields
+model FooterConfig {
+  id              String   @id @default(cuid())
+  address1Label   String   @default("")
+  address1Text    String   @default("")
+  address2Label   String   @default("")
+  address2Text    String   @default("")
+  ctaText         String   @default("")
+  ctaLinkText     String   @default("")
+  ctaLinkHref     String   @default("")
+  copyrightText   String   @default("")
+  facebookUrl     String   @default("")
+  instagramUrl    String   @default("")
+  youtubeUrl      String   @default("")
+  linkedinUrl     String   @default("")
+  updatedAt       DateTime @updatedAt
+  updatedById     String
+
+  @@map("footer_config")
+}
+
+// ─── SEO ─────────────────────────────────────────────────────────────────────
+
+model SeoMeta {
+  id              String   @id @default(cuid())
+  pageId          String   @unique
+  metaTitle       String   @default("")
+  metaDescription String   @default("")
+  ogTitle         String   @default("")
+  ogDescription   String   @default("")
+  ogImageUrl      String   @default("")
+  canonical       String   @default("")
+  noIndex         Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+  updatedById     String
+
+  page            Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@map("seo_meta")
+}
+
+// ─── Form Submissions ────────────────────────────────────────────────────────
+
+model FormSubmission {
+  id          String         @id @default(cuid())
+  formType    FormType
+  data        Json           // validated field values
+  submittedAt DateTime       @default(now())
+  ipAddress   String?
+  isRead      Boolean        @default(false)
+
+  @@index([formType, submittedAt])
+  @@map("form_submissions")
+}
+
+enum FormType {
+  CONTACT
+  GIVE_ONE_HOUR
+  NEWSLETTER
+}
+
+// ─── Audit Log ───────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  userId      String
+  action      String    // e.g. "UPDATE_CONTENT_BLOCK", "UPLOAD_MEDIA", "LOGIN"
+  entityType  String?   // e.g. "ContentBlock", "MediaAsset"
+  entityId    String?
+  metadata    Json?     // before/after snapshot or relevant context
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}

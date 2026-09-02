@@ -279,6 +279,24 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   transform: scale(1.15);
 }
 
+/* --- Team People Carousel (Coverflow) --- */
+.team-people-carousel {
+  padding: 20px 0 60px;
+  overflow: visible;
+  cursor: none !important;
+}
+.team-people-carousel .swiper-slide {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0.5;
+}
+.team-people-carousel .swiper-slide-active {
+  opacity: 1;
+}
+.team-people-carousel .swiper-slide-prev,
+.team-people-carousel .swiper-slide-next {
+  opacity: 0.7;
+}
+
 /* ========================================
    CHC Responsive System
    Project-owned overrides for the Crafto template
@@ -422,7 +440,8 @@ footer {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 10px 20px;
+  padding: 10px;
+  padding-top: 35px;
   border: 0;
   background: transparent;
   color: var(--white);
@@ -579,16 +598,35 @@ footer {
 }
 
 @media (max-width: 991px) {
+  header.header-with-topbar.chc-site-header {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    background: rgba(25, 18, 43, 0.94);
+  }
+
   .chc-site-header .navbar {
-    min-height: var(--chc-mobile-header-height);
+    min-height: auto;
     padding: 0 15px;
     background: rgba(25, 18, 43, 0.94) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    transition: background 0.3s ease;
+  }
+
+  .navbar.bg-transparent {
+    background-color: rgba(25, 18, 43, 0.94) !important;
+  }
+
+  header.sticky.sticky-active [data-header-hover="light"] {
+    background-color: rgba(25, 18, 43, 0.94) !important;
+    box-shadow: none !important;
   }
 
   .chc-site-header .chc-header-inner {
-    min-height: var(--chc-mobile-header-height);
+    min-height: auto;
     padding: 0 !important;
   }
 
@@ -733,7 +771,7 @@ footer {
     display: none;
     width: 100% !important;
     margin: 0 !important;
-    padding: 4px 0 12px 12px !important;
+    padding: 4px 0 12px 0 !important;
     border: 0 !important;
     border-radius: 0 !important;
     background: transparent !important;
@@ -768,12 +806,7 @@ footer {
   }
 
   .chc-site-header .chc-what-we-do .dropdown-menu li a > i {
-    width: 25px;
-    margin: 0;
-    flex: 0 0 25px;
-    color: #bda8ff;
-    font-size: 23px;
-    text-align: center;
+    display: none !important;
   }
 
   .chc-site-header .submenu-icon-content {
@@ -793,6 +826,23 @@ footer {
     color: rgba(255, 255, 255, 0.68) !important;
     font-size: 12px;
     font-weight: 400 !important;
+  }
+
+  .interactive-banner-style-05 p {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    padding-top: 0;
+    transition: all 0.4s ease;
+  }
+
+  .interactive-banner-style-05:active p,
+  .interactive-banner-style-05:focus-within p {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 10px;
+    padding-top: 10px;
   }
 }
 
@@ -850,12 +900,24 @@ footer {
     max-width: 100%;
   }
 
+  .chc-home-hero .col-xl-6 > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
   .home-marketplace,
   .home-marketplace + .btn {
-    display: flex;
-    width: 100%;
+    display: inline-flex;
+    width: auto;
+    flex: 1 1 0;
     margin-right: 0 !important;
+    margin-top: 0 !important;
     justify-content: center;
+    padding: 14px 20px !important;
+    font-size: 14px !important;
+    min-height: 48px;
+    text-align: center;
   }
 
   .contact-form-style-02 .form-control,
@@ -917,13 +979,6 @@ footer {
     margin: 0 !important;
     justify-content: center;
     text-align: center;
-  }
-
-  .interactive-banner-style-05 p {
-    max-height: none;
-    margin-top: 8px;
-    padding-top: 8px;
-    opacity: 1;
   }
 
   .interactive-banner-style-05 figure {
@@ -1002,9 +1057,10 @@ footer {
   .chc-site-footer .sm-fs-150,
   .chc-site-footer .xs-fs-100 {
     display: block;
-    font-size: clamp(4rem, 25vw, 8rem) !important;
+    font-size: clamp(2rem, 12vw, 5rem) !important;
     line-height: 0.9;
-    letter-spacing: -0.05em !important;
+    letter-spacing: -0.03em !important;
+    white-space: nowrap;
   }
 }
 
@@ -1043,11 +1099,6 @@ footer {
   .team-style-05 img {
     filter: none !important;
     opacity: 1 !important;
-  }
-
-  .interactive-banner-style-05 p {
-    max-height: none;
-    opacity: 1;
   }
 
   .interactive-banner-style-05:hover span {

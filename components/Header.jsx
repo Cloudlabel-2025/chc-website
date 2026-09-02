@@ -3,38 +3,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
-const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/oracle-hcm', label: 'Oracle HCM' },
-  { href: '/applications', label: 'Applications' },
-  { href: '/services', label: 'Services', badge: 'Hot' },
-  { href: '/give-one-hour', label: 'Give One Hour' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+const NAV_FALLBACK = [
+  { id: '1', href: '/',              label: 'Home',          badge: null },
+  { id: '2', href: '/oracle-hcm',    label: 'Oracle HCM',    badge: null },
+  { id: '3', href: '/applications',  label: 'Applications',  badge: null },
+  { id: '4', href: '/services',      label: 'Services',      badge: 'Hot' },
+  { id: '5', href: '/give-one-hour', label: 'Give One Hour', badge: null },
+  { id: '6', href: '/about',         label: 'About',         badge: null },
+  { id: '7', href: '/contact',       label: 'Contact',       badge: null },
 ]
 
-const whatWeDoItems = [
-  {
-    href: '/our-delivery-model',
-    icon: 'bi bi-card-text',
-    label: 'Our Delivery Model',
-    description: 'Telling your story with impact.',
-  },
-  {
-    href: '/our-impact',
-    icon: 'bi bi-send',
-    label: 'Our Impact',
-    description: 'Strategies for lasting impact.',
-  },
-  {
-    href: '/our-people',
-    icon: 'bi bi-briefcase',
-    label: 'Our People',
-    description: 'Turning concepts into products.',
-  },
+const WHAT_WE_DO_FALLBACK = [
+  { id: 'a', href: '/our-delivery-model', icon: 'bi bi-card-text', label: 'Our Delivery Model', description: 'Telling your story with impact.' },
+  { id: 'b', href: '/our-impact',         icon: 'bi bi-send',       label: 'Our Impact',         description: 'Strategies for lasting impact.' },
+  { id: 'c', href: '/our-people',         icon: 'bi bi-briefcase',  label: 'Our People',         description: 'Turning concepts into products.' },
 ]
 
-export default function Header() {
+export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_WE_DO_FALLBACK }) {
   const pathname = usePathname()
   const navRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
