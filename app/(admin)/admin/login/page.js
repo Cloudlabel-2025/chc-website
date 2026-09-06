@@ -16,6 +16,11 @@ export default async function LoginPage({ searchParams }) {
   const params = await searchParams
   const callbackUrl = params?.callbackUrl ?? '/admin/dashboard'
 
+  // Never reflect leaked credentials back — strip email/password from the URL
+  if (params?.email !== undefined || params?.password !== undefined) {
+    redirect('/admin/login')
+  }
+
   return (
     <div className="admin-login-shell">
       <div className="admin-login-card">

@@ -46,7 +46,7 @@ export default function LoginForm({ callbackUrl }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
+    <form onSubmit={handleSubmit} method="POST" noValidate>
       {error && (
         <div className={`admin-alert ${rateLimited ? 'admin-alert-warning' : 'admin-alert-error'} admin-mb-16`} role="alert">
           {error}

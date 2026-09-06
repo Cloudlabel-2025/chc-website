@@ -1,0 +1,16 @@
+
+> chc-nextjs@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 2.8s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 2.9s (135 modules)
+ ○ Compiling /admin/login ...
+ ✓ Compiled /admin/login in 15.4s (1018 modules)
+ GET /admin/login?callbackUrl=%2Fadmin%2Fmedia 200 in 16741ms
+[?25h

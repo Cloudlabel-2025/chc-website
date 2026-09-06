@@ -227,8 +227,10 @@ header.header-with-topbar {
   z-index: 1000;
 }
 header.sticky.header-with-topbar {
-  background: rgba(0, 0, 0, 0.85) !important;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(45, 34, 71, 0.95) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(17, 11, 31, 0.24);
 }
 header.sticky.sticky-active .navbar-brand .default-logo {
   visibility: visible !important;
@@ -242,7 +244,7 @@ header.sticky.sticky-active .navbar-brand .alt-logo {
   background-color: transparent !important;
 }
 header.sticky .navbar.bg-transparent {
-  background-color: rgba(0, 0, 0, 0.65) !important;
+  background-color: rgba(45, 34, 71, 0.95) !important;
 }
 header.header-with-topbar .navbar .nav-link {
   color: var(--white) !important;
@@ -599,24 +601,24 @@ footer {
     left: 0;
     right: 0;
     z-index: 1050;
-    background: rgba(25, 18, 43, 0.94) !important;
+    background: rgba(45, 34, 71, 0.95) !important;
   }
 
   .chc-site-header .navbar {
     min-height: auto;
     padding: 0 15px;
-    background: rgba(25, 18, 43, 0.94) !important;
+    background: rgba(45, 34, 71, 0.95) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     transition: background 0.3s ease;
   }
 
   .navbar.bg-transparent {
-    background-color: rgba(25, 18, 43, 0.94) !important;
+    background-color: rgba(45, 34, 71, 0.95) !important;
   }
 
   header.sticky.sticky-active [data-header-hover="light"] {
-    background-color: rgba(25, 18, 43, 0.94) !important;
+    background-color: rgba(45, 34, 71, 0.95) !important;
     box-shadow: none !important;
   }
 
@@ -1135,8 +1137,11 @@ footer {
     scroll-behavior: auto;
   }
 }
-/* Content must remain readable when the optional animation runtime is delayed or unavailable. */
-html body [data-anime],
-html body [data-anime] > * {
+/* Content must remain readable when the animation runtime is unavailable.
+   Scoped to body.no-animation (set by main.js) so it never overrides
+   active anime.js inline opacity during scroll animations. */
+html body.no-animation [data-anime],
+html body.no-animation [data-anime] > * {
   opacity: 1 !important;
+  transform: none !important;
 }
