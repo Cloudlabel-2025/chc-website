@@ -18,6 +18,7 @@ export default function AdminSidebar() {
     {
       label: 'Forms',
       links: [
+        { href: '/admin/forms', label: 'Forms', icon: FormIcon },
         { href: '/admin/submissions', label: 'Submissions', icon: FormIcon },
       ],
     },
@@ -25,6 +26,7 @@ export default function AdminSidebar() {
       label: 'Settings',
       links: [
         { href: '/admin/seo', label: 'SEO', icon: SeoIcon },
+        { href: '/admin/templates', label: 'Templates', icon: PagesIcon },
         { href: '/admin/settings', label: 'Settings', icon: SettingsIcon },
       ],
     },

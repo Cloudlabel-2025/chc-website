@@ -228,6 +228,9 @@ model FormSubmission {
   submittedAt DateTime       @default(now())
   ipAddress   String?
   isRead      Boolean        @default(false)
+  formDefinitionId String?   @db.ObjectId
+
+  formDefinition FormDefinition? @relation(fields: [formDefinitionId], references: [id], onDelete: SetNull)
 
   @@index([formType, submittedAt])
   @@map("form_submissions")
@@ -237,6 +240,38 @@ enum FormType {
   CONTACT
   GIVE_ONE_HOUR
   NEWSLETTER
+  CUSTOM
+}
+
+// ─── Dynamic Forms & Page Templates ──────────────────────────────────────────
+
+model FormDefinition {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug           String   @unique
+  title          String
+  buttonText     String   @default("Submit")
+  successMessage String   @default("Submitted successfully.")
+  isActive       Boolean  @default(true)
+  fields         Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdById    String?  @db.ObjectId
+  updatedById    String?  @db.ObjectId
+
+  submissions FormSubmission[]
+
+  @@map("form_definitions")
+}
+
+model PageTemplate {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  content     Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("page_templates")
 }
 
 // ─── Audit Log ───────────────────────────────────────────────────────────────
