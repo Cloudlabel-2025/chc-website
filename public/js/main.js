@@ -12,6 +12,15 @@
 (function ($) {
 
     "use strict";
+
+    // Keep server-rendered content readable when a theme dependency fails to
+    // load. Without this guard, the animation setup below stops immediately
+    // and every [data-anime] element remains transparent.
+    if (!$ || typeof window.anime === 'undefined') {
+        document.body.classList.add('no-animation');
+        return;
+    }
+
     /* ===================================
      Change variables value as per your need 
      ====================================== */
@@ -64,11 +73,61 @@
      jQuery appear
      ====================================== */
 
+    // Fallback shim: vendors.min.js does not bundle jquery.appear.
+    // Without it, .on('appear') handlers below never fire and every
+    // [data-anime] element stays at opacity:0 forever.
+    // Shared registry: all registered elements share ONE scroll/resize
+    // handler so registering N elements never unbinds the others.
+    if (typeof $.fn.appear === 'undefined') {
+        var $appearRegistry = $();
+        var appearCheckRunning = false;
+        function appearCheckAll() {
+            if (appearCheckRunning) return;
+            appearCheckRunning = true;
+            try {
+                var viewportH = window.innerHeight || document.documentElement.clientHeight;
+                $appearRegistry.each(function () {
+                    var $el = $(this);
+                    if ($el.hasClass('appear')) return;
+                    try {
+                        var rect = this.getBoundingClientRect();
+                        if (rect.top < viewportH && rect.bottom > 0) {
+                            $el.trigger('appear');
+                        }
+                    } catch (e) { /* ignore */ }
+                });
+                // Drop elements that already appeared so the list shrinks
+                $appearRegistry = $appearRegistry.filter(function () {
+                    return !$(this).hasClass('appear');
+                });
+            } finally {
+                appearCheckRunning = false;
+            }
+        }
+        $.fn.appear = function () {
+            $appearRegistry = $appearRegistry.add(this);
+            return this;
+        };
+        $.fn.appearCheckAll = appearCheckAll;
+        // Bind once — never off() inside appear(), or N-1 elements lose it
+        $(window).off('scroll.chc-appear resize.chc-appear').on('scroll.chc-appear resize.chc-appear', appearCheckAll);
+        setTimeout(appearCheckAll, 150);
+    }
+
     $('.vertical-counter, .counter, .progress-bar, .pie-chart-style-01, .attractive-hover, .splitting-animation, .section-dark, footer, [data-anime], [data-fancy-text]').each(function () {
         if (typeof $.fn.appear !== 'undefined') {
-            $(this).appear().trigger('resize');
+            $(this).appear();
         }
     });
+    // Re-run after all .on('appear') handlers below are bound, so the
+    // initial in-viewport trigger is not lost to unbound handlers.
+    setTimeout(function () {
+        if (typeof $.fn.appearCheckAll === 'function') {
+            $.fn.appearCheckAll();
+        } else {
+            $(window).trigger('resize');
+        }
+    }, 600);
 
     initScrollNavigate();
     slideboxstyle();
@@ -4515,7 +4574,7 @@
         noise.init();
     });
 
-})(jQuery);
+})(window.jQuery);
 
 /* ===================================
  Google map

@@ -21,6 +21,9 @@ yarn-error.log*
 .env
 .env*.local
 
+# local db backups (point-in-time snapshots, never commit)
+backups/
+
 # vercel
 .vercel
 
