@@ -1,4 +1,5 @@
 import Script from 'next/script'
+import { headers } from 'next/headers'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -11,11 +12,10 @@ export const metadata = {
 }
 
 export default async function RootLayout({ children }) {
-  const [navItems, whatWeDoItems, footer] = await Promise.all([
-    getNavData(),
-    getWhatWeDoNav(),
-    getFooterData(),
-  ])
+  const isAdmin = (await headers()).get('x-admin-route') === '1'
+  const [navItems, whatWeDoItems, footer] = isAdmin
+    ? [[], [], null]
+    : await Promise.all([getNavData(), getWhatWeDoNav(), getFooterData()])
 
   return (
     <html lang="en" className="no-js">
@@ -37,20 +37,18 @@ export default async function RootLayout({ children }) {
         <link rel="stylesheet" href="/page-styles.css" />
       </head>
       <body data-mobile-nav-style="classic" className="background-position-center-top">
-        <RouteReload />
-        <a className="chc-skip-link" href="#main-content">Skip to main content</a>
-        <div className="box-layout">
-          <Header navItems={navItems} whatWeDoItems={whatWeDoItems} />
-        </div>
+        {!isAdmin && <RouteReload />}
+        {!isAdmin && <a className="chc-skip-link" href="#main-content">Skip to main content</a>}
+        {!isAdmin && <div className="box-layout"><Header navItems={navItems} whatWeDoItems={whatWeDoItems} /></div>}
         <main id="main-content" className="chc-page-content">
           {children}
         </main>
-        <Footer footer={footer} />
-        <div className="crafto-progressive-blur crafto-progressive-blur-bottom" blur-bottom="yes" style={{ '--progressive-blur-height': '15vh' }}></div>
-        <Script src="/js/jquery.js" strategy="beforeInteractive" />
-        <Script src="/js/vendors.min.js" strategy="beforeInteractive" />
-        <Script id="disable-retina" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `try{if(window.Retina){Retina.isRetina=function(){return false;};} if(window.Retina&&window.RetinaImage&&RetinaImage.prototype){RetinaImage.prototype.check_2x_variant=function(cb){cb(false);};} }catch(e){}` }} />
-        <Script src="/js/main.js" strategy="afterInteractive" />
+        {!isAdmin && <Footer footer={footer} />}
+        {!isAdmin && <div className="crafto-progressive-blur crafto-progressive-blur-bottom" blur-bottom="yes" style={{ '--progressive-blur-height': '15vh' }}></div>}
+        {!isAdmin && <Script src="/js/jquery.js" strategy="beforeInteractive" />}
+        {!isAdmin && <Script src="/js/vendors.min.js" strategy="beforeInteractive" />}
+        {!isAdmin && <Script id="disable-retina" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `try{if(window.Retina){Retina.isRetina=function(){return false;};} if(window.Retina&&window.RetinaImage&&RetinaImage.prototype){RetinaImage.prototype.check_2x_variant=function(cb){cb(false);};} }catch(e){}` }} />}
+        {!isAdmin && <Script src="/js/main.js" strategy="afterInteractive" />}
       </body>
     </html>
   )

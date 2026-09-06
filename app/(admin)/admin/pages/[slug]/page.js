@@ -23,7 +23,6 @@ export default async function PageEditorPage({ params }) {
           orderBy: { sortOrder: 'asc' },
           include: {
             blocks: {
-              where: { parentId: null },
               orderBy: { sortOrder: 'asc' },
               include: { mediaAsset: true },
             },

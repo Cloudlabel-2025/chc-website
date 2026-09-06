@@ -1,6 +1,6 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
-import { getInnerPageHero, getContentSection, getAboutFeatureCards, getPageSeo } from '@/lib/cms/public-data'
+import { getInnerPageHero, getContentSection, getAboutFeatureCards, getCtaBanner, getPageSeo } from '@/lib/cms/public-data'
 
 export async function generateMetadata() {
   return getPageSeo('about', {
@@ -10,10 +10,11 @@ export async function generateMetadata() {
 }
 
 export default async function AboutPage() {
-  const [hero, cs, cards] = await Promise.all([
+  const [hero, cs, cards, cta] = await Promise.all([
     getInnerPageHero('about', { heading: 'About', subtitle: 'We deliver smart solutions that help your business grow successfully.' }),
     getContentSection('about'),
     getAboutFeatureCards(),
+    getCtaBanner('about'),
   ])
 
   return (
@@ -44,7 +45,7 @@ export default async function AboutPage() {
             <div className="col-12 text-center">
               <i className="bi bi-chat-text text-dark-gray d-inline-block align-middle icon-extra-medium me-5px md-m-5px"></i>
               <div className="fs-20 alt-font text-dark-gray d-inline-block align-middle fw-500 ls-minus-05px">
-                Let&apos;s make something great work together. <a href="/contact" className="text-dark-gray fw-600 text-decoration-line-bottom">Got a project in mind?</a>
+                {cta.heading} <a href={cta.buttonHref} className="text-dark-gray fw-600 text-decoration-line-bottom">{cta.buttonLabel}</a>
               </div>
             </div>
           </div>

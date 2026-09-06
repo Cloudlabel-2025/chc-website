@@ -1,6 +1,6 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
-import { getInnerPageHero, getContentSection, getPeopleData, getPageSeo } from '@/lib/cms/public-data'
+import { getInnerPageHero, getContentSection, getPeopleData, getPeopleHeader, getPageSeo } from '@/lib/cms/public-data'
 
 export async function generateMetadata() {
   return getPageSeo('our-people', {
@@ -10,10 +10,11 @@ export async function generateMetadata() {
 }
 
 export default async function OurPeoplePage() {
-  const [hero, cs, people] = await Promise.all([
+  const [hero, cs, people, ph] = await Promise.all([
     getInnerPageHero('our-people', { heading: 'Our People', subtitle: 'Meet the team behind CHC.' }),
     getContentSection('our-people'),
     getPeopleData(),
+    getPeopleHeader(),
   ])
 
   return (
@@ -27,8 +28,8 @@ export default async function OurPeoplePage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
             <div className="col-lg-7 text-center" data-anime='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-              <span className="fw-600 ls-1px fs-16 alt-font mb-5px d-inline-block text-uppercase text-base-color">Meet our people</span>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">Leading experts</h2>
+              <span className="fw-600 ls-1px fs-16 alt-font mb-5px d-inline-block text-uppercase text-base-color">{ph.badge}</span>
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{ph.heading}</h2>
             </div>
           </div>
           <div className="swiper team-people-carousel magic-cursor" data-slider-options='{ "slidesPerView": 3, "spaceBetween": 30, "loop": true, "autoplay": { "delay": 5000, "disableOnInteraction": false }, "effect": "coverflow", "coverflowEffect": { "rotate": 0, "stretch": 0, "depth": 100, "modifier": 2, "slideShadows": false }, "centeredSlides": true, "breakpoints": { "1200": { "slidesPerView": 3 }, "992": { "slidesPerView": 3 }, "768": { "slidesPerView": 2 }, "320": { "slidesPerView": 1 } } }'>

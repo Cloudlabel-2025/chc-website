@@ -1,18 +1,18 @@
-// CHC CMS — Prisma Schema
-// Normalized: User → Session, Page → Section → ContentBlock, MediaAsset, Nav, Footer, SEO, Audit
+// CHC CMS — Prisma Schema (MongoDB)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
 }
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   email         String    @unique
   passwordHash  String
   name          String
@@ -29,9 +29,9 @@ model User {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
-  userId       String
+  userId       String   @db.ObjectId
   expires      DateTime
   createdAt    DateTime @default(now())
 
@@ -40,10 +40,9 @@ model Session {
   @@map("sessions")
 }
 
-// Tracks failed login attempts for rate limiting
 model LoginAttempt {
-  id          String   @id @default(cuid())
-  identifier  String   // email or IP
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier  String
   attemptedAt DateTime @default(now())
   success     Boolean  @default(false)
 
@@ -52,7 +51,8 @@ model LoginAttempt {
 }
 
 model RateLimitBucket {
-  key         String   @id
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
   windowStart DateTime
   count       Int      @default(0)
   updatedAt   DateTime @updatedAt
@@ -69,10 +69,10 @@ enum UserRole {
 // ─── Media ───────────────────────────────────────────────────────────────────
 
 model MediaAsset {
-  id           String      @id @default(cuid())
-  filename     String      // original filename
-  storageKey   String      @unique // S3/R2 object key
-  publicUrl    String      // CDN/public URL
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  filename     String
+  storageKey   String      @unique
+  publicUrl    String
   mimeType     String
   sizeBytes    Int
   width        Int?
@@ -90,9 +90,9 @@ model MediaAsset {
 // ─── Pages & Content ─────────────────────────────────────────────────────────
 
 model Page {
-  id          String      @id @default(cuid())
-  slug        String      @unique // e.g. "home", "about", "oracle-hcm"
-  title       String      // internal label
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String      @unique
+  title       String
   isPublished Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -106,9 +106,9 @@ model Page {
 }
 
 model Section {
-  id          String        @id @default(cuid())
-  pageId      String
-  sectionKey  String        // e.g. "hero", "intro", "why-chc", "what-we-do"
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  pageId      String        @db.ObjectId
+  sectionKey  String
   sortOrder   Int           @default(0)
   isVisible   Boolean       @default(true)
   createdAt   DateTime      @default(now())
@@ -123,27 +123,24 @@ model Section {
   @@map("sections")
 }
 
-// A ContentBlock is a single typed field within a section.
-// fieldKey maps to the field-rules config (single source of truth).
-// For repeatable items (team members, service cards, etc.) parentId links children to a parent block.
 model ContentBlock {
-  id           String        @id @default(cuid())
-  sectionId    String
-  fieldKey     String        // e.g. "heroTitle", "heroImage", "teamMember"
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  sectionId    String        @db.ObjectId
+  fieldKey     String
   blockType    BlockType
-  textValue    String?       // for text/richtext/url fields
-  mediaAssetId String?       // for image fields
+  textValue    String?
+  mediaAssetId String?       @db.ObjectId
   sortOrder    Int           @default(0)
   isPublished  Boolean       @default(false)
-  parentId     String?       // for repeatable child items
+  parentId     String?       @db.ObjectId
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   createdById  String
   updatedById  String
 
   section      Section       @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  mediaAsset   MediaAsset?   @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
-  parent       ContentBlock? @relation("BlockChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  mediaAsset   MediaAsset?   @relation(fields: [mediaAssetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent       ContentBlock? @relation("BlockChildren", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children     ContentBlock[] @relation("BlockChildren")
 
   @@index([sectionId, fieldKey])
@@ -161,20 +158,20 @@ enum BlockType {
 // ─── Navigation ──────────────────────────────────────────────────────────────
 
 model NavigationItem {
-  id          String    @id @default(cuid())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   label       String
   href        String
   sortOrder   Int       @default(0)
-  badge       String?   // e.g. "Hot"
-  icon        String?   // e.g. "bi bi-card-text" — used by dropdown children
-  description String?   // short description shown in dropdown
-  parentId    String?   // for dropdown children
+  badge       String?
+  icon        String?
+  description String?
+  parentId    String?   @db.ObjectId
   isVisible   Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   updatedById String
 
-  parent      NavigationItem?  @relation("NavChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  parent      NavigationItem?  @relation("NavChildren", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children    NavigationItem[] @relation("NavChildren")
 
   @@map("navigation_items")
@@ -182,9 +179,8 @@ model NavigationItem {
 
 // ─── Footer ──────────────────────────────────────────────────────────────────
 
-// Single-row config table for footer fields
 model FooterConfig {
-  id              String   @id @default(cuid())
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
   address1Label   String   @default("")
   address1Text    String   @default("")
   address2Label   String   @default("")
@@ -206,8 +202,8 @@ model FooterConfig {
 // ─── SEO ─────────────────────────────────────────────────────────────────────
 
 model SeoMeta {
-  id              String   @id @default(cuid())
-  pageId          String   @unique
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  pageId          String   @unique @db.ObjectId
   metaTitle       String   @default("")
   metaDescription String   @default("")
   ogTitle         String   @default("")
@@ -226,9 +222,9 @@ model SeoMeta {
 // ─── Form Submissions ────────────────────────────────────────────────────────
 
 model FormSubmission {
-  id          String         @id @default(cuid())
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
   formType    FormType
-  data        Json           // validated field values
+  data        Json
   submittedAt DateTime       @default(now())
   ipAddress   String?
   isRead      Boolean        @default(false)
@@ -246,12 +242,12 @@ enum FormType {
 // ─── Audit Log ───────────────────────────────────────────────────────────────
 
 model AuditLog {
-  id          String    @id @default(cuid())
-  userId      String
-  action      String    // e.g. "UPDATE_CONTENT_BLOCK", "UPLOAD_MEDIA", "LOGIN"
-  entityType  String?   // e.g. "ContentBlock", "MediaAsset"
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  action      String
+  entityType  String?
   entityId    String?
-  metadata    Json?     // before/after snapshot or relevant context
+  metadata    Json?
   createdAt   DateTime  @default(now())
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)

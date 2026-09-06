@@ -172,10 +172,6 @@
     padding-left: 20px;
     padding-right: 20px;
   }
-  .cover-background h1 {
-    font-size: 2.2rem;
-    line-height: 1.9rem;
-  }
 }
 
 /* --- Hero Overlay Animation (synced with wave SVG 5s cycle) --- */
@@ -1003,7 +999,7 @@ footer {
     padding: 24px !important;
   }
 
-  .stack-card-item img[style*="aspectRatio"] {
+  .stack-card-item img[style*="aspect"] {
     min-height: 220px;
     max-height: 340px;
     object-fit: cover;
@@ -1060,7 +1056,6 @@ footer {
     font-size: clamp(2rem, 12vw, 5rem) !important;
     line-height: 0.9;
     letter-spacing: -0.03em !important;
-    white-space: nowrap;
   }
 }
 
@@ -1110,4 +1105,9 @@ footer {
   html:focus-within {
     scroll-behavior: auto;
   }
+}
+/* Content must remain readable when the optional animation runtime is delayed or unavailable. */
+html body [data-anime],
+html body [data-anime] > * {
+  opacity: 1 !important;
 }

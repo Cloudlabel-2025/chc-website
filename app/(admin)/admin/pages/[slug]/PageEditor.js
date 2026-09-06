@@ -27,7 +27,7 @@ function Modal({ title, onClose, children, wide = false }) {
 
 // ─── Block field editor ───────────────────────────────────────────────────────
 
-function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, required, onSaved }) {
+function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, required, parentId, onSaved }) {
   const [value, setValue]   = useState(block?.textValue ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved]   = useState(false)
@@ -46,7 +46,7 @@ function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, r
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fieldKey, blockType, textValue: isImage ? null : value }),
+          body: JSON.stringify({ fieldKey, blockType, textValue: isImage ? null : value, parentId: parentId ?? null }),
         }
       )
       const data = await res.json()
@@ -67,7 +67,7 @@ function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, r
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fieldKey, blockType: 'IMAGE', mediaAssetId: asset.id }),
+          body: JSON.stringify({ fieldKey, blockType: 'IMAGE', mediaAssetId: asset.id, parentId: parentId ?? null }),
         }
       )
       const data = await res.json()
@@ -144,6 +144,179 @@ function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, r
   )
 }
 
+// ─── Repeatable item editor ───────────────────────────────────────────────────
+
+function itemTitle(item, children) {
+  const first = ['name', 'title', 'heading', 'label', 'question'].map((k) =>
+    children.find((c) => c.fieldKey === k)?.textValue
+  ).find(Boolean)
+  return first || `Item ${item.sortOrder + 1}`
+}
+
+function RepeatableItemEditor({ sectionId, slug, sectionKey, initialBlocks = [], sectionFields = [] }) {
+  const fieldDefs = REPEATABLE_FIELDS[sectionKey] ?? []
+  const [allBlocks, setAllBlocks] = useState(initialBlocks)
+  const [expandedId, setExpandedId] = useState(null)
+  const [adding, setAdding]         = useState(false)
+  const [deleting, setDeleting]     = useState(false)
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null)
+  const [err, setErr]               = useState('')
+
+  const items = allBlocks
+    .filter((b) => !b.parentId)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+  const childrenOf = (id) => allBlocks.filter((b) => b.parentId === id)
+
+  function handleChildSaved(newBlock) {
+    setAllBlocks((prev) => {
+      const idx = prev.findIndex((b) => b.id === newBlock.id)
+      if (idx >= 0) return prev.map((b, i) => (i === idx ? newBlock : b))
+      return [...prev, newBlock]
+    })
+  }
+
+  async function handleAddItem() {
+    setAdding(true)
+    setErr('')
+    try {
+      const res = await fetch(`/api/admin/pages/${slug}/sections/${sectionId}/blocks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fieldKey: 'item',
+          blockType: 'TEXT',
+          textValue: '',
+          sortOrder: items.length,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setErr(data.error ?? 'Failed to add item.'); return }
+      setAllBlocks((prev) => [...prev, data.block])
+      setExpandedId(data.block.id)
+    } catch { setErr('Network error — item not added.') }
+    finally { setAdding(false) }
+  }
+
+  async function executeDelete(item) {
+    setDeleting(true)
+    setErr('')
+    try {
+      // NoAction FK: delete children first, then the parent row
+      const kids = childrenOf(item.id)
+      for (const kid of kids) {
+        await fetch(`/api/admin/pages/${slug}/sections/${sectionId}/blocks/${kid.id}`, { method: 'DELETE' })
+      }
+      const res = await fetch(`/api/admin/pages/${slug}/sections/${sectionId}/blocks/${item.id}`, { method: 'DELETE' })
+      if (!res.ok) { setErr('Failed to delete item.'); return }
+      const gone = new Set([item.id, ...kids.map((k) => k.id)])
+      setAllBlocks((prev) => prev.filter((b) => !gone.has(b.id)))
+      setDeleteConfirmId(null)
+      if (expandedId === item.id) setExpandedId(null)
+    } catch { setErr('Network error — item not deleted.') }
+    finally { setDeleting(false) }
+  }
+
+  return (
+    <div>
+      {sectionFields.length > 0 && (
+        <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--admin-border)' }}>
+          {sectionFields.map((f) => {
+            const blk = allBlocks.find((b) => !b.parentId && b.fieldKey === f.fieldKey) ?? null
+            return (
+              <BlockField
+                key={f.fieldKey}
+                sectionId={sectionId}
+                block={blk}
+                {...f}
+                onSaved={handleChildSaved}
+              />
+            )
+          })}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span className="admin-text-sm admin-text-muted">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+        <button className="admin-btn admin-btn-secondary admin-btn-sm" onClick={handleAddItem} disabled={adding}>
+          {adding ? 'Adding…' : '+ Add Item'}
+        </button>
+      </div>
+
+      {err && <div className="admin-alert admin-alert-error admin-mb-16">{err}</div>}
+
+      {items.length === 0 && (
+        <p className="admin-text-muted admin-text-sm">No items yet. Click “+ Add Item” to create the first one.</p>
+      )}
+
+      {items.map((item) => {
+        const kids = childrenOf(item.id)
+        const expanded = expandedId === item.id
+        return (
+          <div key={item.id} className="admin-card admin-mb-16" style={{ border: '1px solid var(--admin-border)' }}>
+            <div
+              className="admin-card-header"
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+              onClick={() => setExpandedId(expanded ? null : item.id)}
+            >
+              <span className="admin-card-title" style={{ fontSize: 13 }}>{itemTitle(item, kids)}</span>
+              <span style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
+                <button
+                  className="admin-btn admin-btn-secondary admin-btn-sm"
+                  onClick={() => setExpandedId(expanded ? null : item.id)}
+                >
+                  {expanded ? 'Collapse' : 'Edit'}
+                </button>
+                {deleteConfirmId === item.id ? (
+                  <>
+                    <button
+                      className="admin-btn admin-btn-sm"
+                      style={{ background: 'var(--admin-danger)', color: '#fff' }}
+                      onClick={() => executeDelete(item)}
+                      disabled={deleting}
+                    >
+                      {deleting ? 'Deleting…' : 'Confirm'}
+                    </button>
+                    <button
+                      className="admin-btn admin-btn-secondary admin-btn-sm"
+                      onClick={() => setDeleteConfirmId(null)}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="admin-btn admin-btn-secondary admin-btn-sm"
+                    onClick={() => setDeleteConfirmId(item.id)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </span>
+            </div>
+            {expanded && (
+              <div className="admin-card-body">
+                {fieldDefs.map((f) => {
+                  const blk = kids.find((c) => c.fieldKey === f.fieldKey) ?? null
+                  return (
+                    <BlockField
+                      key={f.fieldKey}
+                      sectionId={sectionId}
+                      block={blk}
+                      parentId={item.id}
+                      {...f}
+                      onSaved={handleChildSaved}
+                    />
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── Section panel ────────────────────────────────────────────────────────────
 
 const SECTION_FIELDS = {
@@ -177,8 +350,13 @@ const SECTION_FIELDS = {
     { fieldKey: 'subtitle',        blockType: 'TEXT',  label: 'Subtitle',          maxLength: 200 },
   ],
   contact: [
+    { fieldKey: 'officeLabel',   blockType: 'TEXT', label: 'Office label',    maxLength: 40 },
     { fieldKey: 'officeAddress', blockType: 'TEXT', label: 'Office address',  maxLength: 200 },
+    { fieldKey: 'phoneLabel',    blockType: 'TEXT', label: 'Phone label',     maxLength: 40 },
     { fieldKey: 'phone',         blockType: 'TEXT', label: 'Phone',           maxLength: 30 },
+    { fieldKey: 'faxLabel',      blockType: 'TEXT', label: 'Fax label',       maxLength: 40 },
+    { fieldKey: 'fax',           blockType: 'TEXT', label: 'Fax',             maxLength: 30 },
+    { fieldKey: 'emailLabel',    blockType: 'TEXT', label: 'Email label',     maxLength: 40 },
     { fieldKey: 'email1',        blockType: 'TEXT', label: 'Primary email',   maxLength: 100 },
     { fieldKey: 'email2',        blockType: 'TEXT', label: 'Secondary email', maxLength: 100 },
     { fieldKey: 'mapLat',        blockType: 'TEXT', label: 'Map latitude',    maxLength: 20 },
@@ -193,7 +371,191 @@ const SECTION_FIELDS = {
     { fieldKey: 'heading',   blockType: 'TEXT', label: 'Section heading',   maxLength: 100, required: true },
     { fieldKey: 'paragraph', blockType: 'TEXT', label: 'Section paragraph', maxLength: 500, required: true },
   ],
+  ctaBanner: [
+    { fieldKey: 'heading',     blockType: 'TEXT', label: 'Banner heading',  maxLength: 100 },
+    { fieldKey: 'paragraph',   blockType: 'TEXT', label: 'Banner text',     maxLength: 200 },
+    { fieldKey: 'buttonLabel', blockType: 'TEXT', label: 'Button label',    maxLength: 40 },
+    { fieldKey: 'buttonHref',  blockType: 'URL',  label: 'Button URL',      maxLength: 200 },
+  ],
+  peopleHeader: [
+    { fieldKey: 'badge',   blockType: 'TEXT', label: 'Eyebrow badge',   maxLength: 40 },
+    { fieldKey: 'heading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 },
+  ],
+  faqHeader: [
+    { fieldKey: 'eyebrow', blockType: 'TEXT', label: 'Eyebrow',         maxLength: 40 },
+    { fieldKey: 'heading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 },
+  ],
+  faqFooter: [
+    { fieldKey: 'text',  blockType: 'TEXT', label: 'Footer text',  maxLength: 120 },
+    { fieldKey: 'label', blockType: 'TEXT', label: 'Link label',   maxLength: 40 },
+    { fieldKey: 'href',  blockType: 'URL',  label: 'Link URL',     maxLength: 200 },
+  ],
+  processHeader2: [
+    { fieldKey: 'heading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 },
+  ],
+  impactHeader: [
+    { fieldKey: 'badge',   blockType: 'TEXT', label: 'Eyebrow badge',   maxLength: 40 },
+    { fieldKey: 'heading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 },
+  ],
+  impactFooter: [
+    { fieldKey: 'note', blockType: 'TEXT', label: 'Footer note', maxLength: 200 },
+  ],
+  homeStackHeader: [
+    { fieldKey: 'eyebrow', blockType: 'TEXT', label: 'Eyebrow',         maxLength: 40 },
+    { fieldKey: 'heading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 },
+  ],
+  oracleHeadings: [
+    { fieldKey: 'capabilitiesHeading', blockType: 'TEXT', label: 'Capabilities heading',  maxLength: 60 },
+    { fieldKey: 'servicesEyebrow',     blockType: 'TEXT', label: 'Services eyebrow',      maxLength: 40 },
+    { fieldKey: 'servicesHeading',     blockType: 'TEXT', label: 'Services heading',      maxLength: 60 },
+    { fieldKey: 'exploreLabel',        blockType: 'TEXT', label: 'Carousel button label', maxLength: 30 },
+  ],
+  contactForm: [
+    { fieldKey: 'formBadge',      blockType: 'TEXT', label: 'Form badge',      maxLength: 48 },
+    { fieldKey: 'heading',        blockType: 'TEXT', label: 'Form heading',    maxLength: 80 },
+    { fieldKey: 'paragraph',      blockType: 'TEXT', label: 'Form paragraph',  maxLength: 300 },
+    { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
+  ],
+  giveOneHourForm: [
+    { fieldKey: 'formBadge',      blockType: 'TEXT', label: 'Form badge',      maxLength: 48 },
+    { fieldKey: 'heading',        blockType: 'TEXT', label: 'Form heading',    maxLength: 80 },
+    { fieldKey: 'paragraph',      blockType: 'TEXT', label: 'Form paragraph',  maxLength: 300 },
+    { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
+  ],
+  newsletterForm: [
+    { fieldKey: 'heading',        blockType: 'TEXT', label: 'Form heading',    maxLength: 80 },
+    { fieldKey: 'placeholder',    blockType: 'TEXT', label: 'Placeholder',     maxLength: 60 },
+    { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
+  ],
 }
+
+// ─── Repeatable item field definitions (per-card fields, Class D) ────────────
+
+const REPEATABLE_FIELDS = {
+  whatWeDo: [
+    { fieldKey: 'image',       blockType: 'IMAGE', label: 'Card image',       required: true },
+    { fieldKey: 'title',       blockType: 'TEXT',  label: 'Card title',       maxLength: 60,  required: true },
+    { fieldKey: 'description', blockType: 'TEXT',  label: 'Card description', maxLength: 200, required: true },
+    { fieldKey: 'href',        blockType: 'URL',   label: 'Card link URL',    maxLength: 200 },
+  ],
+  whyChc: [
+    { fieldKey: 'image',     blockType: 'IMAGE', label: 'Card image',     required: true },
+    { fieldKey: 'heading',   blockType: 'TEXT',  label: 'Card heading',   maxLength: 80,  required: true },
+    { fieldKey: 'paragraph', blockType: 'TEXT',  label: 'Card paragraph', maxLength: 300, required: true },
+  ],
+  featureCards: [
+    { fieldKey: 'image',     blockType: 'IMAGE', label: 'Card icon/image', required: true },
+    { fieldKey: 'title',     blockType: 'TEXT',  label: 'Card title',      maxLength: 60,  required: true },
+    { fieldKey: 'paragraph', blockType: 'TEXT',  label: 'Card paragraph',  maxLength: 300, required: true },
+    { fieldKey: 'href',      blockType: 'URL',   label: 'Card link URL',   maxLength: 200 },
+  ],
+  capabilityItem: [
+    { fieldKey: 'icon',  blockType: 'IMAGE', label: 'Capability icon',      required: true },
+    { fieldKey: 'label', blockType: 'TEXT',  label: 'Capability label',     maxLength: 40, required: true },
+    { fieldKey: 'href',  blockType: 'URL',   label: 'Link URL (optional)',  maxLength: 200 },
+  ],
+  productisedService: [
+    { fieldKey: 'image',            blockType: 'IMAGE', label: 'Service image',     required: true },
+    { fieldKey: 'title',            blockType: 'TEXT',  label: 'Service title',     maxLength: 80,  required: true },
+    { fieldKey: 'hoverDescription', blockType: 'TEXT',  label: 'Hover description', maxLength: 300, required: true },
+    { fieldKey: 'ctaText',          blockType: 'TEXT',  label: 'CTA text',          maxLength: 60,  required: true },
+    { fieldKey: 'ctaHref',          blockType: 'URL',   label: 'CTA link URL',      maxLength: 200 },
+  ],
+  serviceCarouselItem: [
+    { fieldKey: 'image',       blockType: 'IMAGE', label: 'Slide image',       required: true },
+    { fieldKey: 'title',       blockType: 'TEXT',  label: 'Slide title',       maxLength: 60,  required: true },
+    { fieldKey: 'description', blockType: 'TEXT',  label: 'Slide description', maxLength: 300, required: true },
+    { fieldKey: 'href',        blockType: 'URL',   label: 'Slide link URL',    maxLength: 200 },
+  ],
+  serviceSlide: [
+    { fieldKey: 'image',       blockType: 'IMAGE', label: 'Slide icon/image',  required: true },
+    { fieldKey: 'title',       blockType: 'TEXT',  label: 'Slide title',       maxLength: 60,  required: true },
+    { fieldKey: 'description', blockType: 'TEXT',  label: 'Slide description', maxLength: 300, required: true },
+    { fieldKey: 'href',        blockType: 'URL',   label: 'Slide link URL',    maxLength: 200 },
+  ],
+  teamMember: [
+    { fieldKey: 'photo',         blockType: 'IMAGE', label: 'Photo',                    required: true },
+    { fieldKey: 'name',          blockType: 'TEXT',  label: 'Name',                     maxLength: 80,  required: true },
+    { fieldKey: 'role',          blockType: 'TEXT',  label: 'Role / title',             maxLength: 80,  required: true },
+    { fieldKey: 'capability',    blockType: 'TEXT',  label: 'Capability area',          maxLength: 100 },
+    { fieldKey: 'learningFocus', blockType: 'TEXT',  label: 'Learning / delivery focus', maxLength: 150 },
+  ],
+  stackCards1: [
+    { fieldKey: 'image',     blockType: 'IMAGE', label: 'Card image',     required: true },
+    { fieldKey: 'badge',     blockType: 'TEXT',  label: 'Badge label',    maxLength: 60 },
+    { fieldKey: 'heading',   blockType: 'TEXT',  label: 'Card heading',   maxLength: 80,  required: true },
+    { fieldKey: 'paragraph', blockType: 'TEXT',  label: 'Card paragraph', maxLength: 300, required: true },
+  ],
+  stackCards2: [
+    { fieldKey: 'image',     blockType: 'IMAGE', label: 'Card image',     required: true },
+    { fieldKey: 'badge',     blockType: 'TEXT',  label: 'Badge label',    maxLength: 60 },
+    { fieldKey: 'heading',   blockType: 'TEXT',  label: 'Card heading',   maxLength: 80,  required: true },
+    { fieldKey: 'paragraph', blockType: 'TEXT',  label: 'Card paragraph', maxLength: 300, required: true },
+  ],
+  stackCards3: [
+    { fieldKey: 'image',     blockType: 'IMAGE', label: 'Card image',     required: true },
+    { fieldKey: 'badge',     blockType: 'TEXT',  label: 'Badge label',    maxLength: 60 },
+    { fieldKey: 'heading',   blockType: 'TEXT',  label: 'Card heading',   maxLength: 80,  required: true },
+    { fieldKey: 'paragraph', blockType: 'TEXT',  label: 'Card paragraph', maxLength: 300, required: true },
+  ],
+  processSteps1: [
+    { fieldKey: 'icon',        blockType: 'TEXT', label: 'Icon class (line-icon-*)', maxLength: 80,  required: true },
+    { fieldKey: 'label',       blockType: 'TEXT', label: 'Step label',               maxLength: 60,  required: true },
+    { fieldKey: 'description', blockType: 'TEXT', label: 'Step description',         maxLength: 200, required: true },
+  ],
+  processSteps2: [
+    { fieldKey: 'icon',        blockType: 'TEXT', label: 'Icon class (line-icon-*)', maxLength: 80,  required: true },
+    { fieldKey: 'label',       blockType: 'TEXT', label: 'Step label',               maxLength: 60,  required: true },
+    { fieldKey: 'description', blockType: 'TEXT', label: 'Step description',         maxLength: 200, required: true },
+  ],
+  faqItem: [
+    { fieldKey: 'question', blockType: 'TEXT', label: 'Question', maxLength: 150, required: true },
+    { fieldKey: 'answer',   blockType: 'TEXT', label: 'Answer',   maxLength: 500, required: true },
+  ],
+}
+
+const REPEATABLE_SECTION_FIELDS = {
+  whatWeDo: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 }],
+  whyChc: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 }],
+}
+
+// ─── Add-section library (sectionKey → label + default animation) ────────────
+
+const SECTION_LIBRARY = [
+  { key: 'hero', label: 'Hero banner', animation: 'hero' },
+  { key: 'innerPageHero', label: 'Inner page hero', animation: 'fadeIn' },
+  { key: 'intro', label: 'Image + intro content', animation: 'fadeIn' },
+  { key: 'contentSection', label: 'Image + content section', animation: 'fadeIn' },
+  { key: 'whatWeDo', label: 'What we do cards', animation: 'slideIn' },
+  { key: 'whyChc', label: 'Why CHC cards', animation: 'stack' },
+  { key: 'featureCards', label: 'Feature cards', animation: 'fadeIn' },
+  { key: 'capabilityItem', label: 'Capabilities carousel', animation: 'fadeIn' },
+  { key: 'productisedService', label: 'Productised services', animation: 'fadeIn' },
+  { key: 'deliveryCapacity', label: 'Delivery capacity', animation: 'fadeIn' },
+  { key: 'serviceCarouselItem', label: 'Service carousel', animation: 'fadeIn' },
+  { key: 'serviceSlide', label: 'Impact service slides', animation: 'fadeIn' },
+  { key: 'stackCards1', label: 'Stack cards group 1', animation: 'stack' },
+  { key: 'stackCards2', label: 'Stack cards group 2', animation: 'stack' },
+  { key: 'stackCards3', label: 'Stack cards group 3', animation: 'stack' },
+  { key: 'processSteps1', label: 'Process steps', animation: 'slideIn' },
+  { key: 'processSteps2', label: 'Process steps (extended)', animation: 'slideIn' },
+  { key: 'faqItem', label: 'FAQ cards', animation: 'flipIn' },
+  { key: 'teamMember', label: 'People carousel', animation: 'fadeIn' },
+  { key: 'contact', label: 'Contact details', animation: 'fadeIn' },
+  { key: 'contactForm', label: 'Contact form copy', animation: 'fadeIn' },
+  { key: 'oracleHeadings', label: 'Oracle HCM headings & labels', animation: 'fadeIn' },
+  { key: 'ctaBanner', label: 'CTA banner', animation: 'fadeIn' },
+  { key: 'peopleHeader', label: 'People section header', animation: 'fadeIn' },
+  { key: 'faqHeader', label: 'FAQ header', animation: 'fadeIn' },
+  { key: 'faqFooter', label: 'FAQ footer link', animation: 'fadeIn' },
+  { key: 'processHeader2', label: 'Process section header', animation: 'fadeIn' },
+  { key: 'impactHeader', label: 'Impact section header', animation: 'fadeIn' },
+  { key: 'impactFooter', label: 'Impact footer note', animation: 'fadeIn' },
+  { key: 'homeStackHeader', label: 'Homepage stack header', animation: 'fadeIn' },
+  { key: 'giveOneHour', label: 'Give one hour intro', animation: 'fadeIn' },
+  { key: 'giveOneHourForm', label: 'Give One Hour form copy', animation: 'fadeIn' },
+  { key: 'newsletterForm', label: 'Newsletter form copy', animation: 'fadeIn' },
+]
 
 function SectionPanel({ section, slug }) {
   const [open, setOpen]     = useState(true)
@@ -202,6 +564,8 @@ function SectionPanel({ section, slug }) {
   const [toggling, setToggling] = useState(false)
 
   const fields = SECTION_FIELDS[section.sectionKey] ?? []
+  const repFields = REPEATABLE_FIELDS[section.sectionKey] ?? null
+  const repSectionFields = REPEATABLE_SECTION_FIELDS[section.sectionKey] ?? []
 
   function getBlock(fieldKey) {
     return blocks.find((b) => b.fieldKey === fieldKey) ?? null
@@ -249,10 +613,17 @@ function SectionPanel({ section, slug }) {
 
       {open && (
         <div className="admin-card-body">
-          {fields.length === 0 ? (
+          {repFields ? (
+            <RepeatableItemEditor
+              sectionId={section.id}
+              slug={slug}
+              sectionKey={section.sectionKey}
+              initialBlocks={blocks}
+              sectionFields={repSectionFields}
+            />
+          ) : fields.length === 0 ? (
             <p className="admin-text-muted admin-text-sm">
-              This section has repeatable items — use the seed script to populate initial data,
-              then edit individual items here.
+              No editable fields configured for this section type.
             </p>
           ) : (
             fields.map((f) => (
@@ -278,6 +649,10 @@ export default function PageEditor({ page, slug }) {
   const [published, setPublished] = useState(page.isPublished)
   const [toggling, setToggling]   = useState(false)
   const [pubMsg, setPubMsg]       = useState('')
+  const [sections, setSections]   = useState(page.sections ?? [])
+  const [sectionToAdd, setSectionToAdd] = useState('')
+  const [addingSection, setAddingSection] = useState(false)
+  const [addErr, setAddErr]       = useState('')
 
   // Inject slug for BlockField fetch URLs
   if (typeof window !== 'undefined') window.__pageSlug = slug
@@ -297,6 +672,30 @@ export default function PageEditor({ page, slug }) {
         setTimeout(() => setPubMsg(''), 3000)
       }
     } finally { setToggling(false) }
+  }
+
+  async function addSection() {
+    if (!sectionToAdd) return
+    const lib = SECTION_LIBRARY.find((s) => s.key === sectionToAdd)
+    if (!lib) return
+    setAddingSection(true)
+    setAddErr('')
+    try {
+      const res = await fetch(`/api/admin/pages/${slug}/sections`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sectionKey: lib.key,
+          animationKey: lib.animation,
+          sortOrder: sections.length,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setAddErr(data.error ?? 'Failed to add section.'); return }
+      setSections((prev) => [...prev, { ...data.section, blocks: [] }])
+      setSectionToAdd('')
+    } catch { setAddErr('Network error — section not added.') }
+    finally { setAddingSection(false) }
   }
 
   return (
@@ -331,18 +730,43 @@ export default function PageEditor({ page, slug }) {
 
       {tab === 'content' && (
         <div>
-          {page.sections.length === 0 ? (
+          {/* Add section */}
+          <div className="admin-card admin-mb-16">
+            <div className="admin-card-body" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <select
+                className="admin-select"
+                value={sectionToAdd}
+                onChange={(e) => setSectionToAdd(e.target.value)}
+                style={{ maxWidth: 320 }}
+              >
+                <option value="">+ Add Section…</option>
+                {SECTION_LIBRARY.filter((s) => !sections.some((sec) => sec.sectionKey === s.key)).map((s) => (
+                  <option key={s.key} value={s.key}>{s.label}</option>
+                ))}
+              </select>
+              <button
+                className="admin-btn admin-btn-primary admin-btn-sm"
+                onClick={addSection}
+                disabled={!sectionToAdd || addingSection}
+              >
+                {addingSection ? 'Adding…' : 'Add'}
+              </button>
+              {addErr && <span className="admin-field-error">{addErr}</span>}
+            </div>
+          </div>
+
+          {sections.length === 0 ? (
             <div className="admin-card">
               <div className="admin-card-body">
                 <div className="admin-empty">
                   <div className="admin-empty-icon">📝</div>
-                  <p className="admin-empty-title">No sections yet</p>
+                  <p className="admin-empty-title">No sections yet. Use “+ Add Section” above to create the first one.</p>
                   <p className="admin-text-muted">Run <code>npm run db:seed</code> to populate sections from the current site content.</p>
                 </div>
               </div>
             </div>
           ) : (
-            page.sections.map((section) => (
+            sections.map((section) => (
               <SectionPanel key={section.id} section={section} slug={slug} />
             ))
           )}

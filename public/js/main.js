@@ -21,7 +21,7 @@
     } = anime;
     var menuBreakPoint = 991;
     var sliderBreakPoint = 991; // It will effect when you have used attribute "data-thumb-slider-md-direction" OR "data-slider-md-direction"
-    var animeBreakPoint = 1199;
+    var animeBreakPoint = 0;
     var headerTransition = 300; // Header transition effect time
 
     /* ===================================
@@ -65,7 +65,9 @@
      ====================================== */
 
     $('.vertical-counter, .counter, .progress-bar, .pie-chart-style-01, .attractive-hover, .splitting-animation, .section-dark, footer, [data-anime], [data-fancy-text]').each(function () {
-        $(this).appear().trigger('resize');
+        if (typeof $.fn.appear !== 'undefined') {
+            $(this).appear().trigger('resize');
+        }
     });
 
     initScrollNavigate();
@@ -2741,6 +2743,16 @@
             if (typeof (sliderOptions) !== 'undefined' && sliderOptions !== null) {
 
                 sliderOptions = $.parseJSON(sliderOptions);
+
+                // 0-slide guard: skip init if no slides present and loop is enabled
+                var slideCount = 0;
+                try {
+                    slideCount = $(swiperItem).find('.swiper-slide').length;
+                } catch (e) {}
+                if (sliderOptions.loop && slideCount === 0) {
+                    console.warn('[swiper] loop enabled but no slides found, skipping init');
+                    return;
+                }
 
                 // If user have provided "data-slide-change-on-click" attribute then below code will execute
                 var changeOnClick = _this.attr('data-slide-change-on-click');

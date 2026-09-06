@@ -3,7 +3,7 @@ import ContentSection from '@/components/ContentSection'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getOracleCapabilities, getOracleProductisedServices,
-  getOracleDeliveryCapacity, getOracleServiceCarousel,
+  getOracleDeliveryCapacity, getOracleServiceCarousel, getOracleHeadings,
 } from '@/lib/cms/public-data'
 
 export async function generateMetadata() {
@@ -14,7 +14,7 @@ export async function generateMetadata() {
 }
 
 export default async function OracleHCMPage() {
-  const [hero, cs, capabilities, services, delivery, carousel] = await Promise.all([
+  const [hero, cs, capabilities, services, delivery, carousel, oHeadings] = await Promise.all([
     getInnerPageHero('oracle-hcm', {
       heading: 'Oracle HCM',
       subtitle: 'CHC provides senior-led Oracle HCM delivery supported by trained functional and technical consultants.',
@@ -24,6 +24,7 @@ export default async function OracleHCMPage() {
     getOracleProductisedServices(),
     getOracleDeliveryCapacity(),
     getOracleServiceCarousel(),
+    getOracleHeadings(),
   ])
 
   return (
@@ -36,11 +37,11 @@ export default async function OracleHCMPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row">
             <div className="col-12 text-center mt-10px mb-30px">
-              <div className="alt-font core-capabilities-heading text-dark-gray ls-minus-05px">Core Capabilities</div>
+              <div className="alt-font core-capabilities-heading text-dark-gray ls-minus-05px">{oHeadings.capabilitiesHeading}</div>
             </div>
           </div>
           <div className="row position-relative clients-style-08">
-            <div className="col swiper text-center feather-shadow" data-slider-options='{ "slidesPerView": 2, "spaceBetween":0, "speed": 4000, "loop": true, "pagination": { "el": ".slider-four-slide-pagination-2", "clickable": false }, "allowTouchMove": false, "autoplay": { "delay":0, "disableOnInteraction": false }, "navigation": { "nextEl": ".slider-four-slide-next-2", "prevEl": ".slider-four-slide-prev-2" }, "keyboard": { "enabled": true, "onlyInViewport": true }, "breakpoints": { "1400": { "slidesPerView": 6 }, "1200": { "slidesPerView": 5 }, "768": { "slidesPerView": 3 } }, "effect": "slide" }'>
+            <div className="col swiper text-center feather-shadow" data-slider-options='{ "slidesPerView": 1, "spaceBetween":0, "speed": 4000, "loop": true, "pagination": { "el": ".slider-four-slide-pagination-2", "clickable": false }, "allowTouchMove": true, "autoplay": { "delay":0, "disableOnInteraction": false }, "navigation": { "nextEl": ".slider-four-slide-next-2", "prevEl": ".slider-four-slide-prev-2" }, "keyboard": { "enabled": true, "onlyInViewport": true }, "breakpoints": { "1400": { "slidesPerView": 6 }, "1200": { "slidesPerView": 5 }, "768": { "slidesPerView": 3 }, "320": { "slidesPerView": 1 } }, "effect": "slide" }'>
               <div className="swiper-wrapper marquee-slide">
                 {capabilities.map((item) => (
                   <div className="swiper-slide" key={item.label}>
@@ -59,8 +60,8 @@ export default async function OracleHCMPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
             <div className="col-lg-7 text-center" data-anime='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-              <span className="fw-600 ls-1px fs-16 alt-font mb-5px d-inline-block text-uppercase text-base-color">Oracle</span>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">Productised Oracle Services</h2>
+              <span className="fw-600 ls-1px fs-16 alt-font mb-5px d-inline-block text-uppercase text-base-color">{oHeadings.servicesEyebrow}</span>
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{oHeadings.servicesHeading}</h2>
             </div>
           </div>
           <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 justify-content-center" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 800, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -98,18 +99,18 @@ export default async function OracleHCMPage() {
                     {carousel.map((service) => (
                       <div className="swiper-slide" key={service.title}>
                         <div className="services-box-style-03 last-paragraph-no-margin border-radius-6px overflow-hidden">
-                          <div className="position-relative">
-                            <a href="/services"><img src={service.img} alt="" /></a>
+                            <div className="position-relative">
+                            <a href={service.href || '/services'}><img src={service.img} alt="" /></a>
                           </div>
                           <div className="bg-white">
-                            <div className="ps-65px pe-65px pt-30px pb-30px text-center">
-                              <a href="/services" className="d-inline-block fs-18 fw-700 text-dark-gray mb-5px">{service.title}</a>
+                            <div className="ps-65px pe-65px pt-30px pb-30px text-center sm-ps-25px sm-pe-25px">
+                              <a href={service.href || '/services'} className="d-inline-block fs-18 fw-700 text-dark-gray mb-5px">{service.title}</a>
                               <p>{service.desc}</p>
                             </div>
                             <div className="d-flex justify-content-center border-top border-color-extra-medium-gray pt-20px pb-20px ps-50px pe-50px position-relative text-center">
-                              <a href="/services" className="btn btn-link btn-hover-animation-switch btn-medium fw-700 text-dark-gray text-uppercase">
+                              <a href={service.href || '/services'} className="btn btn-link btn-hover-animation-switch btn-medium fw-700 text-dark-gray text-uppercase">
                                 <span>
-                                  <span className="btn-text">Explore services</span>
+                                  <span className="btn-text">{oHeadings.exploreLabel}</span>
                                   <span className="btn-icon"><i className="fa-solid fa-arrow-right"></i></span>
                                   <span className="btn-icon"><i className="fa-solid fa-arrow-right"></i></span>
                                 </span>

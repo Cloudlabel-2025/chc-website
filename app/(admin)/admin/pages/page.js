@@ -1,5 +1,6 @@
 import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
+import PagesManager from './PagesManager'
 import prisma from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
@@ -29,11 +30,24 @@ export default async function PagesPage() {
     })
   } catch { /* DB not connected yet */ }
 
+  let templates = []
+  try {
+    templates = await prisma.pageTemplate.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    })
+  } catch { /* templates table may not exist yet */ }
+
   // Merge DB rows with known slugs so all 10 always appear
   const rows = PAGE_SLUGS.map((known) => {
     const db = pages.find((p) => p.slug === known.slug)
     return db ?? { id: null, slug: known.slug, title: known.title, isPublished: false, updatedAt: null }
   })
+  // Append any extra DB pages not in the known list (created via + Create Page)
+  for (const p of pages) {
+    if (!rows.some((r) => r.slug === p.slug)) rows.push(p)
+  }
+  rows.sort((a, b) => a.slug.localeCompare(b.slug))
 
   return (
     <AdminShell session={session}>
@@ -44,48 +58,10 @@ export default async function PagesPage() {
         </div>
       </div>
 
-      <div className="admin-card">
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Page</th>
-                <th>Slug</th>
-                <th>Status</th>
-                <th>Last updated</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.slug}>
-                  <td style={{ fontWeight: 600 }}>{row.title}</td>
-                  <td><code style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>/{row.slug === 'home' ? '' : row.slug}</code></td>
-                  <td>
-                    {row.id
-                      ? <span className={`admin-badge ${row.isPublished ? 'admin-badge-published' : 'admin-badge-draft'}`}>
-                          {row.isPublished ? 'Published' : 'Draft'}
-                        </span>
-                      : <span className="admin-badge admin-badge-locked">Not seeded</span>
-                    }
-                  </td>
-                  <td className="admin-text-muted admin-text-sm">
-                    {row.updatedAt ? new Date(row.updatedAt).toLocaleDateString('en-AU') : '—'}
-                  </td>
-                  <td>
-                    <a
-                      href={`/admin/pages/${row.slug}`}
-                      className="admin-btn admin-btn-secondary admin-btn-sm"
-                    >
-                      Edit →
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <PagesManager
+        initialPages={JSON.parse(JSON.stringify(rows))}
+        templates={JSON.parse(JSON.stringify(templates))}
+      />
     </AdminShell>
   )
 }

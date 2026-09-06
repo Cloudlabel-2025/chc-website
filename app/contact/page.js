@@ -35,7 +35,7 @@ export default async function ContactPage() {
                   <i className="line-icon-Geo2-Love icon-extra-large text-base-color mb-25px"></i>
                 </div>
                 <div className="feature-box-content last-paragraph-no-margin">
-                  <span className="d-inline-block alt-font fw-600 text-dark-gray mb-5px fs-20">CHC office</span>
+                  <span className="d-inline-block alt-font fw-600 text-dark-gray mb-5px fs-20">{contact.officeLabel}</span>
                   <p>{contact.officeAddress}</p>
                 </div>
               </div>
@@ -46,10 +46,10 @@ export default async function ContactPage() {
                   <i className="line-icon-Headset icon-extra-large text-base-color mb-25px"></i>
                 </div>
                 <div className="feature-box-content last-paragraph-no-margin">
-                  <span className="d-inline-block alt-font fw-600 text-dark-gray mb-5px fs-20">Call us directly</span>
+                  <span className="d-inline-block alt-font fw-600 text-dark-gray mb-5px fs-20">{contact.phoneLabel}</span>
                   <div className="w-100 d-block">
                     {contact.phone && <span className="d-block">Phone: <a href={`tel:${contact.phone.replace(/\D/g,'')}`} className="text-base-color-hover">{contact.phone}</a></span>}
-                    {contact.fax   && <span className="d-block">Fax: {contact.fax}</span>}
+                    {contact.fax   && <span className="d-block">{contact.faxLabel} {contact.fax}</span>}
                   </div>
                 </div>
               </div>
@@ -60,7 +60,7 @@ export default async function ContactPage() {
                   <i className="line-icon-Mail-Read icon-extra-large text-base-color mb-25px"></i>
                 </div>
                 <div className="feature-box-content last-paragraph-no-margin">
-                  <span className="d-inline-block alt-font fw-600 text-dark-gray mb-5px fs-20">E-mail us</span>
+                  <span className="d-inline-block alt-font fw-600 text-dark-gray mb-5px fs-20">{contact.emailLabel}</span>
                   <div className="w-100 d-block">
                     {contact.email1 && <a href={`mailto:${contact.email1}`} className="d-block">{contact.email1}</a>}
                     {contact.email2 && <a href={`mailto:${contact.email2}`} className="d-block">{contact.email2}</a>}

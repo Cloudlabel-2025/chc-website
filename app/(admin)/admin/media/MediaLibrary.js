@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 
-const ACCEPTED_TYPES = 'image/jpeg,image/png,image/webp,image/svg+xml'
+const ACCEPTED_TYPES = 'image/jpeg,image/png,image/webp,image/svg+xml,image/gif,image/avif,image/heic,image/heif,image/bmp,image/tiff,image/x-icon,image/vnd.microsoft.icon'
 
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes}B`
@@ -24,6 +24,7 @@ export default function MediaLibrary({ onSelect, selectionMode = false }) {
   const [altEditing, setAltEditing] = useState(null)
   const [altValue, setAltValue]     = useState('')
   const [error, setError]           = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
   const fileInputRef = useRef(null)
   const searchTimer  = useRef(null)
 
@@ -81,7 +82,13 @@ export default function MediaLibrary({ onSelect, selectionMode = false }) {
     setUploadErrors(errs)
     setUploading(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
-    fetchAssets(1, search)
+    const hadSuccess = errs.length < files.length
+    if (hadSuccess) {
+      const okCount = files.length - errs.length
+      setSuccessMsg(`Uploaded ${okCount} image${okCount > 1 ? 's' : ''} successfully.`)
+      setTimeout(() => setSuccessMsg(''), 4000)
+    }
+    fetchAssets(hadSuccess ? 1 : page, search)
   }
 
   // Delete
@@ -171,6 +178,10 @@ export default function MediaLibrary({ onSelect, selectionMode = false }) {
 
       {error && (
         <div className="admin-alert admin-alert-error admin-mb-16">{error}</div>
+      )}
+
+      {successMsg && (
+        <div className="admin-alert admin-mb-16" style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: 'var(--admin-text)' }}>{successMsg}</div>
       )}
 
       {/* Grid */}

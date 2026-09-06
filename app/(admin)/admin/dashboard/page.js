@@ -7,6 +7,9 @@ export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Dashboard' }
 
 async function getDashboardCounts() {
+  if (process.env.NODE_ENV !== 'production' && process.env.CMS_DEV_BYPASS === 'true') {
+    return { pages: '—', media: '—', submissions: '—' }
+  }
   try {
     const [pages, media, submissions] = await Promise.all([
       prisma.page.count(),

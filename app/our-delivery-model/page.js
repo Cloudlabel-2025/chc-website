@@ -3,6 +3,7 @@ import ContentSection from '@/components/ContentSection'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getDeliveryModelProcessSteps, getDeliveryModelFaqs,
+  getFaqHeader, getFaqFooter, getProcessHeader2,
 } from '@/lib/cms/public-data'
 
 export async function generateMetadata() {
@@ -13,12 +14,15 @@ export async function generateMetadata() {
 }
 
 export default async function OurDeliveryModelPage() {
-  const [hero, cs, steps1, steps2, faqs] = await Promise.all([
+  const [hero, cs, steps1, steps2, faqs, fh, ff, ph2] = await Promise.all([
     getInnerPageHero('our-delivery-model', { heading: 'Our Delivery Model', subtitle: 'We deliver smart solutions that help your business grow successfully.' }),
     getContentSection('our-delivery-model'),
     getDeliveryModelProcessSteps('processSteps1'),
     getDeliveryModelProcessSteps('processSteps2'),
     getDeliveryModelFaqs(),
+    getFaqHeader(),
+    getFaqFooter(),
+    getProcessHeader2(),
   ])
 
   return (
@@ -50,8 +54,8 @@ export default async function OurDeliveryModelPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
             <div className="col-lg-7 text-center" data-anime='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-              <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">Frequently asked questions</span>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">How can we help?</h2>
+              <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">{fh.eyebrow}</span>
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{fh.heading}</h2>
             </div>
           </div>
           <div className="row justify-content-center">
@@ -70,7 +74,7 @@ export default async function OurDeliveryModelPage() {
           </div>
           <div className="row justify-content-center" data-anime='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 100, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-12 text-center mt-6">
-              <h6 className="alt-font text-dark-gray ls-minus-1px mb-0">Didn&apos;t find the right response? <a href="/" className="text-decoration-line-bottom-medium text-dark-gray fw-600 d-inline-block">view more from here</a></h6>
+              <h6 className="alt-font text-dark-gray ls-minus-1px mb-0">{ff.text} <a href={ff.href} className="text-decoration-line-bottom-medium text-dark-gray fw-600 d-inline-block">{ff.label}</a></h6>
             </div>
           </div>
         </div>
@@ -81,7 +85,7 @@ export default async function OurDeliveryModelPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center justify-content-center text-center text-lg-start" data-anime='{ "el": "childs", "translateX": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-lg-5 col-md-10 md-mb-50px xs-mb-40px">
-              <h2 className="fw-600 text-dark-gray ls-minus-2px mb-0">Explore the simple business process.</h2>
+              <h2 className="fw-600 text-dark-gray ls-minus-2px mb-0">{ph2.heading}</h2>
             </div>
           </div>
           <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 mt-7 md-mt-50px" data-anime='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>

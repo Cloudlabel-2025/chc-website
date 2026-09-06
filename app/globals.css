@@ -7,12 +7,19 @@ body {
   background-image: url('/images/vertical-line-bg.svg');
 }
 
+/* Safety net: only force visible when JS animation init failed entirely */
+body.no-animation [data-anime],
+body.no-animation [data-anime] > * {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* Critical mobile header - prevents white flicker on refresh before page-styles.css loads */
 @media (max-width: 991px) {
   header.header-with-topbar.chc-site-header,
   .chc-site-header .navbar,
   .navbar.bg-transparent {
-    background: rgba(25, 18, 43, 0.94) !important;
-    background-color: rgba(25, 18, 43, 0.94) !important;
+    background: rgba(45, 34, 71, 0.95) !important;
+    background-color: rgba(45, 34, 71, 0.95) !important;
   }
 }
