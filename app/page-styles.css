@@ -1108,11 +1108,3 @@ footer {
     scroll-behavior: auto;
   }
 }
-/* Content must remain readable when the animation runtime is unavailable.
-   Scoped to body.no-animation (set by main.js) so it never overrides
-   active anime.js inline opacity during scroll animations. */
-html body.no-animation [data-anime],
-html body.no-animation [data-anime] > * {
-  opacity: 1 !important;
-  transform: none !important;
-}

@@ -28,7 +28,7 @@ export default async function ContactPage() {
 
       <section id="down-section">
         <div className="container-fluid px-5 lg-px-10">
-          <div className="row row-cols-1 row-cols-md-3 row-cols-sm-2 justify-content-center" data-anime='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
+          <div className="row row-cols-1 row-cols-md-3 row-cols-sm-2 justify-content-center" data-chc-animate='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
             <div className="col icon-with-text-style-04 sm-mb-40px">
               <div className="feature-box last-paragraph-no-margin">
                 <div className="feature-box-icon">
@@ -72,7 +72,7 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="p-0" id="location" data-anime='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
+      <section className="p-0" id="location" data-chc-animate='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
         <div className="container-fluid">
           <div className="row justify-content-center">
             <div className="col-12 p-0">
@@ -85,12 +85,12 @@ export default async function ContactPage() {
       <section className="bg-very-light-gray">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center">
-            <div className="col-lg-7 text-center mb-2" data-anime='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+            <div className="col-lg-7 text-center mb-2" data-chc-animate='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
               <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">Feel free to get in touch!</span>
               <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">How we can help you?</h2>
             </div>
           </div>
-          <div className="row row-cols-md-1 justify-content-center" data-anime='{ "translateY": [100, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+          <div className="row row-cols-md-1 justify-content-center" data-chc-animate='{ "translateY": [100, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-xl-9 col-lg-11">
               <form action="/api/public/contact" method="post" className="row contact-form-style-02">
                 <div className="col-md-6 mb-30px">

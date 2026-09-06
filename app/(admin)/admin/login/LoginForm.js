@@ -18,10 +18,10 @@ export default function LoginForm({ callbackUrl }) {
     const formData = new FormData(e.currentTarget)
 
     // Client-side UX validation (not authoritative — server validates too)
-    const email = formData.get('email')?.toString().trim()
+    const username = formData.get('username')?.toString().trim()
     const password = formData.get('password')?.toString()
-    if (!email || !password) {
-      setError('Email and password are required.')
+    if (!username || !password) {
+      setError('Username and password are required.')
       return
     }
 
@@ -54,12 +54,12 @@ export default function LoginForm({ callbackUrl }) {
       )}
 
       <div className="admin-form-group">
-        <label htmlFor="email" className="admin-label admin-label-required">
-          Email address
+        <label htmlFor="username" className="admin-label admin-label-required">
+          Username (email address)
         </label>
         <input
-          id="email"
-          name="email"
+          id="username"
+          name="username"
           type="email"
           autoComplete="email"
           required

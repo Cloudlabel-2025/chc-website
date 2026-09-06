@@ -2,21 +2,33 @@ import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
 import NavEditor from './NavEditor'
 import prisma from '@/lib/prisma'
+import { getNavigationFallback } from '@/lib/cms/navigation-defaults'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Navigation' }
+
+function databaseQuery(operation) {
+  return Promise.race([
+    operation,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Database connection timed out')), 2500)),
+  ])
+}
 
 export default async function NavigationPage() {
   const session = await requireAdmin()
 
   let items = []
+  let databaseAvailable = true
   try {
-    items = await prisma.navigationItem.findMany({
+    items = await databaseQuery(prisma.navigationItem.findMany({
       where: { parentId: null },
       orderBy: { sortOrder: 'asc' },
       include: { children: { orderBy: { sortOrder: 'asc' } } },
-    })
-  } catch { /* DB not connected */ }
+    }))
+  } catch {
+    items = getNavigationFallback()
+    databaseAvailable = false
+  }
 
   return (
     <AdminShell session={session}>
@@ -26,7 +38,7 @@ export default async function NavigationPage() {
           <p className="admin-page-subtitle">Manage header navigation items and dropdowns</p>
         </div>
       </div>
-      <NavEditor initialItems={JSON.parse(JSON.stringify(items))} />
+      <NavEditor initialItems={JSON.parse(JSON.stringify(items))} databaseAvailable={databaseAvailable} />
     </AdminShell>
   )
 }

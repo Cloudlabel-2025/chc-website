@@ -13,11 +13,16 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: 'Invalid JSON.' }, { status: 400 })
   }
 
-  const result = await updateNavItem(params.id, body ?? {})
-  if (!result.success) {
-    return NextResponse.json({ errors: result.errors }, { status: 422 })
+  try {
+    const result = await updateNavItem(params.id, body ?? {})
+    if (!result.success) {
+      return NextResponse.json({ errors: result.errors }, { status: 422 })
+    }
+    return NextResponse.json({ item: result.item })
+  } catch (err) {
+    console.error('Update nav error:', err)
+    return NextResponse.json({ error: 'Navigation is unavailable because the database could not be reached.' }, { status: 503 })
   }
-  return NextResponse.json({ item: result.item })
 }
 
 export async function DELETE(request, { params }) {

@@ -15,22 +15,22 @@
  * Requires all STORAGE_* and DATABASE_URL env vars to be set.
  */
 
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import { readFile } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { randomBytes } from 'crypto'
+import { uploadFile, generateStorageKey } from '../lib/cms/storage.js'
+
+dotenv.config({ path: '.env.local' })
+dotenv.config({ path: '.env' })
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT      = path.resolve(__dirname, '..')
 const PUBLIC    = path.join(ROOT, 'public', 'images')
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
-const prisma  = new PrismaClient({ adapter })
+const prisma = new PrismaClient()
 
 // ─── CMS-referenced images ────────────────────────────────────────────────────
 // Derived from Phase 0 audit: images actually used in JSX/components.
@@ -107,33 +107,6 @@ function getMimeType(filename) {
   return map[ext] ?? 'application/octet-stream'
 }
 
-function generateStorageKey(filename) {
-  const ext  = path.extname(filename).toLowerCase()
-  const rand = randomBytes(8).toString('hex')
-  const now  = new Date()
-  const year = now.getUTCFullYear()
-  const month = String(now.getUTCMonth() + 1).padStart(2, '0')
-  return `media/${year}/${month}/${rand}${ext}`
-}
-
-function getS3Client() {
-  const { STORAGE_ENDPOINT, STORAGE_REGION, STORAGE_ACCESS_KEY_ID, STORAGE_SECRET_ACCESS_KEY } = process.env
-  if (!STORAGE_ACCESS_KEY_ID || !STORAGE_SECRET_ACCESS_KEY) {
-    throw new Error('STORAGE_ACCESS_KEY_ID and STORAGE_SECRET_ACCESS_KEY are required')
-  }
-  return new S3Client({
-    region: STORAGE_REGION ?? 'auto',
-    ...(STORAGE_ENDPOINT ? { endpoint: STORAGE_ENDPOINT, forcePathStyle: true } : {}),
-    credentials: { accessKeyId: STORAGE_ACCESS_KEY_ID, secretAccessKey: STORAGE_SECRET_ACCESS_KEY },
-  })
-}
-
-function getPublicUrl(storageKey) {
-  const base = process.env.STORAGE_PUBLIC_URL
-  if (!base) throw new Error('STORAGE_PUBLIC_URL is required')
-  return `${base.replace(/\/$/, '')}/${storageKey}`
-}
-
 // Reads PNG/JPEG/WebP dimensions from buffer without external deps
 function readDimensions(buffer, mimeType) {
   try {
@@ -160,7 +133,7 @@ async function getOrCreateSystemUser() {
   const existing = await prisma.user.findFirst({ where: { email: 'seed@system.internal' } })
   if (existing) return existing.id
   const user = await prisma.user.create({
-    data: { id: 'seed', email: 'seed@system.internal', passwordHash: 'DISABLED', name: 'Seed Script', role: 'ADMIN', isActive: false, updatedAt: new Date() },
+    data: { email: 'seed@system.internal', passwordHash: 'DISABLED', name: 'Seed Script', role: 'ADMIN', isActive: false, updatedAt: new Date() },
   })
   return user.id
 }
@@ -171,7 +144,7 @@ async function main() {
   console.log('CHC CMS — media migration\n')
 
   // Validate storage config before doing anything
-  const required = ['DATABASE_URL', 'STORAGE_BUCKET', 'STORAGE_ACCESS_KEY_ID', 'STORAGE_SECRET_ACCESS_KEY', 'STORAGE_PUBLIC_URL']
+  const required = ['MONGODB_URI', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET']
   const missing  = required.filter((k) => !process.env[k])
   if (missing.length) {
     console.error(`Missing required env vars: ${missing.join(', ')}`)
@@ -179,8 +152,6 @@ async function main() {
     process.exit(1)
   }
 
-  const s3     = getS3Client()
-  const bucket = process.env.STORAGE_BUCKET
   const userId = await getOrCreateSystemUser()
 
   let uploaded = 0
@@ -212,18 +183,12 @@ async function main() {
     const mimeType   = getMimeType(entry.file)
     const sizeBytes  = buffer.length
     const storageKey = generateStorageKey(entry.file)
-    const publicUrl  = getPublicUrl(storageKey)
     const dims       = readDimensions(buffer, mimeType)
 
-    // Upload to S3
+    // Upload using the same Cloudinary adapter as the CMS media library.
+    let storageResult
     try {
-      await s3.send(new PutObjectCommand({
-        Bucket:        bucket,
-        Key:           storageKey,
-        Body:          buffer,
-        ContentType:   mimeType,
-        ContentLength: sizeBytes,
-      }))
+      storageResult = await uploadFile({ buffer, storageKey, mimeType, sizeBytes })
     } catch (err) {
       console.error(`  ✗  upload failed: ${entry.file} — ${err.message}`)
       continue
@@ -233,12 +198,12 @@ async function main() {
     await prisma.mediaAsset.create({
       data: {
         filename:     entry.file,
-        storageKey,
-        publicUrl,
+        storageKey:   storageResult.storageKey,
+        publicUrl:    storageResult.publicUrl,
         mimeType,
         sizeBytes,
-        width:        dims?.width  ?? null,
-        height:       dims?.height ?? null,
+        width:        storageResult.width  ?? dims?.width  ?? null,
+        height:       storageResult.height ?? dims?.height ?? null,
         altText:      entry.altText,
         uploadedById: userId,
         updatedAt:    new Date(),

@@ -48,7 +48,7 @@ export default async function RootLayout({ children }) {
         {!isAdmin && <Script src="/js/jquery.js" strategy="beforeInteractive" />}
         {!isAdmin && <Script src="/js/vendors.min.js" strategy="beforeInteractive" />}
         {!isAdmin && <Script id="disable-retina" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `try{if(window.Retina){Retina.isRetina=function(){return false;};} if(window.Retina&&window.RetinaImage&&RetinaImage.prototype){RetinaImage.prototype.check_2x_variant=function(cb){cb(false);};} }catch(e){}` }} />}
-        {!isAdmin && <Script src="/js/main.js" strategy="afterInteractive" />}
+        {!isAdmin && <Script src="/js/chc-animations.js" strategy="afterInteractive" />}
       </body>
     </html>
   )

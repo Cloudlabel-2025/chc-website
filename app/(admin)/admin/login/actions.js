@@ -5,6 +5,7 @@ import { loginSchema } from '@/lib/cms/schemas'
 import { checkRateLimit } from '@/lib/cms/rate-limit'
 import { headers } from 'next/headers'
 import { AuthError } from 'next-auth'
+import { getRequestIp, normalizeUsername } from '@/lib/cms/auth-utils'
 
 /**
  * @typedef {{ error?: string, rateLimited?: boolean }} LoginResult
@@ -19,7 +20,7 @@ import { AuthError } from 'next-auth'
  */
 export async function loginAction(formData) {
   const raw = {
-    email: formData.get('email'),
+    username: formData.get('username'),
     password: formData.get('password'),
   }
 
@@ -31,14 +32,19 @@ export async function loginAction(formData) {
 
   // 2. Pre-check rate limit before hitting the DB via Auth.js
   const headersList = await headers()
-  const ip =
-    headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
-  const identifier = parsed.data.email.toLowerCase()
-
-  const [emailLimit, ipLimit] = await Promise.all([
-    checkRateLimit(identifier),
-    checkRateLimit(ip),
-  ])
+  const ip = getRequestIp(headersList)
+  const identifier = normalizeUsername(parsed.data.username)
+  let emailLimit
+  let ipLimit
+  try {
+    [emailLimit, ipLimit] = await Promise.all([
+      checkRateLimit(identifier),
+      checkRateLimit(ip),
+    ])
+  } catch (err) {
+    console.error('Login rate-limit check failed:', err)
+    return { error: 'Sign-in is temporarily unavailable. Please try again shortly.' }
+  }
 
   if (emailLimit.limited || ipLimit.limited) {
     return {
@@ -50,7 +56,7 @@ export async function loginAction(formData) {
   // 3. Attempt sign-in via Auth.js (which runs the full authorize() flow)
   try {
     await signIn('credentials', {
-      email: parsed.data.email,
+      username: parsed.data.username,
       password: parsed.data.password,
       redirect: false,
     })

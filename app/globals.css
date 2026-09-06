@@ -7,11 +7,25 @@ body {
   background-image: url('/images/vertical-line-bg.svg');
 }
 
-/* Safety net: only force visible when JS animation init failed entirely */
-body.no-animation [data-anime],
-body.no-animation [data-anime] > * {
+/* Dependable scroll-in animations. These override the legacy no-animation
+   fallback only after chc-animations.js has initialized successfully. */
+body.chc-native-animations [data-chc-animate].chc-reveal {
+  opacity: 0 !important;
+  transform: translate3d(0, 28px, 0) !important;
+  transition: opacity 650ms ease var(--chc-reveal-delay, 0ms), transform 650ms ease var(--chc-reveal-delay, 0ms) !important;
+}
+
+body.chc-native-animations [data-chc-animate].chc-reveal.chc-revealed {
   opacity: 1 !important;
   transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.chc-native-animations [data-chc-animate].chc-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* Critical mobile header - prevents white flicker on refresh before page-styles.css loads */

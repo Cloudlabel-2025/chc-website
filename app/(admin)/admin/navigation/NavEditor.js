@@ -45,7 +45,7 @@ function ItemForm({ initial = {}, onSave, onCancel, saving }) {
   )
 }
 
-export default function NavEditor({ initialItems }) {
+export default function NavEditor({ initialItems, databaseAvailable = true }) {
   const [items, setItems]       = useState(initialItems)
   const [modal, setModal]       = useState(null) // { type: 'add'|'edit'|'addChild', item?, parentId? }
   const [saving, setSaving]     = useState(false)
@@ -53,6 +53,7 @@ export default function NavEditor({ initialItems }) {
   const [err, setErr]           = useState('')
 
   async function handleSave(data) {
+    if (!databaseAvailable) return
     setSaving(true)
     setErr('')
     try {
@@ -62,7 +63,7 @@ export default function NavEditor({ initialItems }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         })
-        const json = await res.json()
+        const json = await res.json().catch(() => ({}))
         if (!res.ok) { setErr((json.errors ?? [json.error]).join(', ')); return }
         setItems((prev) => prev.map((it) => {
           if (it.id === modal.item.id) return { ...it, ...json.item }
@@ -75,7 +76,7 @@ export default function NavEditor({ initialItems }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...data, parentId }),
         })
-        const json = await res.json()
+        const json = await res.json().catch(() => ({}))
         if (!res.ok) { setErr((json.errors ?? [json.error]).join(', ')); return }
         if (parentId) {
           setItems((prev) => prev.map((it) =>
@@ -90,7 +91,7 @@ export default function NavEditor({ initialItems }) {
   }
 
   async function handleDelete() {
-    if (!deleteId) return
+    if (!deleteId || !databaseAvailable) return
     const res = await fetch(`/api/admin/navigation/${deleteId}`, { method: 'DELETE' })
     if (res.ok) {
       setItems((prev) => prev
@@ -102,6 +103,7 @@ export default function NavEditor({ initialItems }) {
   }
 
   async function toggleVisible(item) {
+    if (!databaseAvailable) return
     const res = await fetch(`/api/admin/navigation/${item.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -126,15 +128,15 @@ export default function NavEditor({ initialItems }) {
         </div>
         <div className="admin-flex admin-gap-8">
           <label className="admin-toggle" onClick={(e) => e.stopPropagation()}>
-            <input type="checkbox" checked={item.isVisible} onChange={() => toggleVisible(item)} />
+            <input type="checkbox" checked={item.isVisible} disabled={!databaseAvailable} onChange={() => toggleVisible(item)} />
             <span className="admin-toggle-track" />
           </label>
           {!isChild && (
-            <button className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setModal({ type: 'addChild', parentId: item.id })}>
+            <button disabled={!databaseAvailable} className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setModal({ type: 'addChild', parentId: item.id })}>
               + Child
             </button>
           )}
-          <button className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setModal({ type: 'edit', item })}>Edit</button>
+          <button disabled={!databaseAvailable} className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setModal({ type: 'edit', item })}>Edit</button>
           <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteId(item.id)}>✕</button>
         </div>
       </div>
@@ -145,10 +147,16 @@ export default function NavEditor({ initialItems }) {
     <div>
       {err && <div className="admin-alert admin-alert-error admin-mb-16">{err}</div>}
 
+      {!databaseAvailable && (
+        <div className="admin-alert admin-alert-warning admin-mb-16">
+          Showing the current site navigation in preview mode. MongoDB is unavailable, so editing and adding items are disabled until it reconnects.
+        </div>
+      )}
+
       <div className="admin-card admin-mb-16">
         <div className="admin-card-header">
           <span className="admin-card-title">Navigation items ({items.length})</span>
-          <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => setModal({ type: 'add' })}>
+          <button disabled={!databaseAvailable} className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => setModal({ type: 'add' })}>
             + Add item
           </button>
         </div>

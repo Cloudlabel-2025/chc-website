@@ -27,12 +27,12 @@ export default async function GiveOneHourPage() {
       <section className="bg-very-light-gray">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center">
-            <div className="col-lg-7 text-center mb-2" data-anime='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+            <div className="col-lg-7 text-center mb-2" data-chc-animate='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
               <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">Give One Hour</span>
               <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">Share your expertise, shape a career.</h2>
             </div>
           </div>
-          <div className="row justify-content-center" data-anime='{ "translateY": [100, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+          <div className="row justify-content-center" data-chc-animate='{ "translateY": [100, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-xl-9 col-lg-11">
               <form action="/api/public/give-one-hour" method="post" className="row contact-form-style-02">
                 <div className="col-md-6 mb-30px">

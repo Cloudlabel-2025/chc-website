@@ -1,6 +1,7 @@
 import { getSession } from '@/lib/cms/auth-helpers'
 import { redirect } from 'next/navigation'
 import LoginForm from './LoginForm'
+import { safeAdminCallbackUrl } from '@/lib/cms/auth-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +15,7 @@ export default async function LoginPage({ searchParams }) {
   }
 
   const params = await searchParams
-  const callbackUrl = params?.callbackUrl ?? '/admin/dashboard'
+  const callbackUrl = safeAdminCallbackUrl(params?.callbackUrl)
 
   // Never reflect leaked credentials back — strip email/password from the URL
   if (params?.email !== undefined || params?.password !== undefined) {

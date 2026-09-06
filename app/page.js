@@ -31,7 +31,7 @@ export default async function HomePage() {
         </div>
         <div className="container-fluid h-100">
           <div className="row align-items-center h-100">
-            <div className="col-xl-6 col-lg-8 col-md-10 position-relative z-index-1" data-anime='{ "el": "childs", "translateY": [0, 0], "perspective": [1200,1200], "scale": [1.05, 1], "rotateX": [30, 0], "opacity": [0,1], "duration": 800, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
+            <div className="col-xl-6 col-lg-8 col-md-10 position-relative z-index-1" data-chc-animate='{ "el": "childs", "translateY": [0, 0], "perspective": [1200,1200], "scale": [1.05, 1], "rotateX": [30, 0], "opacity": [0,1], "duration": 800, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="ps-25px pe-25px pt-5px pb-5px mb-25px text-uppercase text-white fs-12 ls-1px fw-600 border-radius-100px bg-gradient-dark-gray-transparent d-flex w-70 sm-w-100">
                 <i className="bi bi-megaphone text-white icon-small me-10px"></i>{hero.badge}
               </span>
@@ -59,18 +59,18 @@ export default async function HomePage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center justify-content-center mb-5 sm-mb-0">
             <div className="col-lg-6 position-relative md-mb-15 sm-mb-25">
-              <div className="w-70 xs-w-80" data-animation-delay="50" data-shadow-animation="true" style={{ aspectRatio: '470/566' }}>
+              <div className="w-70 xs-w-80" data-chc-animate style={{ aspectRatio: '470/566' }}>
                 <img src={intro.leftImage} alt="" className="border-radius-10px w-100 h-100" style={{ objectFit: 'cover' }} />
                 <div className="position-absolute left-60px bottom-minus-60px hero-spinner-wrap" style={{ width: '150px', height: '150px' }} aria-hidden="true">
                   <img src="/images/chc-spin-support.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100px', height: 'auto', borderRadius: '50%' }} />
                   <img src="/images/chc-spinner.png" alt="" className="animation-rotation" style={{ position: 'absolute', top: '50%', left: '50%', marginTop: '-75px', marginLeft: '-75px', width: '150px', height: 'auto' }} />
                 </div>
               </div>
-              <div className="w-50 overflow-hidden position-absolute right-20px xs-right-15px xs-w-60 bottom-minus-50px" data-shadow-animation="true" data-animation-delay="250" data-bottom-top="transform: translateY(50px)" data-top-bottom="transform: translateY(-50px)" style={{ aspectRatio: '350/419' }}>
+              <div className="w-50 overflow-hidden position-absolute right-20px xs-right-15px xs-w-60 bottom-minus-50px" data-chc-animate style={{ aspectRatio: '350/419' }}>
                 <img src={intro.rightImage} alt="" className="border-radius-10px w-100 h-100 box-shadow-quadruple-large" style={{ objectFit: 'cover' }} />
               </div>
             </div>
-            <div className="col-xl-6 col-lg-6 ps-6 md-ps-15px" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+            <div className="col-xl-6 col-lg-6 ps-6 md-ps-15px" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="ps-20px pe-20px pt-5px pb-5px mb-20px text-uppercase alt-font text-base-color fs-12 lh-26 fw-600 alt-font border-radius-100px bg-gradient-very-light-gray-transparent d-inline-flex">
                 <i className="bi bi-award fs-16 me-5px"></i>{intro.badge}
               </span>
@@ -92,12 +92,12 @@ export default async function HomePage() {
       <section className="section-what-we-do ps-7 pe-7 xxl-ps-3 xxl-pe-3 xs-px-0">
         <div className="container-fluid">
           <div className="row justify-content-center mb-3">
-            <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-anime='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+            <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">Innovative solutions</span>
               <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">What we do</h2>
             </div>
           </div>
-          <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 row-cols-sm-2 justify-content-center" data-anime='{ "el": "childs", "translateX": [30, 0], "opacity": [0,1], "duration": 800, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
+          <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 row-cols-sm-2 justify-content-center" data-chc-animate='{ "el": "childs", "translateX": [30, 0], "opacity": [0,1], "duration": 800, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
             {whatWeDo.map((card, i) => (
               <div className="col interactive-banner-style-05 lg-mb-30px position-relative z-index-1" key={i}>
                 <div className="atropos" data-atropos data-atropos-perspective="1450">
@@ -124,7 +124,7 @@ export default async function HomePage() {
       <section className="chc-why-section">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
-            <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-anime='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+            <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">Why CHC?</h2>
             </div>
           </div>

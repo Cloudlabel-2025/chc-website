@@ -32,7 +32,7 @@ export default async function OurDeliveryModelPage() {
       <ContentSection {...cs} />
 
       {/* Process Steps Grid #1 */}
-      <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 mt-7 md-mt-50px" style={{ padding: '0 15px' }} data-anime='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+      <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 mt-7 md-mt-50px" style={{ padding: '0 15px' }} data-chc-animate='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
         {steps1.map((step, i) => (
           <div key={i} className={`col text-center process-step-style-02 hover-box last-paragraph-no-margin ${i < 4 ? 'md-mb-50px' : ''}`}>
             <i className={`${step.icon} text-base-color icon-double-large mb-20px`}></i>
@@ -53,14 +53,14 @@ export default async function OurDeliveryModelPage() {
       <section className="bg-very-light-gray">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
-            <div className="col-lg-7 text-center" data-anime='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+            <div className="col-lg-7 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">{fh.eyebrow}</span>
               <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{fh.heading}</h2>
             </div>
           </div>
           <div className="row justify-content-center">
             <div className="col-xl-10">
-              <div className="row row-cols-1 row-cols-md-2" data-anime='{ "el": "childs", "perspective": [1200,1200], "willchange": "transform", "translateY": [0, 0], "scale": [1.1, 1], "rotateX": [50, 0], "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+              <div className="row row-cols-1 row-cols-md-2" data-chc-animate='{ "el": "childs", "perspective": [1200,1200], "willchange": "transform", "translateY": [0, 0], "scale": [1.1, 1], "rotateX": [50, 0], "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
                 {faqs.map((faq, i) => (
                   <div key={i} className="col mb-30px last-paragraph-no-margin">
                     <div className="bg-white h-100 ps-50px pe-50px pt-40px pb-40px xs-p-30px box-shadow-quadruple-large border-radius-5px">
@@ -72,7 +72,7 @@ export default async function OurDeliveryModelPage() {
               </div>
             </div>
           </div>
-          <div className="row justify-content-center" data-anime='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 100, "staggervalue": 100, "easing": "easeOutQuad" }'>
+          <div className="row justify-content-center" data-chc-animate='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 100, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-12 text-center mt-6">
               <h6 className="alt-font text-dark-gray ls-minus-1px mb-0">{ff.text} <a href={ff.href} className="text-decoration-line-bottom-medium text-dark-gray fw-600 d-inline-block">{ff.label}</a></h6>
             </div>
@@ -83,12 +83,12 @@ export default async function OurDeliveryModelPage() {
       {/* Process Steps Grid #2 */}
       <section className="bg-very-light-gray big-section" id="down-section">
         <div className="container-fluid px-5 lg-px-10">
-          <div className="row align-items-center justify-content-center text-center text-lg-start" data-anime='{ "el": "childs", "translateX": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+          <div className="row align-items-center justify-content-center text-center text-lg-start" data-chc-animate='{ "el": "childs", "translateX": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-lg-5 col-md-10 md-mb-50px xs-mb-40px">
               <h2 className="fw-600 text-dark-gray ls-minus-2px mb-0">{ph2.heading}</h2>
             </div>
           </div>
-          <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 mt-7 md-mt-50px" data-anime='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+          <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 mt-7 md-mt-50px" data-chc-animate='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             {steps2.map((step, i) => (
               <div key={i} className={`col text-center process-step-style-02 hover-box last-paragraph-no-margin ${i < 4 ? 'md-mb-50px' : i === 5 ? 'xs-mb-50px' : ''}`}>
                 <i className={`${step.icon} text-base-color icon-double-large mb-20px`}></i>

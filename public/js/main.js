@@ -16,10 +16,28 @@
     // Keep server-rendered content readable when a theme dependency fails to
     // load. Without this guard, the animation setup below stops immediately
     // and every [data-anime] element remains transparent.
-    if (!$ || typeof window.anime === 'undefined') {
+    if (!$ || typeof window.anime === 'undefined' || window.CHC_USE_LEGACY_ANIMATIONS === false) {
         document.body.classList.add('no-animation');
         return;
     }
+
+    // Theme animations are progressive enhancement only. A later error in a
+    // plugin callback used to leave server-rendered sections at opacity: 0.
+    // After the initial animation window, prefer readable content over an
+    // unfinished animation and clear any inline styles left by the runtime.
+    window.setTimeout(function () {
+        document.querySelectorAll('[data-anime]:not(.anime-complete)').forEach(function (element) {
+            element.style.removeProperty('opacity');
+            element.style.removeProperty('transform');
+            element.style.removeProperty('transition');
+            Array.from(element.children).forEach(function (child) {
+                child.style.removeProperty('opacity');
+                child.style.removeProperty('transform');
+                child.style.removeProperty('transition');
+            });
+        });
+        document.body.classList.add('no-animation');
+    }, 3500);
 
     /* ===================================
      Change variables value as per your need 
