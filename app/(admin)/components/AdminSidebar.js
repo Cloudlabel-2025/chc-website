@@ -1,4 +1,4 @@
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen, onClose }) {
   const sections = [
     {
       label: 'Content',
@@ -33,12 +33,12 @@ export default function AdminSidebar() {
   ]
 
   return (
-    <aside className="admin-sidebar">
+    <aside id="admin-sidebar" className={`admin-sidebar${isOpen ? ' is-open' : ''}`} aria-label="Admin navigation">
       {sections.map((section) => (
         <div key={section.label} className="admin-nav-section">
           <p className="admin-nav-label">{section.label}</p>
           {section.links.map(({ href, label, icon: Icon }) => (
-            <a key={href} href={href} className="admin-nav-link">
+            <a key={href} href={href} className="admin-nav-link" onClick={onClose}>
               <Icon />
               {label}
             </a>
