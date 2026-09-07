@@ -66,9 +66,9 @@ export default function Footer({ footer = DEFAULTS }) {
             {f.copyrightText && <p className="mt-auto mb-0">{f.copyrightText}</p>}
           </div>
         </div>
-        <div className="row mb-minus-70px md-mb-minus-50px md-mb-minus-20px">
+        <div className="row chc-footer-signature">
           <div className="col-12 text-center">
-            <span className="text-base-color fs-300 xl-fs-250 lg-fs-200 sm-fs-150 xs-fs-100 fw-600 ls-minus-4px lg-ls-minus-2px w-100 opacity-6" style={{ whiteSpace: 'nowrap' }}>Cloud</span>
+            <span className="chc-footer-wordmark text-base-color fw-600 opacity-6">Cloudheard</span>
           </div>
         </div>
       </div>

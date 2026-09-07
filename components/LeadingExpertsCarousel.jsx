@@ -3,15 +3,26 @@
 import { useEffect, useRef } from 'react'
 import Swiper from 'swiper/bundle'
 
-// Leading Experts carousel for /our-people. Scoped and self-contained: it owns
-// its own markup and initialises Swiper against its own root ref on mount, so
-// it never depends on the legacy vendors.min.js globals, imagesLoaded timing,
-// data-slider-options JSON parsing, or any global initializer.
-// Design spec (coverflow, autoplay 5s, breakpoints) mirrors the original theme.
-const AUTOPLAY_DELAY_MS = 5000
+const AUTOPLAY_DELAY_MS = 4000
+const PLACEHOLDER_GALLERY = [
+  '/images/healthcheck.jpg',
+  '/images/oracle-tech-pod.jpg',
+  '/images/rapid-response.jpg',
+  '/images/release-assurance.jpg',
+]
 
+/**
+ * /our-people carousel: a continuously looping, centre-focused gallery.
+ * Swiper moves a side card to the enlarged centre position via controls or
+ * drag while the hover overlay reveals that person's details.
+ */
 export default function LeadingExpertsCarousel({ people = [] }) {
   const rootRef = useRef(null)
+  const previousRef = useRef(null)
+  const nextRef = useRef(null)
+  // Swiper needs at least three slides for a stable centred loop. Do not alter
+  // CMS data; only repeat the available visual cards when the data is sparse.
+  const carouselPeople = people.length > 0 && people.length < 3 ? [...people, ...people, ...people] : people
 
   useEffect(() => {
     const root = rootRef.current
@@ -23,23 +34,30 @@ export default function LeadingExpertsCarousel({ people = [] }) {
     let swiper
     try {
       swiper = new Swiper(root, {
-        slidesPerView: 3,
-        spaceBetween: 30,
+        slidesPerView: 1.1,
+        spaceBetween: 22,
         loop: count > 2,
         centeredSlides: count > 1,
-        effect: 'coverflow',
-        coverflowEffect: { rotate: 0, stretch: 0, depth: 100, modifier: 2, slideShadows: false },
-        autoplay: count > 1 ? { delay: AUTOPLAY_DELAY_MS, disableOnInteraction: false } : false,
-        observer: true,
-        observeParents: true,
+        speed: 760,
+        grabCursor: true,
         watchSlidesProgress: true,
+        autoplay: count > 1 ? {
+          delay: AUTOPLAY_DELAY_MS,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: false,
+          waitForTransition: false,
+        } : false,
+        navigation: {
+          prevEl: previousRef.current,
+          nextEl: nextRef.current,
+        },
         keyboard: { enabled: true, onlyInViewport: true },
         a11y: { enabled: true },
+        observer: true,
+        observeParents: true,
         breakpoints: {
-          320: { slidesPerView: 1 },
-          768: { slidesPerView: 2 },
-          992: { slidesPerView: 3 },
-          1200: { slidesPerView: 3 },
+          768: { slidesPerView: 2.15, spaceBetween: 26 },
+          992: { slidesPerView: 3, spaceBetween: 32 },
         },
       })
     } catch (error) {
@@ -48,55 +66,60 @@ export default function LeadingExpertsCarousel({ people = [] }) {
     }
 
     root.classList.add('chc-carousel-ready')
-
-    const handleLoad = () => {
-      try {
-        if (swiper && !swiper.destroyed) swiper.update()
-      } catch {
-        // Ignore post-load measurement errors.
-      }
-    }
-    window.addEventListener('load', handleLoad, { once: true })
+    const refresh = () => swiper && !swiper.destroyed && swiper.update()
+    window.addEventListener('load', refresh, { once: true })
 
     return () => {
-      window.removeEventListener('load', handleLoad)
+      window.removeEventListener('load', refresh)
       try {
         if (swiper && !swiper.destroyed) swiper.destroy(true, true)
       } catch {
-        // Ignore destroy errors during unmount.
+        // Ignore cleanup after a partial initialization.
       }
     }
   }, [])
 
   return (
-    <div
-      ref={rootRef}
-      className="swiper team-people-carousel magic-cursor"
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="Leading experts"
-    >
-      <div className="swiper-wrapper">
-        {people.map((person, i) => (
-          <div className="swiper-slide" key={person.name ? `${person.name}-${i}` : i}>
-            <div className="text-center team-style-05">
-              <div className="position-relative border-radius-4px overflow-hidden mb-30px last-paragraph-no-margin">
-                <img src={person.photo} alt={person.name} loading="lazy" />
-                <div className="w-100 h-100 d-flex flex-column justify-content-center align-items-center p-40px lg-p-30px team-content bg-gradient-dark-orange-transparent">
-                  <div className="social-icon fs-20">
-                    <p className="text-white">{person.name}</p>
-                    <p className="text-white">{person.role}</p>
-                    {person.capability    && <p className="text-white">{person.capability}</p>}
-                    {person.learningFocus && <p className="text-white">{person.learningFocus}</p>}
+    <div className="chc-people-carousel-shell">
+      <div
+        ref={rootRef}
+        className="swiper team-people-carousel"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Leading experts"
+      >
+        <div className="swiper-wrapper">
+          {carouselPeople.map((person, index) => {
+            const photo = person.photo?.includes('placehold.co')
+              ? PLACEHOLDER_GALLERY[index % PLACEHOLDER_GALLERY.length]
+              : person.photo
+
+            return (
+            <div className="swiper-slide" key={person.name ? `${person.name}-${index}` : index}>
+              <article className="chc-person-card">
+                <div className="chc-person-media">
+                  <img src={photo} alt={person.name || 'CHC team member'} loading="lazy" />
+                  <div className="chc-person-details">
+                    <span className="chc-person-name">{person.name}</span>
+                    {person.role && <span className="chc-person-role">{person.role}</span>}
+                    {person.capability && <span className="chc-person-meta">{person.capability}</span>}
+                    {person.learningFocus && <span className="chc-person-meta">{person.learningFocus}</span>}
                   </div>
                 </div>
-              </div>
-              <div className="alt-font fw-600 text-dark-gray lh-22 fs-18">{person.name}</div>
-              <span>{person.role}</span>
-              <div className="chc-carousel-link-row mt-20px"><a href="/services" className="chc-carousel-service-link">Explore services <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
+              </article>
             </div>
-          </div>
-        ))}
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="chc-people-carousel-controls" aria-label="People carousel controls">
+        <button ref={previousRef} type="button" className="chc-people-carousel-arrow" aria-label="Show previous person">
+          <i className="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        </button>
+        <button ref={nextRef} type="button" className="chc-people-carousel-arrow" aria-label="Show next person">
+          <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </button>
       </div>
     </div>
   )

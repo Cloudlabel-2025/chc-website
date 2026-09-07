@@ -1,5 +1,6 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
+import DeliveryCapacityCarousel from '@/components/DeliveryCapacityCarousel'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getOracleProductisedServices, getOracleHeadings,
@@ -121,10 +122,10 @@ export default async function OracleHCMPage() {
           <div className="row align-items-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-12">
               <div className="outside-box-right-20 sm-outside-box-right-0">
-                <div className="chc-delivery-carousel magic-cursor drag-cursor">
+                <DeliveryCapacityCarousel>
                   <div className="chc-delivery-carousel-track" role="list" aria-label="Oracle delivery services">
-                    {[...DELIVERY_CAROUSEL, ...DELIVERY_CAROUSEL].map((service, index) => (
-                      <div className="chc-delivery-carousel-card" key={`${service.title}-${index}`} role="listitem" aria-hidden={index >= DELIVERY_CAROUSEL.length}>
+                    {[...DELIVERY_CAROUSEL, ...DELIVERY_CAROUSEL, ...DELIVERY_CAROUSEL].map((service, index) => (
+                      <div className="chc-delivery-carousel-card" key={`${service.title}-${index}`} role="listitem" aria-hidden={index < DELIVERY_CAROUSEL.length || index >= DELIVERY_CAROUSEL.length * 2}>
                         <div className="services-box-style-03 last-paragraph-no-margin border-radius-6px overflow-hidden">
                             <div className="position-relative">
                             <a href={service.href || '/services'}><img src={service.img} alt="" /></a>
@@ -142,7 +143,7 @@ export default async function OracleHCMPage() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </DeliveryCapacityCarousel>
               </div>
             </div>
           </div>

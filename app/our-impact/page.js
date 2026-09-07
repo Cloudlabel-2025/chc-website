@@ -1,5 +1,6 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
+import ImpactServicesCarousel from '@/components/ImpactServicesCarousel'
 import { getInnerPageHero, getContentSection, getImpactHeader, getImpactFooter, getPageSeo } from '@/lib/cms/public-data'
 
 const IMPACT_SERVICES = [
@@ -45,24 +46,7 @@ export default async function OurImpactPage() {
           <div className="row mb-25px sm-mb-0" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-md-12">
               <div className="outside-box-right-15 outside-box-left-15 sm-outside-box-right-0 sm-outside-box-left-0">
-                <div className="swiper magic-cursor" data-slider-options='{ "slidesPerView": 1, "spaceBetween": 20, "loop": true, "autoplay": { "delay": 250000, "disableOnInteraction": false }, "pagination": { "el": ".slider-four-slide-pagination-1", "clickable": true }, "keyboard": { "enabled": true, "onlyInViewport": true }, "breakpoints": { "1600": { "slidesPerView": 6 }, "1400": { "slidesPerView": 5 }, "1200": { "slidesPerView": 4 }, "991": { "slidesPerView": 3 }, "768": { "slidesPerView": 2 } }, "effect": "slide" }'>
-                  <div className="swiper-wrapper pt-30px pb-30px">
-                    {IMPACT_SERVICES.map((slide, i) => (
-                      <div className="swiper-slide box-shadow-extra-large" key={i}>
-                        <div className="border-radius-10px bg-white pt-40px pb-40px ps-50px pe-50px xxl-p-30px justify-content-start text-start">
-                          <a href={slide.href || '/'} className="text-center d-block mb-50px md-mb-30px">
-                            <img src={slide.img} alt="" />
-                          </a>
-                          <div className="last-paragraph-no-margin text-center text-md-start">
-                            <a href={slide.href || '/'} className="d-inline-block alt-font text-dark-gray fw-600 fs-20 mb-5px ls-minus-05px">{slide.title}</a>
-                            <p>{slide.desc}</p>
-                            <div className="chc-carousel-link-row mt-25px"><a href={slide.href || '/services'} className="chc-carousel-service-link">Explore services <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <ImpactServicesCarousel services={IMPACT_SERVICES} />
               </div>
             </div>
           </div>

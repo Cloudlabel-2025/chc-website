@@ -103,19 +103,25 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
           </div>
 
           <div className="chc-menu-column menu-order">
-            <button
-              className={`navbar-toggler chc-menu-toggle${menuOpen ? ' is-open' : ''}`}
-              type="button"
+            <input
+              id="chc-mobile-menu-toggle"
+              className="chc-menu-toggle-state"
+              type="checkbox"
+              checked={menuOpen}
+              onChange={(event) => setMenuOpen(event.target.checked)}
               aria-controls="navbarNav"
-              aria-expanded={menuOpen}
               aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
-              onClick={() => setMenuOpen((open) => !open)}
+            />
+            <label
+              htmlFor="chc-mobile-menu-toggle"
+              className={`navbar-toggler chc-menu-toggle${menuOpen ? ' is-open' : ''}`}
+              aria-hidden="true"
             >
               <span className="navbar-toggler-line"></span>
               <span className="navbar-toggler-line"></span>
               <span className="navbar-toggler-line"></span>
               <span className="navbar-toggler-line"></span>
-            </button>
+            </label>
 
             <div className={`navbar-collapse chc-navbar-collapse${menuOpen ? ' show' : ''}`} id="navbarNav">
               <ul className="navbar-nav">
@@ -129,16 +135,23 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
                 ))}
 
                 <li className={`nav-item dropdown dropdown-with-icon chc-what-we-do${whatWeDoOpen ? ' is-open' : ''}${isWhatWeDoActive ? ' active' : ''}`}>
-                  <button
-                    type="button"
-                    className="chc-nav-parent"
-                    aria-expanded={whatWeDoOpen}
+                  <input
+                    id="chc-what-we-do-toggle"
+                    className="chc-what-we-do-state"
+                    type="checkbox"
+                    checked={whatWeDoOpen}
+                    onChange={(event) => setWhatWeDoOpen(event.target.checked)}
                     aria-controls="what-we-do-menu"
-                    onClick={() => setWhatWeDoOpen((open) => !open)}
+                    aria-label={whatWeDoOpen ? 'Close What we do menu' : 'Open What we do menu'}
+                  />
+                  <label
+                    htmlFor="chc-what-we-do-toggle"
+                    className="chc-nav-parent"
+                    aria-hidden="true"
                   >
                     <span>What we do</span>
                     <i className="fa-solid fa-angle-down" aria-hidden="true"></i>
-                  </button>
+                  </label>
                   <ul className="dropdown-menu" id="what-we-do-menu">
                     {whatWeDoItems.map((item) => (
                       <li key={item.href}>

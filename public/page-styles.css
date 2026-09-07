@@ -378,8 +378,9 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   touch-action: pan-y;
 }
 
-.chc-delivery-carousel:active {
+.chc-delivery-carousel.is-dragging {
   cursor: grabbing;
+  user-select: none;
 }
 
 .chc-delivery-carousel-track {
@@ -388,7 +389,7 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   flex-wrap: nowrap !important;
   align-items: stretch;
   width: max-content;
-  animation: chc-delivery-carousel-step 32s linear infinite;
+  animation: chc-delivery-carousel-loop 36s linear infinite;
   will-change: transform;
 }
 
@@ -430,16 +431,98 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   height: 72px;
 }
 
-@keyframes chc-delivery-carousel-step {
-  0%, 10% { transform: translateX(0); }
-  12.5%, 22.5% { transform: translateX(-6.25%); }
-  25%, 35% { transform: translateX(-12.5%); }
-  37.5%, 47.5% { transform: translateX(-18.75%); }
-  50%, 60% { transform: translateX(-25%); }
-  62.5%, 72.5% { transform: translateX(-31.25%); }
-  75%, 85% { transform: translateX(-37.5%); }
-  87.5%, 97.5% { transform: translateX(-43.75%); }
-  100% { transform: translateX(-50%); }
+@keyframes chc-delivery-carousel-loop {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-33.333333%, 0, 0); }
+}
+
+/* /our-impact — standalone Experienced services loop, independent from Swiper. */
+.chc-impact-services-carousel {
+  overflow: hidden;
+  padding: 30px 0;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.chc-impact-services-carousel.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.chc-impact-services-track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  width: max-content;
+  animation: chc-impact-services-loop 36s linear infinite;
+  will-change: transform;
+}
+
+.chc-impact-service-card {
+  display: flex;
+  flex: 0 0 clamp(245px, 21vw, 320px);
+  flex-direction: column;
+  width: clamp(245px, 21vw, 320px);
+  height: 370px;
+  min-height: 370px;
+  margin: 0 10px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(31, 20, 54, .14);
+}
+
+.chc-impact-service-image {
+  display: block;
+  flex: 0 0 170px;
+  overflow: hidden;
+  background: #eee;
+}
+
+.chc-impact-service-image img {
+  display: block;
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+}
+
+.chc-impact-service-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 26px;
+  text-align: left;
+}
+
+.chc-impact-service-title {
+  margin-bottom: 8px;
+  color: var(--dark-gray);
+  font-family: var(--alt-font);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.chc-impact-service-content p {
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+@keyframes chc-impact-services-loop {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-33.333333%, 0, 0); }
+}
+
+@media (max-width: 767px) {
+  .chc-impact-service-card {
+    flex-basis: min(78vw, 300px);
+    width: min(78vw, 300px);
+    height: 365px;
+    min-height: 365px;
+  }
+
+  .chc-impact-service-content { padding: 22px; }
 }
 
 @media (max-width: 767px) {
@@ -467,6 +550,131 @@ header.header-with-topbar .navbar .navbar-toggler-line {
 .team-people-carousel .swiper-slide-prev,
 .team-people-carousel .swiper-slide-next {
   opacity: 0.7;
+}
+
+/* /our-people — centre-led 600 × 756 expert gallery. */
+.chc-people-carousel-shell {
+  position: relative;
+  padding: 0 58px;
+}
+
+.team-people-carousel {
+  padding: 28px 0 64px;
+  overflow: visible;
+  cursor: grab;
+}
+
+.team-people-carousel:active { cursor: grabbing; }
+
+.team-people-carousel .swiper-wrapper { align-items: center; }
+
+.team-people-carousel .swiper-slide {
+  height: auto !important;
+  opacity: .48;
+  transform: scale(.84);
+  transition: transform .7s ease, opacity .7s ease;
+}
+
+.team-people-carousel .swiper-slide-active {
+  z-index: 2;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.team-people-carousel .swiper-slide-prev,
+.team-people-carousel .swiper-slide-next {
+  opacity: .7;
+  transform: scale(.91);
+}
+
+.chc-person-card {
+  width: min(100%, 350px);
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #201139;
+  box-shadow: 0 16px 36px rgba(32, 17, 57, .18);
+}
+
+.chc-person-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 600 / 756;
+  overflow: hidden;
+  background: #c8b6f1;
+}
+
+.chc-person-media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .55s ease;
+}
+
+.chc-person-details {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 28px;
+  color: #fff;
+  opacity: 0;
+  background: linear-gradient(to top, rgba(20, 8, 39, .94), rgba(20, 8, 39, .38) 52%, transparent 78%);
+  transition: opacity .35s ease;
+}
+
+.team-people-carousel .swiper-slide-active .chc-person-media:hover > img { transform: scale(1.05); }
+.team-people-carousel .swiper-slide-active .chc-person-media:hover .chc-person-details { opacity: 1; }
+
+.chc-person-name { font-family: var(--alt-font); font-size: 25px; font-weight: 700; line-height: 1.1; }
+.chc-person-role { font-size: 15px; font-weight: 600; }
+.chc-person-meta { font-size: 13px; line-height: 1.4; opacity: .82; }
+
+.chc-people-carousel-controls {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.chc-people-carousel-arrow {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  cursor: pointer;
+  place-items: center;
+  color: #fff;
+  border: 1px solid rgba(44, 23, 76, .2);
+  border-radius: 50%;
+  background: rgba(46, 23, 80, .92);
+  box-shadow: 0 8px 20px rgba(25, 10, 46, .2);
+  pointer-events: auto;
+  transition: transform .2s ease, background-color .2s ease;
+}
+
+.chc-people-carousel-arrow:hover,
+.chc-people-carousel-arrow:focus-visible {
+  color: #fff;
+  background: #5a2d9a;
+  transform: scale(1.08);
+}
+
+@media (max-width: 767px) {
+  .chc-people-carousel-shell { padding: 0 20px; }
+  .team-people-carousel { padding-bottom: 38px; }
+  .chc-person-details { padding: 22px; }
+  .chc-person-name { font-size: 22px; }
+  .chc-people-carousel-arrow { width: 38px; height: 38px; }
+  .chc-person-card { width: min(100%, 290px); }
 }
 
 /* ========================================
@@ -1379,4 +1587,331 @@ header.header-with-topbar.chc-site-header > .navbar {
 header.header-with-topbar.chc-site-header .navbar-brand img.default-logo {
   max-width: 118px;
   max-height: 54px;
+}
+
+/* Footer signature stays deliberately on one line without overflowing on phones. */
+.chc-footer-wordmark {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: visible;
+  transform: none;
+  margin-bottom: 0;
+  color: var(--base-color);
+  font-size: min(14vw, 9rem);
+  line-height: .9;
+  letter-spacing: -.06em;
+  text-align: center;
+  text-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.chc-site-footer {
+  padding-bottom: 0 !important;
+}
+
+.chc-site-footer .row.mb-minus-70px {
+  margin-bottom: 0 !important;
+}
+
+/* The footer owns its blur: it fades smoothly through the Cloudheard signature
+   instead of drawing a hard line across the bottom of the viewport. */
+.crafto-progressive-blur.crafto-progressive-blur-bottom {
+  display: none !important;
+}
+
+.chc-site-footer::after {
+  display: none;
+}
+
+.chc-footer-signature {
+  position: relative;
+  isolation: isolate;
+}
+
+.chc-footer-signature::after {
+  content: '';
+  position: absolute;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  z-index: 2;
+  width: 100vw;
+  height: 28%;
+  pointer-events: none;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, rgba(24, 11, 45, 0), rgba(20, 9, 39, .13) 48%, rgba(14, 6, 28, .5) 100%);
+  backdrop-filter: blur(18px) saturate(110%);
+  -webkit-backdrop-filter: blur(18px) saturate(110%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 72%);
+  mask-image: linear-gradient(to bottom, transparent, black 72%);
+}
+
+.chc-site-footer > .container {
+  position: relative;
+  z-index: 9;
+}
+
+.chc-site-footer .footer-spinner-wrap { z-index: 9; }
+
+/* Mobile public shell. These rules intentionally supersede the legacy theme's
+   white header and collapse behaviour rather than layering on another variant. */
+@media (max-width: 991px) {
+  html {
+    overflow-x: clip;
+    background-color: #120820;
+  }
+
+  body {
+    overflow-x: clip;
+    margin: 0 !important;
+    /* Preserve the public site's light lined canvas above the footer. */
+    background-color: #fff;
+    background-image: url('/images/vertical-line-bg.svg');
+  }
+
+  header.header-with-topbar.chc-site-header,
+  header.header-with-topbar.chc-site-header > .navbar,
+  header.header-with-topbar.chc-site-header > .navbar.bg-transparent {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: 0;
+    min-height: 76px;
+    background: linear-gradient(90deg, rgba(25, 12, 49, .82), rgba(53, 27, 88, .76)) !important;
+    box-shadow: 0 5px 20px rgba(13, 5, 29, .28);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+  }
+
+  header.header-with-topbar.chc-site-header .chc-header-inner,
+  header.header-with-topbar.chc-site-header .container-fluid {
+    background: linear-gradient(90deg, rgba(25, 12, 49, .82), rgba(53, 27, 88, .76)) !important;
+  }
+
+  .box-layout:has(> header.header-with-topbar.chc-site-header) {
+    background: transparent !important;
+  }
+
+  .chc-site-header .chc-header-inner { min-height: 76px; }
+  .chc-site-header .navbar-brand { min-height: 76px; padding: 7px 0 !important; }
+  .chc-site-header .navbar-brand img.default-logo { max-width: 112px; max-height: 56px; }
+  .chc-site-header .chc-menu-toggle {
+    position: relative !important;
+    z-index: 1102;
+    display: grid !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    place-items: center;
+    overflow: hidden !important;
+    cursor: pointer;
+    touch-action: manipulation;
+    border: 1px solid rgba(255,255,255,.2) !important;
+    border-radius: 12px;
+    background: rgba(255,255,255,.06) !important;
+  }
+
+  /* The legacy theme offsets these four lines for a 44px button. Center them
+     explicitly so the tap target and the icon remain aligned on every phone. */
+  .chc-site-header .chc-menu-column {
+    display: flex !important;
+    flex: 0 0 52px !important;
+    position: relative;
+    min-width: 52px !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+  }
+
+  /* A native checkbox means the menu remains usable while client scripts are
+     loading; the visible label is the styled, full-size touch control. */
+  .chc-site-header .chc-menu-toggle-state,
+  .chc-site-header .chc-what-we-do-state {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .chc-site-header .chc-menu-toggle-state:focus-visible + .chc-menu-toggle {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+
+  .chc-site-header .chc-what-we-do-state:focus-visible + .chc-nav-parent {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+  }
+
+  .chc-site-header .chc-menu-toggle .navbar-toggler-line {
+    position: absolute !important;
+    left: 50% !important;
+    width: 20px !important;
+    height: 2px !important;
+    margin: 0 !important;
+    border-radius: 999px;
+    background: #fff !important;
+    transform: translateX(-50%);
+    transform-origin: center;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+
+  .chc-site-header .chc-menu-toggle .navbar-toggler-line:nth-child(1) { top: 14px !important; }
+  .chc-site-header .chc-menu-toggle .navbar-toggler-line:nth-child(2),
+  .chc-site-header .chc-menu-toggle .navbar-toggler-line:nth-child(3) { top: 21px !important; }
+  .chc-site-header .chc-menu-toggle .navbar-toggler-line:nth-child(4) { top: 28px !important; }
+  .chc-site-header .chc-menu-toggle.is-open .navbar-toggler-line:nth-child(1),
+  .chc-site-header .chc-menu-toggle.is-open .navbar-toggler-line:nth-child(4) { opacity: 0; }
+  .chc-site-header .chc-menu-toggle.is-open .navbar-toggler-line:nth-child(2) { transform: translateX(-50%) rotate(45deg); }
+  .chc-site-header .chc-menu-toggle.is-open .navbar-toggler-line:nth-child(3) { transform: translateX(-50%) rotate(-45deg); }
+  .chc-site-header .chc-menu-toggle-state:checked + .chc-menu-toggle .navbar-toggler-line:nth-child(1),
+  .chc-site-header .chc-menu-toggle-state:checked + .chc-menu-toggle .navbar-toggler-line:nth-child(4) { opacity: 0; }
+  .chc-site-header .chc-menu-toggle-state:checked + .chc-menu-toggle .navbar-toggler-line:nth-child(2) { transform: translateX(-50%) rotate(45deg); }
+  .chc-site-header .chc-menu-toggle-state:checked + .chc-menu-toggle .navbar-toggler-line:nth-child(3) { transform: translateX(-50%) rotate(-45deg); }
+  .chc-site-header .chc-what-we-do-state:checked + .chc-nav-parent i { transform: rotate(180deg); }
+
+  .chc-site-header .chc-navbar-collapse {
+    position: fixed !important;
+    top: 76px !important;
+    right: 0 !important;
+    left: 0 !important;
+    z-index: 1101;
+    max-height: calc(100dvh - 76px);
+    overflow-y: auto;
+    background: linear-gradient(160deg, rgba(30, 15, 56, .98), rgba(50, 24, 84, .98)) !important;
+    box-shadow: 0 18px 38px rgba(13, 5, 29, .36);
+  }
+  .chc-site-header .chc-navbar-collapse:not(.show) { display: none !important; }
+  .chc-site-header .chc-navbar-collapse.show { display: block !important; }
+  .chc-site-header .chc-menu-toggle-state:checked ~ .chc-navbar-collapse { display: block !important; }
+  .chc-site-header .chc-what-we-do-state:checked ~ .dropdown-menu { display: block !important; }
+  .chc-site-header .navbar-nav { padding: 8px 20px 22px !important; }
+  .chc-site-header .navbar-nav .nav-link,
+  .chc-site-header .chc-nav-parent { min-height: 52px; padding: 12px 4px !important; }
+
+  .chc-site-footer {
+    overflow: clip !important;
+    margin: 0 !important;
+    padding-bottom: 1px !important;
+    border-bottom: 1px solid #120820;
+    background-color: #120820;
+  }
+  .chc-site-footer::after {
+    display: block;
+    z-index: 8;
+    height: 150px;
+    background: linear-gradient(to bottom, rgba(24, 11, 45, 0), rgba(14, 6, 28, .42));
+    backdrop-filter: blur(14px) saturate(110%);
+    -webkit-backdrop-filter: blur(14px) saturate(110%);
+  }
+  .chc-footer-signature { margin: 0 !important; padding-bottom: 0; }
+  .chc-footer-signature::after { width: 100%; height: 32%; transform: none; left: 0; }
+  .chc-footer-wordmark { font-size: min(13vw, 4.8rem); }
+}
+
+/* Desktop never uses the mobile checkbox state. Keep the full navigation in
+   its normal horizontal layout even if a viewport is resized from a phone. */
+@media (min-width: 992px) {
+  .chc-site-header .chc-menu-toggle-state,
+  .chc-site-header .chc-what-we-do-state,
+  .chc-site-header .chc-menu-toggle {
+    display: none !important;
+  }
+
+  .chc-site-header .chc-menu-column {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .chc-site-header .chc-navbar-collapse,
+  .chc-site-header .chc-navbar-collapse:not(.show) {
+    position: static !important;
+    display: flex !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Home hero calls to action: compact phone controls without changing the
+   shared desktop button component or any CTAs on the other pages. */
+@media (max-width: 575px) {
+  .chc-home-hero .chc-hero-ctas {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large {
+    min-height: 32px !important;
+    padding: 8px 13px !important;
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large .btn-double-text {
+    line-height: 1.1 !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large,
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large:hover,
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large:focus-visible {
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: rgba(255, 255, 255, .94) !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large > span {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large .btn-double-text {
+    display: inline-block;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .chc-home-hero .chc-hero-ctas .home-marketplace,
+  .chc-home-hero .chc-hero-ctas .home-marketplace:hover,
+  .chc-home-hero .chc-hero-ctas .home-marketplace:focus-visible {
+    background-image: linear-gradient(90deg, #9a53ff, #ef71b6) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: #bc63e8 !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .home-marketplace .btn-double-text {
+    color: inherit !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn,
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:hover,
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:focus-visible,
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn i {
+    color: #4e73ff !important;
+    -webkit-text-fill-color: #4e73ff !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large i {
+    margin-left: 5px;
+    font-size: 11px;
+  }
 }
