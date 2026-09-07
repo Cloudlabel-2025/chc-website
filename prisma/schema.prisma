@@ -119,7 +119,9 @@ model Section {
   page        Page          @relation(fields: [pageId], references: [id], onDelete: Cascade)
   blocks      ContentBlock[]
 
-  @@unique([pageId, sectionKey])
+  // A page may use the same reusable section template more than once.
+  // Ordering is stored per instance in sortOrder.
+  @@index([pageId, sectionKey])
   @@map("sections")
 }
 

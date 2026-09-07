@@ -1,7 +1,10 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import LeadingExpertsCarousel from '@/components/LeadingExpertsCarousel'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContentSection, getPeopleHeader, getPeopleData, getPageSeo } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return getPageSeo('our-people', {
@@ -36,6 +39,7 @@ export default async function OurPeoplePage() {
           <LeadingExpertsCarousel people={people} />
         </div>
       </section>
+      <CmsAdditionalSections slug="our-people" skipFirst={{ innerPageHero: 1, contentSection: 1, peopleHeader: 1, teamMember: 1 }} />
     </>
   )
 }

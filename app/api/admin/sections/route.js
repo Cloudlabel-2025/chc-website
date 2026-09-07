@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/cms/auth-helpers'
-import { upsertSection, reorderSections } from '@/lib/cms/content'
-import { getSectionTemplate } from '@/lib/cms/section-templates'
+import { upsertSection, reorderSections, populateSectionDefaults } from '@/lib/cms/content'
 import prisma from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
@@ -30,32 +29,7 @@ export async function POST(request) {
 
     const section = await upsertSection({ pageId, sectionKey, sortOrder, animationKey })
 
-    const existingBlocksCount = await prisma.contentBlock.count({ where: { sectionId: section.id } })
-    if (existingBlocksCount === 0) {
-      const template = getSectionTemplate(sectionKey)
-      if (template?.defaultBlocks?.length) {
-        for (let i = 0; i < template.defaultBlocks.length; i++) {
-          const def = template.defaultBlocks[i]
-          await prisma.contentBlock.create({
-            data: {
-              sectionId: section.id,
-              fieldKey: def.fieldKey,
-              blockType: def.blockType,
-              textValue: def.textValue ?? null,
-              sortOrder: i,
-              isPublished: true,
-              createdById: session.user.id,
-              updatedById: session.user.id,
-            },
-          })
-        }
-      }
-    }
-
-    const fullSection = await prisma.section.findUnique({
-      where: { id: section.id },
-      include: { blocks: { include: { mediaAsset: true }, orderBy: { sortOrder: 'asc' } } },
-    })
+    const fullSection = await populateSectionDefaults(section.id, sectionKey, session.user.id)
 
     return NextResponse.json({ section: fullSection }, { status: 201 })
   } catch (err) {

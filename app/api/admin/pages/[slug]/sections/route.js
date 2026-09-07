@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { getPage, upsertSection } from '@/lib/cms/content'
+import { getPage, upsertSection, populateSectionDefaults } from '@/lib/cms/content'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,7 +21,8 @@ export async function POST(request, { params }) {
 
   try {
     const section = await upsertSection({ pageId: page.id, sectionKey, sortOrder })
-    return NextResponse.json({ section }, { status: 201 })
+    const populatedSection = await populateSectionDefaults(section.id, sectionKey, session.user.id)
+    return NextResponse.json({ section: populatedSection }, { status: 201 })
   } catch (err) {
     console.error('Upsert section error:', err)
     return NextResponse.json({ error: 'Failed to upsert section.' }, { status: 500 })

@@ -1,10 +1,13 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getDeliveryModelProcessSteps, getDeliveryModelFaqs,
   getFaqHeader, getFaqFooter, getProcessHeader2,
 } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return getPageSeo('our-delivery-model', {
@@ -106,6 +109,7 @@ export default async function OurDeliveryModelPage() {
           </div>
         </div>
       </section>
+      <CmsAdditionalSections slug="our-delivery-model" skipFirst={{ innerPageHero: 1, contentSection: 1, processSteps1: 1, processSteps2: 1, faqItem: 1, faqHeader: 1, faqFooter: 1, processHeader2: 1 }} />
     </>
   )
 }

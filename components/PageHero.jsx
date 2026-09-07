@@ -1,7 +1,10 @@
+import { cloudinaryUrl } from '@/lib/cms/cloudinary-url'
+import HeroScrollButton from '@/components/HeroScrollButton'
+
 export default function PageHero({ backgroundImage, heading, subtitle }) {
   return (
     <section className="chc-page-hero cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px">
-      <img src={backgroundImage} alt="" className="chc-hero-background" fetchPriority="high" aria-hidden="true" />
+      <img src={cloudinaryUrl(backgroundImage, 'hero')} alt="" className="chc-hero-background" fetchPriority="high" aria-hidden="true" />
       <div className="hero-overlay-animated"></div>
       <div className="shape-image-animation bottom-0 p-0 w-100 d-none d-md-block">
         <svg xmlns="http://www.w3.org/2000/svg" width="3000" height="400" viewBox="0 180 2500 200" fill="#ffffff">
@@ -16,9 +19,7 @@ export default function PageHero({ backgroundImage, heading, subtitle }) {
           {subtitle && <p className="mx-auto w-50 xl-w-70 md-w-100 mb-0 text-white opacity-6">{subtitle}</p>}
         </div>
         <div className="down-section text-center" data-chc-animate='{ "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
-          <a href="#down-section" className="section-link">
-            <div className="text-white"><i className="bi bi-arrow-down-short icon-very-medium animation-float"></i></div>
-          </a>
+          <HeroScrollButton />
         </div>
       </div>
     </section>

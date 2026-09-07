@@ -2,8 +2,15 @@
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 const nextConfig = {
+  // Keep `next dev` output separate from `next build` output. Running a build
+  // while a dev server is open must never remove the CSS/client chunks that the
+  // browser is currently using.
+  distDir: isDevelopment ? '.next-dev' : '.next',
   images: {
-    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
+    ],
   },
   output: 'standalone',
   async headers() {

@@ -3,8 +3,9 @@
  * - DB rows: every MediaAsset with local publicUrl (/, /media/, /images/, /uploads/)
  * - Static files: optionally walk public/images/** for hardcoded paths (Phase 4 code swap reads from Cloudinary)
  *
- * Usage: CLOUDINARY_CLOUD_NAME=xxx CLOUDINARY_API_KEY=xxx CLOUDINARY_API_SECRET=xxx node scripts/migrate-to-cloudinary.mjs [--dry-run] [--include=rows|static|all]
+ * Usage: CLOUDINARY_CLOUD_NAME=xxx CLOUDINARY_API_KEY=xxx CLOUDINARY_API_SECRET=xxx node scripts/migrate-to-cloudinary.mjs [--dry-run] [--include=rows|static|all] [--exclude=prefix1,prefix2]
  * Default --include=rows. Use all to also upload static files not yet in DB.
+ * --exclude skips DB rows whose filename starts with any given prefix (e.g. --exclude=demo-,crafto-).
  */
 import 'dotenv/config'
 import fs from 'fs'
@@ -16,6 +17,8 @@ const dryRun = process.argv.includes('--dry-run')
 const includeArg = process.argv.find((a) => a.startsWith('--include='))?.split('=')[1] ?? 'rows'
 const includeRows = includeArg === 'rows' || includeArg === 'all'
 const includeStatic = includeArg === 'static' || includeArg === 'all'
+const excludeArg = process.argv.find((a) => a.startsWith('--exclude='))?.split('=')[1] ?? ''
+const excludePrefixes = excludeArg.split(',').map((p) => p.trim()).filter(Boolean)
 
 async function getCloudinary() {
   const { v2: cloudinary } = await import('cloudinary')
@@ -56,6 +59,11 @@ async function main() {
     } else {
       let migrated = 0, skipped = 0, failed = 0
       for (const asset of assets) {
+        if (excludePrefixes.some((p) => asset.filename.startsWith(p))) {
+          console.log(`  skip ${asset.filename} — excluded by --exclude prefix`)
+          skipped++
+          continue
+        }
         const localPath = path.join(process.cwd(), 'public', asset.publicUrl.replace(/^\//, ''))
         if (!fs.existsSync(localPath)) {
           console.log(`  skip ${asset.filename} — file not found: ${localPath}`)

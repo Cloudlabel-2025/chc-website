@@ -1,5 +1,8 @@
 import PageHero from '@/components/PageHero'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContactData, getPageSeo } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return getPageSeo('contact', {
@@ -122,6 +125,7 @@ export default async function ContactPage() {
           </div>
         </div>
       </section>
+      <CmsAdditionalSections slug="contact" skipFirst={{ innerPageHero: 1, contact: 1, contactForm: 1 }} />
     </>
   )
 }

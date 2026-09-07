@@ -26,17 +26,23 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Invalid JSON.' }, { status: 400 })
   }
 
-  const { slug, title } = body ?? {}
+  const { slug, title, templateId } = body ?? {}
   if (!slug || !title) {
     return NextResponse.json({ error: 'slug and title are required.' }, { status: 400 })
   }
 
   try {
-    const page = await createPage({ slug, title })
+    const page = await createPage({ slug, title, templateId: templateId || undefined })
     return NextResponse.json({ page }, { status: 201 })
   } catch (err) {
+    if (err.code === 'INVALID_PAGE_SLUG') {
+      return NextResponse.json({ error: err.message }, { status: 400 })
+    }
     if (err.code === 'P2002') {
       return NextResponse.json({ error: `Page with slug "${slug}" already exists.` }, { status: 409 })
+    }
+    if (err.code === 'TEMPLATE_NOT_FOUND') {
+      return NextResponse.json({ error: err.message }, { status: 400 })
     }
     console.error('Create page error:', err)
     return NextResponse.json({ error: 'Failed to create page.' }, { status: 500 })

@@ -65,7 +65,13 @@ export async function DELETE(request, { params }) {
   const { searchParams } = new URL(request.url)
   const force = searchParams.get('force') === 'true'
 
-  const result = await deleteMedia(id, { force })
+  let result
+  try {
+    result = await deleteMedia(id, { force })
+  } catch (err) {
+    console.error('Delete media error:', err)
+    return NextResponse.json({ error: 'Unable to delete this asset right now. The media record was kept.' }, { status: 500 })
+  }
 
   if (!result.success) {
     // 409 Conflict when referenced, 404 when not found, 500 for storage errors

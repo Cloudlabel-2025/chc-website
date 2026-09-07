@@ -10,16 +10,16 @@
     "test": "node --test tests/*.test.mjs",
     "security:audit": "node scripts/security-audit.mjs",
     "db:generate": "prisma generate",
+    "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.mjs",
     "db:seed:admin": "node prisma/seed-admin.mjs",
-    "migrate:media": "node scripts/migrate-media.mjs"
+    "migrate:media": "node scripts/migrate-media.mjs",
+    "storage:check": "node scripts/check-cloudinary.mjs"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1124.0",
-    "@aws-sdk/s3-request-presigner": "^3.1124.0",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "next": "^14.2.0",
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "cloudinary": "^1.41.0",
     "dotenv": "^17.4.2"
   }
 }

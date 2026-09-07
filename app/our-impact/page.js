@@ -1,7 +1,10 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import ImpactServicesCarousel from '@/components/ImpactServicesCarousel'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContentSection, getImpactHeader, getImpactFooter, getOurImpactSlides, getPageSeo } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 const IMPACT_SERVICES = [
   { title: 'Configuration', img: '/images/config.png', desc: 'Align Oracle HCM Cloud with the way your workforce and approvals operate.', href: '/oracle-hcm' },
@@ -59,6 +62,7 @@ export default async function OurImpactPage() {
           </div>
         </div>
       </section>
+      <CmsAdditionalSections slug="our-impact" skipFirst={{ innerPageHero: 1, contentSection: 1, impactHeader: 1, impactFooter: 1, serviceSlide: 1 }} />
     </>
   )
 }

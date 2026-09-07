@@ -1,6 +1,9 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContentSection, getPageSeo } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return getPageSeo('give-one-hour', {
@@ -81,6 +84,7 @@ export default async function GiveOneHourPage() {
           </div>
         </div>
       </section>
+      <CmsAdditionalSections slug="give-one-hour" skipFirst={{ innerPageHero: 1, contentSection: 1, giveOneHour: 1, giveOneHourForm: 1 }} />
     </>
   )
 }

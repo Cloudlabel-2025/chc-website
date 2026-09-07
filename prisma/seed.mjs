@@ -10,20 +10,29 @@
  * Usage:
  *   npm run db:seed
  *
- * Requires DATABASE_URL in environment (loaded from .env automatically via dotenv).
+ * Requires MONGODB_URI in environment (loaded from .env automatically via dotenv).
  */
 
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import { PrismaClient } from '@prisma/client'
-import { readdir, stat } from 'node:fs/promises'
+import { readdir, stat, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { SITE_TEMPLATES } from '../lib/cms/site-template-catalog.js'
+import { uploadFile } from '../lib/cms/storage.js'
+
+// Match Next.js environment precedence so this import targets the same CMS
+// database as `npm run dev`.
+dotenv.config({ path: '.env.local', override: false })
+dotenv.config({ path: '.env', override: false })
 
 const prisma = new PrismaClient()
 
 const PUBLIC_IMAGES_DIR = path.resolve(process.cwd(), 'public', 'images')
 const IMAGE_EXTENSIONS = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
 const MIME_TYPES = { '.avif': 'image/avif', '.gif': 'image/gif', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp' }
+// Crafto theme/demo showcase assets stay as local static files — never uploaded
+// to Cloudinary (they are not CMS-authored content).
+const SKIP_MEDIA_PREFIXES = ['demo-', 'crafto-']
 
 async function findImageFiles(directory, prefix = '') {
   const entries = await readdir(directory, { withFileTypes: true })
@@ -38,27 +47,92 @@ async function findImageFiles(directory, prefix = '') {
 
 async function registerPublicMedia(userId) {
   const files = await findImageFiles(PUBLIC_IMAGES_DIR)
+  let uploaded = 0
+  let skipped = 0
+  let existingCloud = 0
   for (const relativePath of files) {
+    if (SKIP_MEDIA_PREFIXES.some((p) => path.basename(relativePath).startsWith(p))) {
+      skipped++
+      continue
+    }
+
     const filePath = path.join(PUBLIC_IMAGES_DIR, relativePath)
     const fileStats = await stat(filePath)
     const extension = path.extname(relativePath).toLowerCase()
-    await prisma.mediaAsset.upsert({
-      where: { storageKey: `public-images/${relativePath}` },
-      create: {
-        filename: path.basename(relativePath), storageKey: `public-images/${relativePath}`,
-        publicUrl: `/images/${relativePath.split(path.sep).join('/')}`,
-        mimeType: MIME_TYPES[extension] ?? 'application/octet-stream', sizeBytes: fileStats.size,
-        altText: path.basename(relativePath, extension).replace(/[-_]+/g, ' '), uploadedById: userId,
-      },
-      update: { filename: path.basename(relativePath), sizeBytes: fileStats.size, mimeType: MIME_TYPES[extension] ?? 'application/octet-stream' },
+    const mimeType = MIME_TYPES[extension] ?? 'application/octet-stream'
+    // Deterministic Cloudinary public_id (matches the format used by
+    // scripts/migrate-to-cloudinary.mjs) so re-seeding stays idempotent.
+    const publicId = `chc/media/public-images/${relativePath
+      .replace(/\.[^.]+$/, '')
+      .replace(/[^a-zA-Z0-9/_-]/g, '_')}`
+    const altText = path.basename(relativePath, extension).replace(/[-_]+/g, ' ')
+
+    const existing = await prisma.mediaAsset.findFirst({
+      where: { OR: [{ storageKey: publicId }, { filename: path.basename(relativePath) }] },
     })
+
+    // Already on Cloudinary — just refresh size/mime metadata.
+    if (existing && existing.publicUrl?.startsWith('http')) {
+      await prisma.mediaAsset.update({
+        where: { id: existing.id },
+        data: { sizeBytes: fileStats.size, mimeType },
+      })
+      existingCloud++
+      continue
+    }
+
+    // Upload through the same Cloudinary adapter the CMS media library uses.
+    const buffer = await readFile(filePath)
+    const storageResult = await uploadFile({
+      buffer,
+      storageKey: publicId,
+      mimeType,
+      sizeBytes: fileStats.size,
+    })
+
+    if (existing) {
+      await prisma.mediaAsset.update({
+        where: { id: existing.id },
+        data: {
+          storageKey: publicId,
+          publicUrl: storageResult.publicUrl,
+          sizeBytes: fileStats.size,
+          mimeType,
+        },
+      })
+    } else {
+      await prisma.mediaAsset.create({
+        data: {
+          filename: path.basename(relativePath),
+          storageKey: publicId,
+          publicUrl: storageResult.publicUrl,
+          mimeType,
+          sizeBytes: fileStats.size,
+          width: storageResult.width ?? null,
+          height: storageResult.height ?? null,
+          altText,
+          uploadedById: userId,
+          updatedAt: new Date(),
+        },
+      })
+    }
+    uploaded++
   }
-  console.log(`  media: ${files.length} local public images registered`)
+  console.log(`  media: ${uploaded} uploaded to Cloudinary, ${existingCloud} already on Cloudinary, ${skipped} theme/demo skipped`)
 }
 
 async function findMediaAssetId(publicUrl) {
-  if (!publicUrl || !publicUrl.startsWith('/images/')) return null
-  const asset = await prisma.mediaAsset.findFirst({ where: { publicUrl }, select: { id: true } })
+  if (!publicUrl) return null
+  // Match by exact publicUrl (legacy local rows) or by filename (Cloudinary rows).
+  const asset = await prisma.mediaAsset.findFirst({
+    where: {
+      OR: [
+        { publicUrl },
+        ...(publicUrl.startsWith('/images/') ? [{ filename: path.basename(publicUrl) }] : []),
+      ],
+    },
+    select: { id: true },
+  })
   return asset?.id ?? null
 }
 

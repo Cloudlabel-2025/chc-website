@@ -1,7 +1,10 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import StackCardGroup from '@/components/StackCardGroup'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContentSection, getApplicationsStackCards, getPageSeo } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return getPageSeo('applications', {
@@ -27,6 +30,7 @@ export default async function ApplicationsPage() {
           <div className="row"><div className="col-12"><StackCardGroup cards={cards} /></div></div>
         </div>
       </section>
+      <CmsAdditionalSections slug="applications" skipFirst={{ innerPageHero: 1, contentSection: 1, stackCards1: 1 }} />
     </>
   )
 }

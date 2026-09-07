@@ -1,8 +1,26 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { setSectionVisibility } from '@/lib/cms/content'
+import { getPage, populateSectionDefaults, setSectionVisibility } from '@/lib/cms/content'
 
 export const dynamic = 'force-dynamic'
+
+// Seeds an existing empty section. It never replaces existing blocks, so it is
+// safe for sections created before default-content seeding was introduced.
+export async function POST(_request, { params }) {
+  const session = await auth()
+  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  try {
+    const page = await getPage(params.slug)
+    const section = page?.sections?.find((entry) => entry.id === params.sectionId)
+    if (!section) return NextResponse.json({ error: 'Section not found on this page.' }, { status: 404 })
+    const populatedSection = await populateSectionDefaults(section.id, section.sectionKey, session.user.id)
+    return NextResponse.json({ section: populatedSection })
+  } catch (err) {
+    console.error('Restore section defaults error:', err)
+    return NextResponse.json({ error: 'Could not restore this section’s default content.' }, { status: 500 })
+  }
+}
 
 export async function PATCH(request, { params }) {
   const session = await auth()

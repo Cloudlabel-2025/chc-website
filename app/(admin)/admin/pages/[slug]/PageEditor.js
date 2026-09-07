@@ -164,7 +164,9 @@ function RepeatableItemEditor({ sectionId, slug, sectionKey, initialBlocks = [],
   const [err, setErr]               = useState('')
 
   const items = allBlocks
-    .filter((b) => !b.parentId)
+    // Section fields (for example, sectionHeading) are not carousel cards.
+    // Only the remaining top-level blocks represent repeatable items.
+    .filter((b) => !b.parentId && !sectionFields.some((field) => field.fieldKey === b.fieldKey))
     .sort((a, b) => a.sortOrder - b.sortOrder)
   const childrenOf = (id) => allBlocks.filter((b) => b.parentId === id)
 
@@ -415,6 +417,7 @@ const SECTION_FIELDS = {
     { fieldKey: 'formBadge',      blockType: 'TEXT', label: 'Form badge',      maxLength: 48 },
     { fieldKey: 'heading',        blockType: 'TEXT', label: 'Form heading',    maxLength: 80 },
     { fieldKey: 'paragraph',      blockType: 'TEXT', label: 'Form paragraph',  maxLength: 300 },
+    { fieldKey: 'submitLabel',    blockType: 'TEXT', label: 'Submit button label', maxLength: 48 },
     { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
   ],
   giveOneHourForm: [
@@ -427,6 +430,10 @@ const SECTION_FIELDS = {
     { fieldKey: 'heading',        blockType: 'TEXT', label: 'Form heading',    maxLength: 80 },
     { fieldKey: 'placeholder',    blockType: 'TEXT', label: 'Placeholder',     maxLength: 60 },
     { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
+  ],
+  richText: [
+    { fieldKey: 'sectionHeading', blockType: 'TEXT',      label: 'Section heading', maxLength: 100, required: true },
+    { fieldKey: 'content',        blockType: 'RICH_TEXT', label: 'Content',         maxLength: 5000, required: true },
   ],
 }
 
@@ -518,6 +525,18 @@ const REPEATABLE_FIELDS = {
 const REPEATABLE_SECTION_FIELDS = {
   whatWeDo: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 }],
   whyChc: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 80 }],
+  featureCards: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  capabilityItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  productisedService: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  serviceCarouselItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  serviceSlide: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  teamMember: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  stackCards1: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  stackCards2: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  stackCards3: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  processSteps1: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  processSteps2: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  faqItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
 }
 
 // ─── Add-section library (sectionKey → label + default animation) ────────────
@@ -556,6 +575,7 @@ const SECTION_LIBRARY = [
   { key: 'giveOneHour', label: 'Give one hour intro', animation: 'fadeIn' },
   { key: 'giveOneHourForm', label: 'Give One Hour form copy', animation: 'fadeIn' },
   { key: 'newsletterForm', label: 'Newsletter form copy', animation: 'fadeIn' },
+  { key: 'richText', label: 'Rich text content', animation: 'fadeIn' },
 ]
 
 function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
@@ -563,6 +583,8 @@ function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
   const [blocks, setBlocks] = useState(section.blocks ?? [])
   const [visible, setVisible] = useState(section.isVisible)
   const [toggling, setToggling] = useState(false)
+  const [restoring, setRestoring] = useState(false)
+  const [restoreError, setRestoreError] = useState('')
 
   const fields = SECTION_FIELDS[section.sectionKey] ?? []
   const repFields = REPEATABLE_FIELDS[section.sectionKey] ?? null
@@ -593,6 +615,19 @@ function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
     } finally { setToggling(false) }
   }
 
+  async function restoreDefaults() {
+    setRestoring(true)
+    setRestoreError('')
+    try {
+      const response = await fetch(`/api/admin/pages/${slug}/sections/${section.id}`, { method: 'POST' })
+      const data = await response.json()
+      if (!response.ok) { setRestoreError(data.error ?? 'Could not restore default content.'); return }
+      setBlocks(data.section?.blocks ?? [])
+      setOpen(true)
+    } catch { setRestoreError('Network error — default content was not restored.') }
+    finally { setRestoring(false) }
+  }
+
   return (
     <div className="admin-card admin-mb-16">
       <div className="admin-section-header" onClick={() => setOpen((o) => !o)}>
@@ -608,6 +643,7 @@ function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
             <span className="admin-toggle-track" />
             <span className="admin-text-sm admin-text-muted">{visible ? 'Visible' : 'Hidden'}</span>
           </label>
+          {(fields.length > 0 || repFields) && <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={restoreDefaults} disabled={restoring} title="Add only the missing default fields and items; existing edits are kept">{restoring ? 'Restoring…' : 'Restore defaults'}</button>}
           <button type="button" className="admin-btn admin-btn-icon admin-btn-secondary" onClick={() => setOpen(true)} aria-label={`Edit ${section.sectionKey}`} title="Edit section"><Edit size={15} /></button>
           <button type="button" className="admin-btn admin-btn-icon admin-btn-ghost" onClick={() => onMove(section.id, -1)} disabled={index === 0} aria-label={`Move ${section.sectionKey} up`} title="Move up"><MoveUp size={15} /></button>
           <button type="button" className="admin-btn admin-btn-icon admin-btn-ghost" onClick={() => onMove(section.id, 1)} disabled={index === total - 1} aria-label={`Move ${section.sectionKey} down`} title="Move down"><MoveDown size={15} /></button>
@@ -620,6 +656,7 @@ function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
         <div className="admin-card-body">
           {repFields ? (
             <RepeatableItemEditor
+              key={`${section.id}-${blocks.length}`}
               sectionId={section.id}
               slug={slug}
               sectionKey={section.sectionKey}
@@ -641,6 +678,7 @@ function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
               />
             ))
           )}
+          {restoreError && <p className="admin-field-error">{restoreError}</p>}
         </div>
       )}
     </div>
@@ -656,6 +694,7 @@ export default function PageEditor({ page, slug }) {
   const [pubMsg, setPubMsg]       = useState('')
   const [sections, setSections]   = useState(page.sections ?? [])
   const [sectionToAdd, setSectionToAdd] = useState('')
+  const [sectionSearch, setSectionSearch] = useState('')
   const [addingSection, setAddingSection] = useState(false)
   const [addErr, setAddErr]       = useState('')
   const [movingSection, setMovingSection] = useState('')
@@ -700,8 +739,9 @@ export default function PageEditor({ page, slug }) {
       })
       const data = await res.json()
       if (!res.ok) { setAddErr(data.error ?? 'Failed to add section.'); return }
-      setSections((prev) => [...prev, { ...data.section, blocks: [] }])
+      setSections((prev) => [...prev, data.section])
       setSectionToAdd('')
+      setSectionSearch('')
     } catch { setAddErr('Network error — section not added.') }
     finally { setAddingSection(false) }
   }
@@ -778,17 +818,23 @@ export default function PageEditor({ page, slug }) {
           {/* Add section */}
           <div className="admin-card admin-mb-16">
             <div className="admin-card-body" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <select
-                className="admin-select"
-                value={sectionToAdd}
-                onChange={(e) => setSectionToAdd(e.target.value)}
-                style={{ maxWidth: 320 }}
-              >
-                <option value="">+ Add Section…</option>
-                {SECTION_LIBRARY.filter((s) => !sections.some((sec) => sec.sectionKey === s.key)).map((s) => (
-                  <option key={s.key} value={s.key}>{s.label}</option>
-                ))}
-              </select>
+              <input
+                className="admin-input"
+                list="cms-section-templates"
+                value={sectionSearch}
+                onChange={(event) => {
+                  const value = event.target.value
+                  const match = SECTION_LIBRARY.find((section) => section.label.toLowerCase() === value.toLowerCase() || section.key === value)
+                  setSectionSearch(value)
+                  setSectionToAdd(match?.key ?? '')
+                }}
+                placeholder="Search all section templates…"
+                style={{ maxWidth: 360 }}
+                aria-label="Search section templates"
+              />
+              <datalist id="cms-section-templates">
+                {SECTION_LIBRARY.map((section) => <option key={section.key} value={section.label}>{section.key}</option>)}
+              </datalist>
               <button
                 className="admin-btn admin-btn-primary admin-btn-sm"
                 onClick={addSection}

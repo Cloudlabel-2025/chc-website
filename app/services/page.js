@@ -1,6 +1,9 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContentSection, getServicesFeatureCards, getCtaBanner, getPageSeo } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return getPageSeo('services', {
@@ -51,6 +54,7 @@ export default async function ServicesPage() {
           </div>
         </div>
       </section>
+      <CmsAdditionalSections slug="services" skipFirst={{ innerPageHero: 1, contentSection: 1, featureCards: 1, cta: 1 }} />
     </>
   )
 }

@@ -7,6 +7,7 @@ import { Edit, Delete } from '@/app/(admin)/components/AdminIcons'
 export default function PagesManager({ initialPages, templates }) {
   const [pages, setPages] = useState(initialPages)
   const [form, setForm] = useState({ title: '', slug: '', templateId: '' })
+  const [templateSearch, setTemplateSearch] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -29,6 +30,7 @@ export default function PagesManager({ initialPages, templates }) {
       }
       setPages((current) => [...current, data.page].sort((a, b) => a.slug.localeCompare(b.slug)))
       setForm({ title: '', slug: '', templateId: '' })
+      setTemplateSearch('')
     } catch {
       setError('Network error. Please try again.')
     } finally {
@@ -97,24 +99,35 @@ export default function PagesManager({ initialPages, templates }) {
                 required
                 pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
                 value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase().trim() })}
-                placeholder="e.g. case-studies"
+                onChange={(e) => setForm({
+                  ...form,
+                  // Let editors paste either `/case-studies` or `case-studies`.
+                  // The database stores the canonical slug without the slash.
+                  slug: e.target.value.toLowerCase().trim().replace(/^\/+/, ''),
+                })}
+                placeholder="e.g. /case-studies"
               />
+              <p className="admin-field-hint">The leading slash is optional.</p>
             </div>
             <div className="admin-form-group">
               <label className="admin-label">Page Snapshot Template (Optional)</label>
-              <select
+              <input
                 className="admin-input"
-                value={form.templateId}
-                onChange={(e) => setForm({ ...form, templateId: e.target.value })}
-              >
-                <option value="">Blank Page</option>
-                {templates.map((template) => (
-                  <option key={template.id} value={template.id}>
-                    {template.name}
-                  </option>
-                ))}
-              </select>
+                list="cms-page-templates"
+                value={templateSearch}
+                onChange={(event) => {
+                  const value = event.target.value
+                  const match = templates.find((template) => template.name.toLowerCase() === value.toLowerCase())
+                  setTemplateSearch(value)
+                  setForm({ ...form, templateId: match?.id ?? '' })
+                }}
+                placeholder="Blank page — search a template"
+                aria-label="Search page snapshot templates"
+              />
+              <datalist id="cms-page-templates">
+                {templates.map((template) => <option key={template.id} value={template.name} />)}
+              </datalist>
+              <p className="admin-field-hint">Leave blank for a blank page, or search and select a template.</p>
             </div>
           </div>
           {error && <p className="admin-field-error">{error}</p>}

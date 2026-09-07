@@ -1,11 +1,14 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import DeliveryCapacityCarousel from '@/components/DeliveryCapacityCarousel'
+import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getOracleProductisedServices, getOracleHeadings, getOracleCapabilities,
   getOracleDeliveryCapacity, getOracleServiceCarousel,
 } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 const CORE_CAPABILITIES = [
   { img: '/images/core-hr-vec.png', label: 'Core HR' },
@@ -153,6 +156,7 @@ export default async function OracleHCMPage() {
           </div>
         </div>
       </section>
+      <CmsAdditionalSections slug="oracle-hcm" skipFirst={{ innerPageHero: 1, contentSection: 1, oracleHeadings: 1, capabilityItem: 1, deliveryCapacity: 1, productisedService: 1, serviceCarouselItem: 1 }} />
     </>
   )
 }

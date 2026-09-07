@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma'
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import { getPageSeo } from '@/lib/cms/public-data'
+import { cloudinaryUrl } from '@/lib/cms/cloudinary-url'
 
 export const dynamic = 'force-dynamic'
 
@@ -82,6 +83,21 @@ export default async function CmsPage({ params }) {
           )
         }
 
+        // Custom rich-text sections intentionally render as plain text here.
+        // CMS content is never injected as HTML on the public site, which keeps
+        // reusable templates safe from stored-XSS content.
+        if (section.sectionKey === 'richText') {
+          const content = textVal('content', '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+          return (
+            <section key={section.id} className="chc-cms-section py-5" aria-labelledby={`section-title-${section.id}`}>
+              <div className="container"><div className="row justify-content-center"><div className="col-lg-9">
+                <h2 id={`section-title-${section.id}`} className="alt-font text-dark-gray fw-600 mb-3">{textVal('sectionHeading', 'Section heading')}</h2>
+                {content && <p className="text-medium-gray fs-17 mb-0">{content}</p>}
+              </div></div></div>
+            </section>
+          )
+        }
+
         // Default Generic Section Renderer for custom/added sections
         const parentBlocks = blocks.filter((b) => !b.parentId)
 
@@ -114,7 +130,7 @@ export default async function CmsPage({ params }) {
                       <div className="p-4 border-radius-8px bg-white box-shadow-quadruple-large h-100">
                         {(block.mediaAsset?.publicUrl || childImg('image') || childImg('photo') || childImg('icon')) && (
                           <img
-                            src={block.mediaAsset?.publicUrl || childImg('image') || childImg('photo') || childImg('icon')}
+                            src={cloudinaryUrl(block.mediaAsset?.publicUrl || childImg('image') || childImg('photo') || childImg('icon'), 'card')}
                             alt=""
                             className="img-fluid border-radius-6px mb-3 w-100"
                             style={{ maxHeight: 240, objectFit: 'cover' }}
