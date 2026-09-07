@@ -1,6 +1,5 @@
 {
-  "/api/admin/navigation/route": "app/api/admin/navigation/route.js",
-  "/our-delivery-model/page": "app/our-delivery-model/page.js",
   "/(admin)/admin/navigation/page": "app/(admin)/admin/navigation/page.js",
-  "/(admin)/admin/login/page": "app/(admin)/admin/login/page.js"
+  "/(admin)/admin/pages/[slug]/page": "app/(admin)/admin/pages/[slug]/page.js",
+  "/(admin)/admin/pages/page": "app/(admin)/admin/pages/page.js"
 }

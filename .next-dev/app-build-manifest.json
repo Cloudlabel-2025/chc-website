@@ -1,20 +1,9 @@
 {
   "pages": {
-    "/our-delivery-model/page": [
+    "/(admin)/admin/navigation/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/our-delivery-model/page.js"
-    ],
-    "/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
-    ],
-    "/(admin)/admin/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(admin)/admin/login/page.js"
+      "static/chunks/app/(admin)/admin/navigation/page.js"
     ],
     "/(admin)/layout": [
       "static/chunks/webpack.js",
@@ -22,15 +11,21 @@
       "static/css/app/(admin)/layout.css",
       "static/chunks/app/(admin)/layout.js"
     ],
-    "/(admin)/admin/navigation/page": [
+    "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(admin)/admin/navigation/page.js"
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
     ],
-    "/_not-found/page": [
+    "/(admin)/admin/pages/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/(admin)/admin/pages/page.js"
+    ],
+    "/(admin)/admin/pages/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/admin/pages/[slug]/page.js"
     ]
   }
 }

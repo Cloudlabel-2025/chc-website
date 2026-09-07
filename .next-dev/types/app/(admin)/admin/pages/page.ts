@@ -1,8 +1,8 @@
-// File: D:\CHC-Website\chc-website\app\our-delivery-model\page.js
-import * as entry from '../../../../app/our-delivery-model/page.js'
+// File: D:\CHC-Website\chc-website\app\(admin)\admin\pages\page.js
+import * as entry from '../../../../../../app/(admin)/admin/pages/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../app/our-delivery-model/page.js')
+type TEntry = typeof import('../../../../../../app/(admin)/admin/pages/page.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{
