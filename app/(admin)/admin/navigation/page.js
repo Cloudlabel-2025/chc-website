@@ -3,7 +3,7 @@ import AdminShell from '@/app/(admin)/components/AdminShell'
 import NavEditor from './NavEditor'
 import prisma from '@/lib/prisma'
 import { getNavigationFallback } from '@/lib/cms/navigation-defaults'
-import { restoreDefaultNavigation } from '@/lib/cms/navigation'
+import { restoreDefaultNavigation, topLevelNavigationWhere } from '@/lib/cms/navigation'
 import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
@@ -16,7 +16,7 @@ export default async function NavigationPage() {
   let databaseAvailable = true
   try {
     items = await databaseQuery(prisma.navigationItem.findMany({
-      where: { parentId: null },
+      where: topLevelNavigationWhere(),
       orderBy: { sortOrder: 'asc' },
       include: { children: { orderBy: { sortOrder: 'asc' } } },
     }))
@@ -25,7 +25,7 @@ export default async function NavigationPage() {
     if (items.length === 0) {
       await databaseQuery(restoreDefaultNavigation(session.user.id))
       items = await databaseQuery(prisma.navigationItem.findMany({
-        where: { parentId: null },
+        where: topLevelNavigationWhere(),
         orderBy: { sortOrder: 'asc' },
         include: { children: { orderBy: { sortOrder: 'asc' } } },
       }))

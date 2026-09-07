@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/page": [
+    "/our-delivery-model/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/our-delivery-model/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,36 +11,21 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/oracle-hcm/page": [
+    "/(admin)/admin/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/oracle-hcm/page.js"
-    ],
-    "/services/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/services/page.js"
-    ],
-    "/applications/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/applications/page.js"
-    ],
-    "/our-delivery-model/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/our-delivery-model/page.js"
-    ],
-    "/(admin)/admin/pages/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(admin)/admin/pages/page.js"
+      "static/chunks/app/(admin)/admin/login/page.js"
     ],
     "/(admin)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/(admin)/layout.css",
       "static/chunks/app/(admin)/layout.js"
+    ],
+    "/(admin)/admin/navigation/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/admin/navigation/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
