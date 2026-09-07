@@ -1,9 +1,11 @@
 import Script from 'next/script'
 import { headers } from 'next/headers'
 import './globals.css'
+import 'swiper/css/bundle'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import RouteReload from '@/components/RouteReload'
+import CarouselInitializer from '@/components/CarouselInitializer'
 import { getNavData, getWhatWeDoNav, getFooterData } from '@/lib/cms/public-data'
 
 export const metadata = {
@@ -38,8 +40,10 @@ export default async function RootLayout({ children }) {
       </head>
       <body data-mobile-nav-style="classic" className="background-position-center-top">
         {!isAdmin && <RouteReload />}
+        {!isAdmin && <CarouselInitializer />}
         {!isAdmin && <a className="chc-skip-link" href="#main-content">Skip to main content</a>}
         {!isAdmin && <div className="box-layout"><Header navItems={navItems} whatWeDoItems={whatWeDoItems} /></div>}
+        {!isAdmin && <div id="chc-header-scroll-sentinel" aria-hidden="true" />}
         <main id="main-content" className="chc-page-content">
           {children}
         </main>
@@ -49,6 +53,7 @@ export default async function RootLayout({ children }) {
         {!isAdmin && <Script src="/js/vendors.min.js" strategy="beforeInteractive" />}
         {!isAdmin && <Script id="disable-retina" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `try{if(window.Retina){Retina.isRetina=function(){return false;};} if(window.Retina&&window.RetinaImage&&RetinaImage.prototype){RetinaImage.prototype.check_2x_variant=function(cb){cb(false);};} }catch(e){}` }} />}
         {!isAdmin && <Script src="/js/chc-animations.js" strategy="afterInteractive" />}
+        {!isAdmin && <Script src="/js/chc-header-state.js" strategy="beforeInteractive" />}
       </body>
     </html>
   )

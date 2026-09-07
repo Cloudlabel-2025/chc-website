@@ -1,26 +1,29 @@
-import SignOutButton from './SignOutButton'
+'use client'
 
-export default function AdminHeader({ session, navOpen, onToggleNav }) {
+import { usePathname } from 'next/navigation'
+
+export default function AdminHeader({ session }) {
+  const pathname = usePathname()
+  const pageName = pathname.split('/').filter(Boolean).at(-1)?.replaceAll('-', ' ') || 'dashboard'
+
   return (
     <header className="admin-header">
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          type="button"
+        <label
+          htmlFor="admin-mobile-menu"
           className="admin-menu-toggle"
-          aria-expanded={!!navOpen}
           aria-controls="admin-sidebar"
-          aria-label={navOpen ? 'Close menu' : 'Open menu'}
-          onClick={onToggleNav}
+          aria-label="Toggle navigation"
         >
           <svg viewBox="0 0 16 16" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            {navOpen
-              ? <path d="M3 3l10 10M13 3L3 13" />
-              : <path d="M2 4h12M2 8h12M2 12h12" />}
+            <path d="M2 4h12M2 8h12M2 12h12" />
           </svg>
-        </button>
+        </label>
         <a href="/admin/dashboard" className="admin-header-brand">
+          <img src="/images/chc-logo.png" alt="CHC" className="admin-header-logo" />
           CHC <span>Admin</span>
         </a>
+        <span className="admin-header-context">/ {pageName}</span>
       </div>
       <div className="admin-header-actions">
         <a
@@ -31,10 +34,7 @@ export default function AdminHeader({ session, navOpen, onToggleNav }) {
         >
           View site ↗
         </a>
-        <span className="admin-text-muted admin-text-sm">
-          {session?.user?.name}
-        </span>
-        <SignOutButton />
+        <span className="admin-user-chip"><span className="admin-user-initial">{session?.user?.name?.slice(0, 1).toUpperCase() || 'A'}</span>{session?.user?.name}</span>
       </div>
     </header>
   )

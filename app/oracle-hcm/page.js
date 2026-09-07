@@ -2,9 +2,39 @@ import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
-  getOracleCapabilities, getOracleProductisedServices,
-  getOracleDeliveryCapacity, getOracleServiceCarousel, getOracleHeadings,
+  getOracleProductisedServices, getOracleHeadings,
 } from '@/lib/cms/public-data'
+
+const CORE_CAPABILITIES = [
+  { img: '/images/core-hr-vec.png', label: 'Core HR' },
+  { img: '/images/wfs.png', label: 'Workforce Structure' },
+  { img: '/images/compensation-vector.png', label: 'Compensation' },
+  { img: '/images/talent-vector.png', label: 'Talent' },
+  { img: '/images/learning-vector.png', label: 'Learning' },
+  { img: '/images/payroll-vector.png', label: 'Payroll' },
+  { img: '/images/security-aor-vector.png', label: 'Security/AOR' },
+  { img: '/images/approvals-vector.png', label: 'Approvals' },
+  { img: '/images/journey-vector.png', label: 'Journey' },
+  { img: '/images/hcm-extracts-vector.png', label: 'HCM Extracts' },
+  { img: '/images/integrations-vector.png', label: 'Integrations' },
+  { img: '/images/testing-vectot.png', label: 'Testing' },
+]
+
+const DELIVERY_CAPACITY = {
+  heading: 'Looking for Oracle Delivery Capacity?',
+  paragraph: 'CHC can operate as a specialist subcontracting and delivery partner for larger Oracle consultancies and implementation partners. We can take responsibility for defined work packages or provide supervised functional and technical delivery capacity under your program.',
+}
+
+const DELIVERY_CAROUSEL = [
+  { img: '/images/config.png', title: 'Configuration', desc: 'Configure Oracle HCM Cloud to align with your organisation’s business processes, workforce structures, roles, approvals, and HR requirements.' },
+  { img: '/images/testing.jpg', title: 'Testing', desc: 'Ensure reliable HCM implementations through functional, integration, regression, and user acceptance testing.' },
+  { img: '/images/reporting.jpg', title: 'Reporting', desc: 'Build meaningful workforce insights with OTBI, BI Publisher, dashboards, and tailored reports.' },
+  { img: '/images/data.jpg', title: 'Data', desc: 'Manage, validate, transform, and maintain workforce and organisational data accurately.' },
+  { img: '/images/integration.jpg', title: 'Integrations', desc: 'Connect Oracle HCM with external applications and enterprise systems through dependable integrations.' },
+  { img: '/images/vbcs.jpg', title: 'VBCS', desc: 'Develop modern, scalable business applications and extensions with Oracle Visual Builder Cloud Service.' },
+  { img: '/images/support.jpg', title: 'Release Support', desc: 'Stay ahead of Oracle quarterly updates with impact analysis, testing, issue identification, and support.' },
+  { img: '/images/manage-support.jpg', title: 'Managed Support', desc: 'Get continuous functional and technical support for Oracle HCM enhancements and operations.' },
+]
 
 export async function generateMetadata() {
   return getPageSeo('oracle-hcm', {
@@ -14,16 +44,13 @@ export async function generateMetadata() {
 }
 
 export default async function OracleHCMPage() {
-  const [hero, cs, capabilities, services, delivery, carousel, oHeadings] = await Promise.all([
+  const [hero, cs, services, oHeadings] = await Promise.all([
     getInnerPageHero('oracle-hcm', {
       heading: 'Oracle HCM',
       subtitle: 'CHC provides senior-led Oracle HCM delivery supported by trained functional and technical consultants.',
     }),
     getContentSection('oracle-hcm'),
-    getOracleCapabilities(),
     getOracleProductisedServices(),
-    getOracleDeliveryCapacity(),
-    getOracleServiceCarousel(),
     getOracleHeadings(),
   ])
 
@@ -41,11 +68,11 @@ export default async function OracleHCMPage() {
             </div>
           </div>
           <div className="row position-relative clients-style-08">
-            <div className="col swiper text-center feather-shadow" data-slider-options='{ "slidesPerView": 1, "spaceBetween":0, "speed": 4000, "loop": true, "pagination": { "el": ".slider-four-slide-pagination-2", "clickable": false }, "allowTouchMove": true, "autoplay": { "delay":0, "disableOnInteraction": false }, "navigation": { "nextEl": ".slider-four-slide-next-2", "prevEl": ".slider-four-slide-prev-2" }, "keyboard": { "enabled": true, "onlyInViewport": true }, "breakpoints": { "1400": { "slidesPerView": 6 }, "1200": { "slidesPerView": 5 }, "768": { "slidesPerView": 3 }, "320": { "slidesPerView": 1 } }, "effect": "slide" }'>
-              <div className="swiper-wrapper marquee-slide">
-                {capabilities.map((item) => (
-                  <div className="swiper-slide" key={item.label}>
-                    <a href="#"><img src={item.img} className="h-75px" alt="" /></a>
+            <div className="col text-center feather-shadow chc-core-capabilities-carousel">
+              <div className="chc-core-capabilities-track" role="list" aria-label="Oracle HCM core capabilities">
+                {[...CORE_CAPABILITIES, ...CORE_CAPABILITIES].map((item, index) => (
+                  <div className="chc-core-capability" key={`${item.label}-${index}`} role="listitem" aria-hidden={index >= CORE_CAPABILITIES.length}>
+                    <img src={item.img} className="h-75px" alt="" />
                     <p>{item.label}</p>
                   </div>
                 ))}
@@ -85,19 +112,19 @@ export default async function OracleHCMPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center mb-5 sm-mb-30px text-center text-lg-start" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-lg-5 md-mb-30px">
-              <h3 className="text-dark-gray fw-700 ls-minus-2px mb-0">{delivery.heading}</h3>
+              <h3 className="text-dark-gray fw-700 ls-minus-2px mb-0">{DELIVERY_CAPACITY.heading}</h3>
             </div>
             <div className="col-lg-7 last-paragraph-no-margin md-mb-30px">
-              <p>{delivery.paragraph}</p>
+              <p>{DELIVERY_CAPACITY.paragraph}</p>
             </div>
           </div>
           <div className="row align-items-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-12">
               <div className="outside-box-right-20 sm-outside-box-right-0">
-                <div className="swiper magic-cursor slider-one-slide" data-slider-options='{ "slidesPerView": 1, "spaceBetween": 30, "loop": true, "autoplay": { "delay": 4000, "disableOnInteraction": false }, "keyboard": { "enabled": true, "onlyInViewport": true }, "breakpoints": { "1200": { "slidesPerView": 4 }, "992": { "slidesPerView": 3 }, "768": { "slidesPerView": 2 }, "320": { "slidesPerView": 1 } }, "effect": "slide" }'>
-                  <div className="swiper-wrapper">
-                    {carousel.map((service) => (
-                      <div className="swiper-slide" key={service.title}>
+                <div className="chc-delivery-carousel magic-cursor drag-cursor">
+                  <div className="chc-delivery-carousel-track" role="list" aria-label="Oracle delivery services">
+                    {[...DELIVERY_CAROUSEL, ...DELIVERY_CAROUSEL].map((service, index) => (
+                      <div className="chc-delivery-carousel-card" key={`${service.title}-${index}`} role="listitem" aria-hidden={index >= DELIVERY_CAROUSEL.length}>
                         <div className="services-box-style-03 last-paragraph-no-margin border-radius-6px overflow-hidden">
                             <div className="position-relative">
                             <a href={service.href || '/services'}><img src={service.img} alt="" /></a>
@@ -107,14 +134,8 @@ export default async function OracleHCMPage() {
                               <a href={service.href || '/services'} className="d-inline-block fs-18 fw-700 text-dark-gray mb-5px">{service.title}</a>
                               <p>{service.desc}</p>
                             </div>
-                            <div className="d-flex justify-content-center border-top border-color-extra-medium-gray pt-20px pb-20px ps-50px pe-50px position-relative text-center">
-                              <a href={service.href || '/services'} className="btn btn-link btn-hover-animation-switch btn-medium fw-700 text-dark-gray text-uppercase">
-                                <span>
-                                  <span className="btn-text">{oHeadings.exploreLabel}</span>
-                                  <span className="btn-icon"><i className="fa-solid fa-arrow-right"></i></span>
-                                  <span className="btn-icon"><i className="fa-solid fa-arrow-right"></i></span>
-                                </span>
-                              </a>
+                            <div className="chc-carousel-link-row d-flex justify-content-center border-top border-color-extra-medium-gray pt-20px pb-20px ps-50px pe-50px position-relative text-center">
+                              <a href={service.href || '/services'} className="chc-carousel-service-link">{oHeadings.exploreLabel} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                             </div>
                           </div>
                         </div>

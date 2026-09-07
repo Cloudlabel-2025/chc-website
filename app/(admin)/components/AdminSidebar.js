@@ -1,4 +1,10 @@
-export default function AdminSidebar({ isOpen, onClose }) {
+'use client'
+
+import { usePathname } from 'next/navigation'
+import SignOutButton from './SignOutButton'
+
+export default function AdminSidebar({ session, onClose }) {
+  const pathname = usePathname()
   const sections = [
     {
       label: 'Content',
@@ -19,32 +25,44 @@ export default function AdminSidebar({ isOpen, onClose }) {
       label: 'Forms',
       links: [
         { href: '/admin/forms', label: 'Forms', icon: FormIcon },
-        { href: '/admin/submissions', label: 'Submissions', icon: FormIcon },
+        { href: '/admin/submissions', label: 'Submissions', icon: InboxIcon },
       ],
     },
     {
       label: 'Settings',
       links: [
         { href: '/admin/seo', label: 'SEO', icon: SeoIcon },
-        { href: '/admin/templates', label: 'Templates', icon: PagesIcon },
+        { href: '/admin/templates', label: 'Templates', icon: TemplatesIcon },
         { href: '/admin/settings', label: 'Settings', icon: SettingsIcon },
       ],
     },
   ]
 
   return (
-    <aside id="admin-sidebar" className={`admin-sidebar${isOpen ? ' is-open' : ''}`} aria-label="Admin navigation">
-      {sections.map((section) => (
-        <div key={section.label} className="admin-nav-section">
-          <p className="admin-nav-label">{section.label}</p>
-          {section.links.map(({ href, label, icon: Icon }) => (
-            <a key={href} href={href} className="admin-nav-link" onClick={onClose}>
-              <Icon />
-              {label}
-            </a>
-          ))}
-        </div>
-      ))}
+    <aside id="admin-sidebar" className="admin-sidebar" aria-label="Admin navigation">
+      <div className="admin-sidebar-heading">
+        <div className="admin-sidebar-overline">CHC workspace</div>
+        <span className="admin-sidebar-user">{session?.user?.name || 'Administrator'}</span>
+      </div>
+      <nav className="admin-sidebar-nav">
+        {sections.map((section) => (
+          <div key={section.label} className="admin-nav-section">
+            <p className="admin-nav-label">{section.label}</p>
+            {section.links.map(({ href, label, icon: Icon }) => (
+              <a key={href} href={href} className={`admin-nav-link${pathname === href ? ' active' : ''}`} onClick={() => onClose?.()}>
+                <Icon />
+                {label}
+              </a>
+            ))}
+          </div>
+        ))}
+      </nav>
+      <div className="admin-sidebar-footer">
+        <a href="/" target="_blank" rel="noopener noreferrer" className="admin-sidebar-site-link">
+          View website <span aria-hidden="true">↗</span>
+        </a>
+        <SignOutButton className="admin-sidebar-signout" />
+      </div>
     </aside>
   )
 }
@@ -98,6 +116,24 @@ function FormIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M2 2.5h12M2 5.5h8M2 8.5h10M2 11.5h6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function InboxIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M2 3.5h12v8.75a.75.75 0 01-.75.75H2.75a.75.75 0 01-.75-.75V3.5z" />
+      <path d="M2 9h3l1 2h4l1-2h3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function TemplatesIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M3 5.5L8 3l5 2.5L8 8 3 5.5z" strokeLinejoin="round" />
+      <path d="M3 8.5L8 11l5-2.5M3 11.5L8 14l5-2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

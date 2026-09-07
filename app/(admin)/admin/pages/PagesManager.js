@@ -139,13 +139,13 @@ export default function PagesManager({ initialPages, templates }) {
             <tbody>
               {pages.map((row) => (
                 <tr key={row.slug}>
-                  <td style={{ fontWeight: 600 }}>{row.title}</td>
-                  <td>
+                  <td data-label="Page title" style={{ fontWeight: 600 }}>{row.title}</td>
+                  <td data-label="URL slug">
                     <code style={{ fontSize: 13, color: 'var(--admin-text-muted)' }}>
                       /{row.slug === 'home' ? '' : row.slug}
                     </code>
                   </td>
-                  <td>
+                  <td data-label="Status">
                     {row.id ? (
                       <button
                         type="button"
@@ -165,10 +165,10 @@ export default function PagesManager({ initialPages, templates }) {
                       <span className="admin-badge admin-badge-locked">Not seeded</span>
                     )}
                   </td>
-                  <td className="admin-text-muted admin-text-sm" suppressHydrationWarning>
+                  <td data-label="Last updated" className="admin-text-muted admin-text-sm" suppressHydrationWarning>
                     {row.updatedAt ? new Date(row.updatedAt).toLocaleDateString('en-AU') : '—'}
                   </td>
-                  <td style={{ textAlign: 'right' }}>
+                  <td data-label="Actions" style={{ textAlign: 'right' }}>
                     <div className="admin-flex admin-gap-8" style={{ justifyContent: 'flex-end' }}>
                       <a href={`/admin/pages/${row.slug}`} className="admin-btn admin-btn-secondary admin-btn-sm" aria-label={`Edit sections for ${row.title}`}>
                         <span className="admin-btn-icon-wrap" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Edit size={14} /><span className="admin-btn-label">Edit Sections</span></span>

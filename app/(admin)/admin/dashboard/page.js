@@ -3,7 +3,6 @@ import AdminShell from '@/app/(admin)/components/AdminShell'
 import prisma from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
-
 export const metadata = { title: 'Dashboard' }
 
 async function getDashboardCounts() {
@@ -25,58 +24,47 @@ async function getDashboardCounts() {
 export default async function DashboardPage() {
   const session = await requireAdmin()
   const counts = await getDashboardCounts()
+  const databaseConnected = counts.pages !== '—'
 
   return (
     <AdminShell session={session}>
-      <div className="admin-page-header">
+      <div className="admin-dashboard-hero">
         <div>
-          <h1 className="admin-page-title">Dashboard</h1>
-          <p className="admin-page-subtitle">Welcome back, {session.user.name}</p>
+          <p className="admin-eyebrow">Content operations</p>
+          <h1 className="admin-page-title">Good to see you, {session.user.name}</h1>
+          <p className="admin-page-subtitle">Manage your website content, assets, and enquiries from one place.</p>
+        </div>
+        <div className={`admin-connection-status${databaseConnected ? ' is-online' : ' is-offline'}`}>
+          <span /> {databaseConnected ? 'Database connected' : 'Preview data mode'}
         </div>
       </div>
 
-      <div className="admin-grid-3 admin-mb-16">
-        <div className="admin-card">
-          <div className="admin-card-body">
-            <p className="admin-text-muted admin-text-sm">Pages</p>
-            <p style={{ fontSize: 28, fontWeight: 700, marginTop: 4 }}>{counts.pages}</p>
-          </div>
-        </div>
-        <div className="admin-card">
-          <div className="admin-card-body">
-            <p className="admin-text-muted admin-text-sm">Media assets</p>
-            <p style={{ fontSize: 28, fontWeight: 700, marginTop: 4 }}>{counts.media}</p>
-          </div>
-        </div>
-        <div className="admin-card">
-          <div className="admin-card-body">
-            <p className="admin-text-muted admin-text-sm">Unread submissions</p>
-            <p style={{ fontSize: 28, fontWeight: 700, marginTop: 4 }}>{counts.submissions}</p>
-          </div>
-        </div>
+      <div className="admin-dashboard-stats admin-mb-16">
+        <div className="admin-stat-card"><span className="admin-stat-icon">P</span><div><p className="admin-stat-label">Pages</p><p className="admin-stat-value">{counts.pages}</p></div></div>
+        <div className="admin-stat-card"><span className="admin-stat-icon">M</span><div><p className="admin-stat-label">Media assets</p><p className="admin-stat-value">{counts.media}</p></div></div>
+        <div className="admin-stat-card"><span className="admin-stat-icon">I</span><div><p className="admin-stat-label">Unread enquiries</p><p className="admin-stat-value">{counts.submissions}</p></div></div>
       </div>
 
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <span className="admin-card-title">Getting started</span>
-        </div>
-        <div className="admin-card-body">
-          <p className="admin-text-muted">
-            Connect your PostgreSQL database and configure your <code>.env</code> file to begin managing content.
-          </p>
-          <ul style={{ marginTop: 12, paddingLeft: 20, lineHeight: 2 }} className="admin-text-muted">
-            <li>Phase 1 ✅ Database schema + Prisma migrations</li>
-            <li>Phase 2 ✅ Authentication (Auth.js + bcrypt + rate limiting)</li>
-            <li>Phase 3 ✅ Media library (S3-compatible storage + admin UI)</li>
-            <li>Phase 4 ✅ CMS backend (pages, sections, blocks, nav, footer, SEO, forms)</li>
-            <li>Phase 5 ✅ Admin UI (page editor, nav editor, footer editor, SEO manager, submissions inbox)</li>
-            <li>Phase 6 ✅ Public site wired to DB (all 10 pages, fallbacks on every function)</li>
-            <li>Phase 7 ✅ Media migration script (S3 upload + MediaAsset rows)</li>
-            <li>Phase 8 ✅ Validation audit (seoSchema fix, field-rules single source of truth)</li>
-            <li>Phase 9 ✅ All repeatable sections wired to DB (about, services, oracle-hcm, applications, our-impact)</li>
-            <li>Phase 10 ✅ Production hardening (our-delivery-model wired, form rate limiting, security headers)</li>
-          </ul>
-        </div>
+      <div className="admin-dashboard-grid">
+        <section className="admin-card">
+          <div className="admin-card-header"><span className="admin-card-title">Quick actions</span></div>
+          <div className="admin-quick-actions">
+            <a href="/admin/pages" className="admin-quick-action"><strong>Manage pages</strong><span>Update sections and publish content →</span></a>
+            <a href="/admin/media" className="admin-quick-action"><strong>Media library</strong><span>Upload and organise visual assets →</span></a>
+            <a href="/admin/navigation" className="admin-quick-action"><strong>Site navigation</strong><span>Update menus and visibility →</span></a>
+          </div>
+        </section>
+        <section className="admin-card">
+          <div className="admin-card-header"><span className="admin-card-title">CMS health</span></div>
+          <div className="admin-card-body">
+            <p className="admin-text-muted">{databaseConnected ? 'Your live content connection is available. Changes made here can be published from the relevant workspace.' : 'The CMS is using safe preview data while the database reconnects. Editing controls remain limited until the connection returns.'}</p>
+            <div className="admin-health-list">
+              <span><i className={databaseConnected ? 'is-ok' : 'is-pending'} /> Content source</span>
+              <span><i className="is-ok" /> Authentication</span>
+              <span><i className="is-ok" /> Public site</span>
+            </div>
+          </div>
+        </section>
       </div>
     </AdminShell>
   )

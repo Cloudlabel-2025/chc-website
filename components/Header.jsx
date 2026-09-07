@@ -22,8 +22,10 @@ const WHAT_WE_DO_FALLBACK = [
 export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_WE_DO_FALLBACK }) {
   const pathname = usePathname()
   const navRef = useRef(null)
+  const headerRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [whatWeDoOpen, setWhatWeDoOpen] = useState(false)
+  const [hasScrolled, setHasScrolled] = useState(false)
 
   const closeNavigation = () => {
     setMenuOpen(false)
@@ -62,11 +64,36 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
     }
   }, [menuOpen, whatWeDoOpen])
 
+  useEffect(() => {
+    const setHeaderState = (scrolled) => {
+      headerRef.current?.classList.toggle('chc-header-scrolled', scrolled)
+      setHasScrolled(scrolled)
+    }
+    const updateHeaderState = () => {
+      const scrollPosition = Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop)
+      setHeaderState(scrollPosition > 24)
+    }
+    const sentinel = document.getElementById('chc-header-scroll-sentinel')
+    const observer = sentinel && 'IntersectionObserver' in window
+      ? new IntersectionObserver(([entry]) => setHeaderState(!entry.isIntersecting), { threshold: 0 })
+      : null
+
+    updateHeaderState()
+    observer?.observe(sentinel)
+    window.addEventListener('scroll', updateHeaderState, { passive: true })
+    document.addEventListener('scroll', updateHeaderState, { capture: true, passive: true })
+    return () => {
+      window.removeEventListener('scroll', updateHeaderState)
+      document.removeEventListener('scroll', updateHeaderState, { capture: true })
+      observer?.disconnect()
+    }
+  }, [])
+
   const isActive = (href) => pathname === href
   const isWhatWeDoActive = whatWeDoItems.some((item) => isActive(item.href))
 
   return (
-    <header className="header-with-topbar chc-site-header">
+    <header ref={headerRef} className={`header-with-topbar chc-site-header${hasScrolled ? ' chc-header-scrolled' : ''}`}>
       <nav ref={navRef} className="navbar navbar-expand-lg header-light bg-transparent sticky-header" aria-label="Primary navigation">
         <div className="container-fluid chc-header-inner">
           <div className="chc-brand-column">

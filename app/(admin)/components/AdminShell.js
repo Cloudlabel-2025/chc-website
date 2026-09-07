@@ -1,27 +1,13 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import AdminSidebar from './AdminSidebar'
 import AdminHeader from './AdminHeader'
 
 export default function AdminShell({ session, children }) {
-  const [navOpen, setNavOpen] = useState(false)
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('chc-mobile-menu-open', navOpen)
-    const onKey = (e) => { if (e.key === 'Escape') setNavOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => {
-      document.documentElement.classList.remove('chc-mobile-menu-open')
-      window.removeEventListener('keydown', onKey)
-    }
-  }, [navOpen])
-
   return (
     <div className="admin-shell">
-      <AdminHeader session={session} navOpen={navOpen} onToggleNav={() => setNavOpen((v) => !v)} />
-      <AdminSidebar isOpen={navOpen} onClose={() => setNavOpen(false)} />
-      {navOpen && <div className="admin-backdrop" onClick={() => setNavOpen(false)} />}
+      <input id="admin-mobile-menu" className="admin-mobile-menu-state" type="checkbox" aria-hidden="true" tabIndex={-1} />
+      <AdminHeader session={session} />
+      <AdminSidebar session={session} />
+      <label htmlFor="admin-mobile-menu" className="admin-backdrop" aria-label="Close navigation" />
       <main className="admin-main">
         {children}
       </main>

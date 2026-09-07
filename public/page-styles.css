@@ -246,6 +246,36 @@ header.sticky.sticky-active .navbar-brand .alt-logo {
 header.sticky .navbar.bg-transparent {
   background-color: rgba(45, 34, 71, 0.95) !important;
 }
+
+/* Solid site header: the legacy sticky-header script is disabled, so the
+   production header owns its sticky state and background directly. */
+header.header-with-topbar.chc-site-header {
+  position: sticky;
+  top: 0;
+  background-color: transparent !important;
+  box-shadow: none;
+  transition: background-color .25s ease, box-shadow .25s ease;
+}
+
+header.header-with-topbar.chc-site-header .navbar,
+header.header-with-topbar.chc-site-header .navbar.bg-transparent {
+  background-color: transparent !important;
+  transition: background-color .25s ease;
+}
+
+header.header-with-topbar.chc-site-header.chc-header-scrolled,
+header.header-with-topbar.chc-site-header.chc-header-scrolled .navbar,
+header.header-with-topbar.chc-site-header.chc-header-scrolled .navbar.bg-transparent {
+  background: rgba(45, 34, 71, 0.85) !important;
+  background-color: rgba(45, 34, 71, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+header.header-with-topbar.chc-site-header.chc-header-scrolled {
+  box-shadow: 0 4px 18px rgba(17, 11, 31, 0.28);
+}
+
 header.header-with-topbar .navbar .nav-link {
   color: var(--white) !important;
 }
@@ -262,20 +292,164 @@ header.header-with-topbar .navbar .navbar-toggler-line {
 }
 
 /* --- Clients Style 08 (Oracle HCM Core Capabilities) --- */
-.clients-style-08 .swiper-slide a {
-  pointer-events: none;
-  cursor: default;
+.chc-core-capabilities-carousel {
+  overflow: hidden;
+  padding: 16px 0;
 }
-.clients-style-08 .swiper-slide p {
+
+.chc-core-capabilities-track {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: flex-start;
+  width: max-content;
+  white-space: nowrap;
+  animation: chc-core-capabilities-marquee 28s linear infinite !important;
+  will-change: transform;
+}
+
+.chc-core-capability {
+  display: inline-block;
+  flex: 0 0 180px !important;
+  width: 180px !important;
+  max-width: none !important;
+  padding: 12px 16px;
+}
+
+.chc-core-capability p {
   opacity: 1;
   margin-top: 10px;
 }
-.clients-style-08 .swiper-slide img {
+
+.chc-core-capability img {
   transition: transform 0.3s ease;
 }
-.clients-style-08 .swiper-slide:hover img {
+
+.chc-core-capability:hover img {
   transform: scale(1.15);
 }
+
+.chc-carousel-service-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--dark-gray);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .2s ease, gap .2s ease;
+}
+
+.chc-carousel-service-link:hover {
+  color: var(--base-color);
+  gap: 13px;
+}
+
+.chc-carousel-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 72px;
+  white-space: nowrap;
+}
+
+@keyframes chc-core-capabilities-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (max-width: 767px) {
+  .chc-core-capability {
+    flex-basis: 140px !important;
+    width: 140px !important;
+  }
+}
+
+/* --- Oracle HCM delivery capacity carousel --- */
+.chc-delivery-carousel {
+  overflow: hidden;
+  cursor: grab;
+  padding: 18px 0;
+  touch-action: pan-y;
+}
+
+.chc-delivery-carousel:active {
+  cursor: grabbing;
+}
+
+.chc-delivery-carousel-track {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  width: max-content;
+  animation: chc-delivery-carousel-step 32s linear infinite;
+  will-change: transform;
+}
+
+.chc-delivery-carousel-card {
+  flex: 0 0 clamp(240px, 22vw, 320px) !important;
+  width: clamp(240px, 22vw, 320px) !important;
+  min-height: 510px;
+  max-width: none !important;
+  padding: 0 15px;
+}
+
+.chc-delivery-carousel-card > .services-box-style-03 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chc-delivery-carousel-card .services-box-style-03 > .position-relative img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.chc-delivery-carousel-card .services-box-style-03 > .bg-white {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chc-delivery-carousel-card .services-box-style-03 > .bg-white > div:first-child {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.chc-delivery-carousel-card .services-box-style-03 > .bg-white > .d-flex {
+  margin-top: auto;
+  height: 72px;
+}
+
+@keyframes chc-delivery-carousel-step {
+  0%, 10% { transform: translateX(0); }
+  12.5%, 22.5% { transform: translateX(-6.25%); }
+  25%, 35% { transform: translateX(-12.5%); }
+  37.5%, 47.5% { transform: translateX(-18.75%); }
+  50%, 60% { transform: translateX(-25%); }
+  62.5%, 72.5% { transform: translateX(-31.25%); }
+  75%, 85% { transform: translateX(-37.5%); }
+  87.5%, 97.5% { transform: translateX(-43.75%); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 767px) {
+  .chc-delivery-carousel-card {
+    flex-basis: min(82vw, 320px) !important;
+    width: min(82vw, 320px) !important;
+    min-height: 490px;
+  }
+}
+
 
 /* --- Team People Carousel (Coverflow) --- */
 .team-people-carousel {
@@ -285,7 +459,7 @@ header.header-with-topbar .navbar .navbar-toggler-line {
 }
 .team-people-carousel .swiper-slide {
   transition: transform 0.5s ease, opacity 0.5s ease;
-  opacity: 0.5;
+  opacity: 1;
 }
 .team-people-carousel .swiper-slide-active {
   opacity: 1;
@@ -1144,4 +1318,65 @@ html body.no-animation [data-anime],
 html body.no-animation [data-anime] > * {
   opacity: 1 !important;
   transform: none !important;
+}
+
+#chc-header-scroll-sentinel {
+  height: 1px;
+  margin-bottom: -1px;
+  pointer-events: none;
+}
+
+@media (max-width: 991px) {
+  header.header-with-topbar.chc-site-header {
+    position: sticky;
+    top: 0;
+    background-color: transparent !important;
+  }
+
+  header.header-with-topbar.chc-site-header.chc-header-scrolled,
+  header.header-with-topbar.chc-site-header.chc-header-scrolled .navbar {
+    background: rgba(45, 34, 71, 0.85) !important;
+    background-color: rgba(45, 34, 71, 0.85) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Public sticky header: transparent at the page origin, opaque violet once content
+   scrolls beneath it. Kept last so legacy Crafto header rules cannot dilute it. */
+header.header-with-topbar.chc-site-header.chc-header-scrolled,
+header.header-with-topbar.chc-site-header.chc-header-scrolled > .navbar.sticky-header,
+header.header-with-topbar.chc-site-header.chc-header-scrolled > .navbar.bg-transparent,
+body.chc-page-scrolled header.header-with-topbar.chc-site-header,
+body.chc-page-scrolled header.header-with-topbar.chc-site-header > .navbar.sticky-header,
+body.chc-page-scrolled header.header-with-topbar.chc-site-header > .navbar.bg-transparent {
+  background-color: rgba(43, 24, 73, 0.94) !important;
+  background-image: linear-gradient(90deg, rgba(30, 16, 55, 0.96), rgba(58, 31, 93, 0.92)) !important;
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  box-shadow: 0 8px 28px rgba(19, 8, 39, 0.34);
+}
+
+/* The header lives inside a small layout wrapper; fixed positioning prevents that
+   wrapper from ending the sticky behaviour after the first viewport. */
+header.header-with-topbar.chc-site-header {
+  position: fixed !important;
+  inset: 0 0 auto;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(25, 12, 49, 0.72), rgba(53, 27, 88, 0.66)) !important;
+  box-shadow: 0 8px 24px rgba(13, 5, 29, 0.26);
+}
+
+header.header-with-topbar.chc-site-header > .navbar {
+  min-height: 66px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  background: linear-gradient(90deg, rgba(25, 12, 49, 0.72), rgba(53, 27, 88, 0.66)) !important;
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+}
+
+header.header-with-topbar.chc-site-header .navbar-brand img.default-logo {
+  max-width: 118px;
+  max-height: 54px;
 }

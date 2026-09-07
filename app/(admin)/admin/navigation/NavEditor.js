@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Add, Delete, Edit, MoveDown, MoveUp } from '@/app/(admin)/components/AdminIcons'
 
 function Modal({ title, onClose, children }) {
   return (
@@ -49,6 +50,7 @@ export default function NavEditor({ initialItems, databaseAvailable = true }) {
   const [items, setItems]       = useState(initialItems)
   const [modal, setModal]       = useState(null) // { type: 'add'|'edit'|'addChild', item?, parentId? }
   const [saving, setSaving]     = useState(false)
+  const [reordering, setReordering] = useState('')
   const [deleteId, setDeleteId] = useState(null)
   const [err, setErr]           = useState('')
 
@@ -117,27 +119,70 @@ export default function NavEditor({ initialItems, databaseAvailable = true }) {
     }
   }
 
-  function NavRow({ item, isChild = false }) {
+  async function moveItem(item, parentId, direction) {
+    if (!databaseAvailable || reordering) return
+
+    const currentItems = items
+    const group = parentId
+      ? currentItems.find((parent) => parent.id === parentId)?.children ?? []
+      : currentItems
+    const currentIndex = group.findIndex((entry) => entry.id === item.id)
+    const destinationIndex = currentIndex + direction
+    if (currentIndex < 0 || destinationIndex < 0 || destinationIndex >= group.length) return
+
+    const reorderedGroup = [...group]
+    ;[reorderedGroup[currentIndex], reorderedGroup[destinationIndex]] = [reorderedGroup[destinationIndex], reorderedGroup[currentIndex]]
+    const updates = reorderedGroup.map((entry, index) => ({ id: entry.id, sortOrder: index }))
+    const nextItems = parentId
+      ? currentItems.map((parent) => parent.id === parentId ? { ...parent, children: reorderedGroup } : parent)
+      : reorderedGroup
+
+    setItems(nextItems)
+    setReordering(item.id)
+    setErr('')
+    try {
+      const res = await fetch('/api/admin/navigation', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: updates }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Could not change navigation order.')
+      }
+    } catch (error) {
+      setItems(currentItems)
+      setErr(error.message || 'Could not change navigation order.')
+    } finally {
+      setReordering('')
+    }
+  }
+
+  function NavRow({ item, isChild = false, parentId = null, index, total }) {
     return (
-      <div className="admin-row-edit" style={{ paddingLeft: isChild ? 40 : 16 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ fontWeight: 600, fontSize: 13 }}>{item.label}</span>
+      <div className={`admin-row-edit admin-navigation-row${isChild ? ' is-child' : ''}`}>
+        <div className="admin-navigation-item">
+          <span className="admin-navigation-title">{item.label}</span>
           {item.badge && <span className="admin-badge admin-badge-draft" style={{ marginLeft: 6 }}>{item.badge}</span>}
           {!item.isVisible && <span className="admin-badge admin-badge-locked" style={{ marginLeft: 6 }}>Hidden</span>}
-          <span className="admin-text-muted admin-text-sm" style={{ marginLeft: 8 }}>{item.href}</span>
+          <span className="admin-navigation-path">{item.href}</span>
         </div>
-        <div className="admin-flex admin-gap-8">
-          <label className="admin-toggle" onClick={(e) => e.stopPropagation()}>
+        <div className="admin-navigation-controls">
+          <label className="admin-toggle admin-navigation-toggle" onClick={(e) => e.stopPropagation()}>
             <input type="checkbox" checked={item.isVisible} disabled={!databaseAvailable} onChange={() => toggleVisible(item)} />
             <span className="admin-toggle-track" />
           </label>
           {!isChild && (
-            <button disabled={!databaseAvailable} className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setModal({ type: 'addChild', parentId: item.id })}>
+            <button disabled={!databaseAvailable} className="admin-btn admin-btn-secondary admin-btn-sm admin-navigation-action" onClick={() => setModal({ type: 'addChild', parentId: item.id })}>
               + Child
             </button>
           )}
-          <button disabled={!databaseAvailable} className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setModal({ type: 'edit', item })}>Edit</button>
-          <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteId(item.id)}>✕</button>
+          <div className="admin-navigation-order" aria-label={`Change position of ${item.label}`}>
+            <button type="button" className="admin-btn admin-btn-icon admin-btn-ghost admin-navigation-icon" disabled={!databaseAvailable || !!reordering || index === 0} onClick={() => moveItem(item, parentId, -1)} aria-label={`Move ${item.label} up`} title="Move up"><MoveUp size={15} /></button>
+            <button type="button" className="admin-btn admin-btn-icon admin-btn-ghost admin-navigation-icon" disabled={!databaseAvailable || !!reordering || index === total - 1} onClick={() => moveItem(item, parentId, 1)} aria-label={`Move ${item.label} down`} title="Move down"><MoveDown size={15} /></button>
+          </div>
+          <button type="button" disabled={!databaseAvailable} className="admin-btn admin-btn-icon admin-btn-secondary admin-navigation-icon" onClick={() => setModal({ type: 'edit', item })} aria-label={`Edit ${item.label}`} title="Edit"><Edit size={15} /></button>
+          <button type="button" disabled={!databaseAvailable} className="admin-btn admin-btn-icon admin-btn-ghost admin-navigation-icon admin-navigation-delete" onClick={() => setDeleteId(item.id)} aria-label={`Delete ${item.label}`} title="Delete"><Delete size={15} /></button>
         </div>
       </div>
     )
@@ -156,8 +201,8 @@ export default function NavEditor({ initialItems, databaseAvailable = true }) {
       <div className="admin-card admin-mb-16">
         <div className="admin-card-header">
           <span className="admin-card-title">Navigation items ({items.length})</span>
-          <button disabled={!databaseAvailable} className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => setModal({ type: 'add' })}>
-            + Add item
+          <button disabled={!databaseAvailable} className="admin-btn admin-btn-primary admin-btn-sm admin-navigation-add" onClick={() => setModal({ type: 'add' })}>
+            <Add size={15} /> Add item
           </button>
         </div>
 
@@ -171,11 +216,11 @@ export default function NavEditor({ initialItems, databaseAvailable = true }) {
           </div>
         ) : (
           <div>
-            {items.map((item) => (
+            {items.map((item, index) => (
               <div key={item.id}>
-                <NavRow item={item} />
-                {item.children.map((child) => (
-                  <NavRow key={child.id} item={child} isChild />
+                <NavRow item={item} index={index} total={items.length} />
+                {item.children.map((child, childIndex) => (
+                  <NavRow key={child.id} item={child} isChild parentId={item.id} index={childIndex} total={item.children.length} />
                 ))}
               </div>
             ))}
