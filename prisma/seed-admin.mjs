@@ -8,13 +8,16 @@
  *   ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=YourSecurePass123! npm run db:seed:admin
  *
  * Password requirements:
- *   - Minimum 12 characters
+ *   - Minimum 8 characters
  *   - At least one uppercase letter, one lowercase letter, one number, one special character
  */
 
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+
+dotenv.config({ path: '.env.local', override: false })
+dotenv.config({ path: '.env', override: false })
 
 const prisma = new PrismaClient()
 const SALT_ROUNDS = 12
@@ -33,7 +36,7 @@ async function main() {
   }
 
   const passwordErrors = []
-  if (password.length < 12)            passwordErrors.push('at least 12 characters')
+  if (password.length < 8)             passwordErrors.push('at least 8 characters')
   if (!/[A-Z]/.test(password))         passwordErrors.push('one uppercase letter')
   if (!/[a-z]/.test(password))         passwordErrors.push('one lowercase letter')
   if (!/[0-9]/.test(password))         passwordErrors.push('one number')

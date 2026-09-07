@@ -1,6 +1,7 @@
 import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
 import prisma from '@/lib/prisma'
+import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Dashboard' }
@@ -10,11 +11,11 @@ async function getDashboardCounts() {
     return { pages: '—', media: '—', submissions: '—' }
   }
   try {
-    const [pages, media, submissions] = await Promise.all([
+    const [pages, media, submissions] = await databaseQuery(Promise.all([
       prisma.page.count(),
       prisma.mediaAsset.count(),
       prisma.formSubmission.count({ where: { isRead: false } }),
-    ])
+    ]))
     return { pages, media, submissions }
   } catch {
     return { pages: '—', media: '—', submissions: '—' }

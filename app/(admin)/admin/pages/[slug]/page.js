@@ -2,6 +2,7 @@ import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
 import PageEditor from './PageEditor'
 import prisma from '@/lib/prisma'
+import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,7 +16,7 @@ export default async function PageEditorPage({ params }) {
 
   let page = null
   try {
-    page = await prisma.page.findUnique({
+    page = await databaseQuery(prisma.page.findUnique({
       where: { slug },
       include: {
         seoMeta: true,
@@ -29,7 +30,7 @@ export default async function PageEditorPage({ params }) {
           },
         },
       },
-    })
+    }))
   } catch { /* DB not connected */ }
 
   return (

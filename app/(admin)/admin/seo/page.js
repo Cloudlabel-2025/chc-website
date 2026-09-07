@@ -2,6 +2,7 @@ import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
 import SeoManager from './SeoManager'
 import prisma from '@/lib/prisma'
+import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'SEO' }
@@ -17,10 +18,10 @@ export default async function SeoPage() {
   let seoList = []
   let pages   = []
   try {
-    pages = await prisma.page.findMany({ select: { id: true, slug: true, title: true } })
-    seoList = await prisma.seoMeta.findMany({
+    pages = await databaseQuery(prisma.page.findMany({ select: { id: true, slug: true, title: true } }))
+    seoList = await databaseQuery(prisma.seoMeta.findMany({
       include: { page: { select: { slug: true, title: true } } },
-    })
+    }))
   } catch { /* DB not connected */ }
 
   // Build rows for all known slugs

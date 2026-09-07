@@ -2,6 +2,7 @@ import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
 import PagesManager from './PagesManager'
 import prisma from '@/lib/prisma'
+import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Pages' }
@@ -24,18 +25,18 @@ export default async function PagesPage() {
 
   let pages = []
   try {
-    pages = await prisma.page.findMany({
+    pages = await databaseQuery(prisma.page.findMany({
       select: { id: true, slug: true, title: true, isPublished: true, updatedAt: true },
       orderBy: { slug: 'asc' },
-    })
+    }))
   } catch { /* DB not connected yet */ }
 
   let templates = []
   try {
-    templates = await prisma.pageTemplate.findMany({
+    templates = await databaseQuery(prisma.pageTemplate.findMany({
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
-    })
+    }))
   } catch { /* templates table may not exist yet */ }
 
   // Merge DB rows with known slugs so all 10 always appear

@@ -217,6 +217,33 @@ body {
 
 .admin-card-body { padding: 20px; }
 
+.admin-password-group { position: relative; }
+.admin-password-group .admin-input { padding-right: 64px; }
+.admin-password-toggle { position: absolute; right: 8px; bottom: 7px; border: 0; background: transparent; color: var(--admin-primary); font-size: 12px; font-weight: 700; cursor: pointer; padding: 7px; }
+.admin-password-toggle:disabled { cursor: not-allowed; color: var(--admin-text-light); }
+
+.admin-template-manager { display: grid; gap: 18px; }
+.admin-template-toolbar { padding: 18px 20px; display: flex; align-items: end; justify-content: space-between; gap: 18px; }
+.admin-template-toolbar p { margin-top: 4px; }
+.admin-template-page-select { display: grid; gap: 6px; min-width: min(100%, 290px); font-size: 12px; font-weight: 600; color: var(--admin-text-muted); }
+.admin-template-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 16px; }
+.admin-template-card { min-height: 270px; display: flex; flex-direction: column; padding: 18px; border: 1px solid var(--admin-border); border-radius: 14px; background: linear-gradient(145deg, rgba(42,32,69,.88), rgba(25,23,36,.95)); box-shadow: var(--admin-shadow); }
+.admin-template-card-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 16px; font-size: 11px; }
+.admin-template-chip { border: 1px solid rgba(139,92,246,.42); color: #c4b5fd; border-radius: 100px; padding: 3px 8px; }
+.admin-template-status { color: var(--admin-success); }
+.admin-template-card h2 { font-size: 16px; line-height: 1.25; color: var(--admin-text); margin-bottom: 9px; }
+.admin-template-card p { color: var(--admin-text-muted); font-size: 13px; line-height: 1.55; }
+.admin-template-section-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0; }
+.admin-template-section-list span { border-radius: 5px; background: rgba(255,255,255,.06); color: var(--admin-text-muted); padding: 3px 6px; font-size: 10px; }
+.admin-template-actions { margin-top: auto; }
+.admin-template-actions .admin-btn { width: 100%; justify-content: center; }
+
+@media (max-width: 620px) {
+  .admin-template-toolbar { align-items: stretch; flex-direction: column; }
+  .admin-template-page-select { min-width: 0; }
+  .admin-template-card { min-height: 0; }
+}
+
 /* ── Forms ───────────────────────────────────────────────────────────────── */
 
 .admin-form-group { margin-bottom: 18px; }

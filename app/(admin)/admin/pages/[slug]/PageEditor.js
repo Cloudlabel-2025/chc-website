@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import MediaLibrary from '@/app/(admin)/admin/media/MediaLibrary'
+import { Delete, Edit, MoveDown, MoveUp } from '@/app/(admin)/components/AdminIcons'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -557,7 +558,7 @@ const SECTION_LIBRARY = [
   { key: 'newsletterForm', label: 'Newsletter form copy', animation: 'fadeIn' },
 ]
 
-function SectionPanel({ section, slug }) {
+function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
   const [open, setOpen]     = useState(true)
   const [blocks, setBlocks] = useState(section.blocks ?? [])
   const [visible, setVisible] = useState(section.isVisible)
@@ -607,6 +608,10 @@ function SectionPanel({ section, slug }) {
             <span className="admin-toggle-track" />
             <span className="admin-text-sm admin-text-muted">{visible ? 'Visible' : 'Hidden'}</span>
           </label>
+          <button type="button" className="admin-btn admin-btn-icon admin-btn-secondary" onClick={() => setOpen(true)} aria-label={`Edit ${section.sectionKey}`} title="Edit section"><Edit size={15} /></button>
+          <button type="button" className="admin-btn admin-btn-icon admin-btn-ghost" onClick={() => onMove(section.id, -1)} disabled={index === 0} aria-label={`Move ${section.sectionKey} up`} title="Move up"><MoveUp size={15} /></button>
+          <button type="button" className="admin-btn admin-btn-icon admin-btn-ghost" onClick={() => onMove(section.id, 1)} disabled={index === total - 1} aria-label={`Move ${section.sectionKey} down`} title="Move down"><MoveDown size={15} /></button>
+          <button type="button" className="admin-btn admin-btn-icon admin-btn-ghost admin-navigation-delete" onClick={() => onDelete(section)} aria-label={`Delete ${section.sectionKey}`} title="Delete section"><Delete size={15} /></button>
           <span className={`admin-section-chevron ${open ? 'open' : ''}`}>▾</span>
         </div>
       </div>
@@ -653,6 +658,9 @@ export default function PageEditor({ page, slug }) {
   const [sectionToAdd, setSectionToAdd] = useState('')
   const [addingSection, setAddingSection] = useState(false)
   const [addErr, setAddErr]       = useState('')
+  const [movingSection, setMovingSection] = useState('')
+  const [sectionToDelete, setSectionToDelete] = useState(null)
+  const [deletingSection, setDeletingSection] = useState(false)
 
   // Inject slug for BlockField fetch URLs
   if (typeof window !== 'undefined') window.__pageSlug = slug
@@ -696,6 +704,43 @@ export default function PageEditor({ page, slug }) {
       setSectionToAdd('')
     } catch { setAddErr('Network error — section not added.') }
     finally { setAddingSection(false) }
+  }
+
+  async function moveSection(sectionId, direction) {
+    if (movingSection) return
+    const currentIndex = sections.findIndex((section) => section.id === sectionId)
+    const nextIndex = currentIndex + direction
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= sections.length) return
+    const previous = sections
+    const next = [...sections]
+    ;[next[currentIndex], next[nextIndex]] = [next[nextIndex], next[currentIndex]]
+    const ordered = next.map((section, index) => ({ ...section, sortOrder: index }))
+    setSections(ordered)
+    setMovingSection(sectionId)
+    setAddErr('')
+    try {
+      const response = await fetch('/api/admin/sections', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections: ordered.map(({ id, sortOrder }) => ({ id, sortOrder })) }),
+      })
+      if (!response.ok) throw new Error('Could not change section order.')
+    } catch (error) {
+      setSections(previous)
+      setAddErr(error.message || 'Could not change section order.')
+    } finally { setMovingSection('') }
+  }
+
+  async function deleteSection() {
+    if (!sectionToDelete) return
+    setDeletingSection(true)
+    setAddErr('')
+    try {
+      const response = await fetch(`/api/admin/sections/${sectionToDelete.id}`, { method: 'DELETE' })
+      if (!response.ok) throw new Error('Could not delete this section.')
+      setSections((current) => current.filter((section) => section.id !== sectionToDelete.id).map((section, index) => ({ ...section, sortOrder: index })))
+      setSectionToDelete(null)
+    } catch (error) { setAddErr(error.message || 'Could not delete this section.') }
+    finally { setDeletingSection(false) }
   }
 
   return (
@@ -766,8 +811,8 @@ export default function PageEditor({ page, slug }) {
               </div>
             </div>
           ) : (
-            sections.map((section) => (
-              <SectionPanel key={section.id} section={section} slug={slug} />
+            sections.map((section, index) => (
+              <SectionPanel key={section.id} section={section} slug={slug} index={index} total={sections.length} onMove={moveSection} onDelete={setSectionToDelete} />
             ))
           )}
         </div>
@@ -775,6 +820,16 @@ export default function PageEditor({ page, slug }) {
 
       {tab === 'seo' && (
         <SeoTab pageId={page.id} slug={slug} seo={page.seoMeta} />
+      )}
+
+      {sectionToDelete && (
+        <Modal title="Delete section" onClose={() => setSectionToDelete(null)}>
+          <p style={{ marginBottom: 16 }}>Delete “{sectionToDelete.sectionKey}” and all of its content? This cannot be undone.</p>
+          <div className="admin-flex admin-gap-8" style={{ justifyContent: 'flex-end' }}>
+            <button className="admin-btn admin-btn-secondary" onClick={() => setSectionToDelete(null)} disabled={deletingSection}>Cancel</button>
+            <button className="admin-btn admin-btn-danger" onClick={deleteSection} disabled={deletingSection}>{deletingSection ? 'Deleting…' : 'Delete section'}</button>
+          </div>
+        </Modal>
       )}
     </div>
   )

@@ -1,7 +1,7 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import ImpactServicesCarousel from '@/components/ImpactServicesCarousel'
-import { getInnerPageHero, getContentSection, getImpactHeader, getImpactFooter, getPageSeo } from '@/lib/cms/public-data'
+import { getInnerPageHero, getContentSection, getImpactHeader, getImpactFooter, getOurImpactSlides, getPageSeo } from '@/lib/cms/public-data'
 
 const IMPACT_SERVICES = [
   { title: 'Configuration', img: '/images/config.png', desc: 'Align Oracle HCM Cloud with the way your workforce and approvals operate.', href: '/oracle-hcm' },
@@ -20,11 +20,12 @@ export async function generateMetadata() {
 }
 
 export default async function OurImpactPage() {
-  const [hero, cs, ih, iFooter] = await Promise.all([
+  const [hero, cs, ih, iFooter, impactServices] = await Promise.all([
     getInnerPageHero('our-impact', { heading: 'Our Impact', subtitle: 'We deliver smart solutions that help your business grow successfully.' }),
     getContentSection('our-impact'),
     getImpactHeader(),
     getImpactFooter(),
+    getOurImpactSlides(),
   ])
 
   return (
@@ -46,7 +47,7 @@ export default async function OurImpactPage() {
           <div className="row mb-25px sm-mb-0" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-md-12">
               <div className="outside-box-right-15 outside-box-left-15 sm-outside-box-right-0 sm-outside-box-left-0">
-                <ImpactServicesCarousel services={IMPACT_SERVICES} />
+                <ImpactServicesCarousel services={impactServices} />
               </div>
             </div>
           </div>

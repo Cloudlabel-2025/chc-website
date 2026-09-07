@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const isDevelopment = process.env.NODE_ENV !== 'production'
+
 const nextConfig = {
   images: {
     unoptimized: true,
@@ -11,10 +13,14 @@ const nextConfig = {
         value: [
           "default-src 'self'", "base-uri 'self'", "form-action 'self'",
           "frame-ancestors 'self'", "object-src 'none'",
-          "script-src 'self' 'unsafe-inline'",
+          // Next.js dev client chunks use eval-based source maps. Without this
+          // development-only allowance, React cannot hydrate any interactive
+          // component (including the CMS login form).
+          `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ''}`,
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' data: https://fonts.gstatic.com",
-          "img-src 'self' data: blob: https:", "connect-src 'self'",
+          "img-src 'self' data: blob: https:",
+          `connect-src 'self'${isDevelopment ? ' ws: wss:' : ''}`,
           'upgrade-insecure-requests',
         ].join('; '),
       },

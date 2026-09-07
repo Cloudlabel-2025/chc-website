@@ -3,16 +3,11 @@ import AdminShell from '@/app/(admin)/components/AdminShell'
 import NavEditor from './NavEditor'
 import prisma from '@/lib/prisma'
 import { getNavigationFallback } from '@/lib/cms/navigation-defaults'
+import { restoreDefaultNavigation } from '@/lib/cms/navigation'
+import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Navigation' }
-
-function databaseQuery(operation) {
-  return Promise.race([
-    operation,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Database connection timed out')), 2500)),
-  ])
-}
 
 export default async function NavigationPage() {
   const session = await requireAdmin()
@@ -25,6 +20,16 @@ export default async function NavigationPage() {
       orderBy: { sortOrder: 'asc' },
       include: { children: { orderBy: { sortOrder: 'asc' } } },
     }))
+    // A connected but newly created database has no navigation rows. Populate
+    // it from the public site defaults once so the editor is never blank.
+    if (items.length === 0) {
+      await databaseQuery(restoreDefaultNavigation(session.user.id))
+      items = await databaseQuery(prisma.navigationItem.findMany({
+        where: { parentId: null },
+        orderBy: { sortOrder: 'asc' },
+        include: { children: { orderBy: { sortOrder: 'asc' } } },
+      }))
+    }
   } catch {
     items = getNavigationFallback()
     databaseAvailable = false

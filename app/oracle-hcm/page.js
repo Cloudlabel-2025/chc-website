@@ -3,7 +3,8 @@ import ContentSection from '@/components/ContentSection'
 import DeliveryCapacityCarousel from '@/components/DeliveryCapacityCarousel'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
-  getOracleProductisedServices, getOracleHeadings,
+  getOracleProductisedServices, getOracleHeadings, getOracleCapabilities,
+  getOracleDeliveryCapacity, getOracleServiceCarousel,
 } from '@/lib/cms/public-data'
 
 const CORE_CAPABILITIES = [
@@ -45,7 +46,7 @@ export async function generateMetadata() {
 }
 
 export default async function OracleHCMPage() {
-  const [hero, cs, services, oHeadings] = await Promise.all([
+  const [hero, cs, services, oHeadings, capabilities, deliveryCapacity, deliveryCarousel] = await Promise.all([
     getInnerPageHero('oracle-hcm', {
       heading: 'Oracle HCM',
       subtitle: 'CHC provides senior-led Oracle HCM delivery supported by trained functional and technical consultants.',
@@ -53,6 +54,9 @@ export default async function OracleHCMPage() {
     getContentSection('oracle-hcm'),
     getOracleProductisedServices(),
     getOracleHeadings(),
+    getOracleCapabilities(),
+    getOracleDeliveryCapacity(),
+    getOracleServiceCarousel(),
   ])
 
   return (
@@ -71,8 +75,8 @@ export default async function OracleHCMPage() {
           <div className="row position-relative clients-style-08">
             <div className="col text-center feather-shadow chc-core-capabilities-carousel">
               <div className="chc-core-capabilities-track" role="list" aria-label="Oracle HCM core capabilities">
-                {[...CORE_CAPABILITIES, ...CORE_CAPABILITIES].map((item, index) => (
-                  <div className="chc-core-capability" key={`${item.label}-${index}`} role="listitem" aria-hidden={index >= CORE_CAPABILITIES.length}>
+                {[...capabilities, ...capabilities].map((item, index) => (
+                  <div className="chc-core-capability" key={`${item.label}-${index}`} role="listitem" aria-hidden={index >= capabilities.length}>
                     <img src={item.img} className="h-75px" alt="" />
                     <p>{item.label}</p>
                   </div>
@@ -113,10 +117,10 @@ export default async function OracleHCMPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center mb-5 sm-mb-30px text-center text-lg-start" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-lg-5 md-mb-30px">
-              <h3 className="text-dark-gray fw-700 ls-minus-2px mb-0">{DELIVERY_CAPACITY.heading}</h3>
+              <h3 className="text-dark-gray fw-700 ls-minus-2px mb-0">{deliveryCapacity.heading}</h3>
             </div>
             <div className="col-lg-7 last-paragraph-no-margin md-mb-30px">
-              <p>{DELIVERY_CAPACITY.paragraph}</p>
+              <p>{deliveryCapacity.paragraph}</p>
             </div>
           </div>
           <div className="row align-items-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -124,8 +128,8 @@ export default async function OracleHCMPage() {
               <div className="outside-box-right-20 sm-outside-box-right-0">
                 <DeliveryCapacityCarousel>
                   <div className="chc-delivery-carousel-track" role="list" aria-label="Oracle delivery services">
-                    {[...DELIVERY_CAROUSEL, ...DELIVERY_CAROUSEL, ...DELIVERY_CAROUSEL].map((service, index) => (
-                      <div className="chc-delivery-carousel-card" key={`${service.title}-${index}`} role="listitem" aria-hidden={index < DELIVERY_CAROUSEL.length || index >= DELIVERY_CAROUSEL.length * 2}>
+                    {[...deliveryCarousel, ...deliveryCarousel, ...deliveryCarousel].map((service, index) => (
+                      <div className="chc-delivery-carousel-card" key={`${service.title}-${index}`} role="listitem" aria-hidden={index < deliveryCarousel.length || index >= deliveryCarousel.length * 2}>
                         <div className="services-box-style-03 last-paragraph-no-margin border-radius-6px overflow-hidden">
                             <div className="position-relative">
                             <a href={service.href || '/services'}><img src={service.img} alt="" /></a>

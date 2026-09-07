@@ -2,6 +2,7 @@ import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
 import FooterForm from './FooterForm'
 import prisma from '@/lib/prisma'
+import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Footer' }
@@ -11,7 +12,7 @@ export default async function FooterPage() {
 
   let footer = null
   try {
-    footer = await prisma.footerConfig.findFirst()
+    footer = await databaseQuery(prisma.footerConfig.findFirst())
   } catch { /* DB not connected */ }
 
   return (

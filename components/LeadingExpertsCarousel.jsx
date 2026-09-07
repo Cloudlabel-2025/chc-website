@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import Swiper from 'swiper/bundle'
 
-const AUTOPLAY_DELAY_MS = 4000
+const AUTOPLAY_DELAY_MS = 5000
 const PLACEHOLDER_GALLERY = [
   '/images/healthcheck.jpg',
   '/images/oracle-tech-pod.jpg',
@@ -26,7 +26,7 @@ export default function LeadingExpertsCarousel({ people = [] }) {
 
   useEffect(() => {
     const root = rootRef.current
-    if (!root) return undefined
+    if (!root || carouselPeople.length === 0) return undefined
 
     const count = root.querySelectorAll(':scope > .swiper-wrapper > .swiper-slide').length
     if (count === 0) return undefined
@@ -34,13 +34,15 @@ export default function LeadingExpertsCarousel({ people = [] }) {
     let swiper
     try {
       swiper = new Swiper(root, {
-        slidesPerView: 1.1,
-        spaceBetween: 22,
+        slidesPerView: 3,
+        spaceBetween: 30,
         loop: count > 2,
         centeredSlides: count > 1,
         speed: 760,
         grabCursor: true,
         watchSlidesProgress: true,
+        effect: 'coverflow',
+        coverflowEffect: { rotate: 0, stretch: 0, depth: 100, modifier: 2, slideShadows: true },
         autoplay: count > 1 ? {
           delay: AUTOPLAY_DELAY_MS,
           disableOnInteraction: false,
@@ -51,13 +53,26 @@ export default function LeadingExpertsCarousel({ people = [] }) {
           prevEl: previousRef.current,
           nextEl: nextRef.current,
         },
+        on: {
+          beforeInit(instance) {
+            if (instance.params.navigation) {
+              instance.params.navigation.prevEl = previousRef.current
+              instance.params.navigation.nextEl = nextRef.current
+            }
+          },
+          init(instance) {
+            if (instance.navigation) instance.navigation.update()
+          },
+        },
         keyboard: { enabled: true, onlyInViewport: true },
         a11y: { enabled: true },
         observer: true,
         observeParents: true,
         breakpoints: {
-          768: { slidesPerView: 2.15, spaceBetween: 26 },
-          992: { slidesPerView: 3, spaceBetween: 32 },
+          320: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          992: { slidesPerView: 3 },
+          1200: { slidesPerView: 3 },
         },
       })
     } catch (error) {
@@ -77,7 +92,7 @@ export default function LeadingExpertsCarousel({ people = [] }) {
         // Ignore cleanup after a partial initialization.
       }
     }
-  }, [])
+  }, [carouselPeople.length])
 
   return (
     <div className="chc-people-carousel-shell">

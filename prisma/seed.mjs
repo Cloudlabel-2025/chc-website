@@ -15,8 +15,63 @@
 
 import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
+import { readdir, stat } from 'node:fs/promises'
+import path from 'node:path'
+import { SITE_TEMPLATES } from '../lib/cms/site-template-catalog.js'
 
 const prisma = new PrismaClient()
+
+const PUBLIC_IMAGES_DIR = path.resolve(process.cwd(), 'public', 'images')
+const IMAGE_EXTENSIONS = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
+const MIME_TYPES = { '.avif': 'image/avif', '.gif': 'image/gif', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp' }
+
+async function findImageFiles(directory, prefix = '') {
+  const entries = await readdir(directory, { withFileTypes: true })
+  const files = []
+  for (const entry of entries) {
+    const relativePath = path.posix.join(prefix, entry.name)
+    if (entry.isDirectory()) files.push(...await findImageFiles(path.join(directory, entry.name), relativePath))
+    else if (IMAGE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) files.push(relativePath)
+  }
+  return files
+}
+
+async function registerPublicMedia(userId) {
+  const files = await findImageFiles(PUBLIC_IMAGES_DIR)
+  for (const relativePath of files) {
+    const filePath = path.join(PUBLIC_IMAGES_DIR, relativePath)
+    const fileStats = await stat(filePath)
+    const extension = path.extname(relativePath).toLowerCase()
+    await prisma.mediaAsset.upsert({
+      where: { storageKey: `public-images/${relativePath}` },
+      create: {
+        filename: path.basename(relativePath), storageKey: `public-images/${relativePath}`,
+        publicUrl: `/images/${relativePath.split(path.sep).join('/')}`,
+        mimeType: MIME_TYPES[extension] ?? 'application/octet-stream', sizeBytes: fileStats.size,
+        altText: path.basename(relativePath, extension).replace(/[-_]+/g, ' '), uploadedById: userId,
+      },
+      update: { filename: path.basename(relativePath), sizeBytes: fileStats.size, mimeType: MIME_TYPES[extension] ?? 'application/octet-stream' },
+    })
+  }
+  console.log(`  media: ${files.length} local public images registered`)
+}
+
+async function findMediaAssetId(publicUrl) {
+  if (!publicUrl || !publicUrl.startsWith('/images/')) return null
+  const asset = await prisma.mediaAsset.findFirst({ where: { publicUrl }, select: { id: true } })
+  return asset?.id ?? null
+}
+
+async function seedSiteTemplates() {
+  for (const template of SITE_TEMPLATES) {
+    await prisma.pageTemplate.upsert({
+      where: { name: template.name },
+      create: template,
+      update: {},
+    })
+  }
+  console.log(`  templates: ${SITE_TEMPLATES.length} reusable layouts registered`)
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -57,10 +112,14 @@ async function seedBlock(userId, sectionId, fieldKey, blockType, textValue = nul
   const existing = await prisma.contentBlock.findFirst({
     where: { sectionId, fieldKey, parentId: null },
   })
-  if (existing) return existing
+  const mediaAssetId = blockType === 'IMAGE' ? await findMediaAssetId(textValue) : null
+  if (existing) {
+    if (mediaAssetId && !existing.mediaAssetId) return prisma.contentBlock.update({ where: { id: existing.id }, data: { mediaAssetId, updatedById: userId } })
+    return existing
+  }
   return prisma.contentBlock.create({
     data: {
-      sectionId, fieldKey, blockType, textValue,
+      sectionId, fieldKey, blockType, textValue, mediaAssetId,
       isPublished: true, sortOrder: 0,
       createdById: userId, updatedById: userId, updatedAt: new Date(),
     },
@@ -80,6 +139,7 @@ async function seedRepeatableItem(userId, sectionId, sortOrder, fields) {
     await prisma.contentBlock.create({
       data: {
         sectionId, fieldKey, blockType, textValue: textValue ?? null,
+        mediaAssetId: blockType === 'IMAGE' ? await findMediaAssetId(textValue) : null,
         isPublished: true, sortOrder: 0, parentId: parent.id,
         createdById: userId, updatedById: userId, updatedAt: new Date(),
       },
@@ -306,13 +366,14 @@ async function seedOracleHcm(userId, CS_DEFAULT) {
   const capSection = await upsertSection(userId, page.id, 'capabilityItem', 2)
   if (!(await hasRepeatableItems(capSection.id))) {
     const caps = [
-      'Core HR', 'Workforce Structure', 'Compensation', 'Talent', 'Learning',
-      'Payroll', 'Security/AOR', 'Approvals', 'Journey', 'HCM Extracts',
-      'Integrations', 'Testing', 'Quarterly Releases', 'Redwood / VBCS', 'Technical Remediation',
+      ['Core HR', '/images/core-hr-vec.png'], ['Workforce Structure', '/images/wfs.png'], ['Compensation', '/images/compensation-vector.png'], ['Talent', '/images/talent-vector.png'], ['Learning', '/images/learning-vector.png'],
+      ['Payroll', '/images/payroll-vector.png'], ['Security/AOR', '/images/security-aor-vector.png'], ['Approvals', '/images/approvals-vector.png'], ['Journey', '/images/journey-vector.png'], ['HCM Extracts', '/images/hcm-extracts-vector.png'],
+      ['Integrations', '/images/integrations-vector.png'], ['Testing', '/images/testing-vectot.png'], ['Quarterly Releases', '/images/qua-rel-vec.png'], ['Redwood / VBCS', '/images/redwood-vec.png'], ['Technical Remediation', '/images/technical-remediation-vec.png'],
     ]
     for (let i = 0; i < caps.length; i++) {
       await seedRepeatableItem(userId, capSection.id, i, {
-        label: { blockType: 'TEXT', textValue: caps[i] },
+        icon:  { blockType: 'IMAGE', textValue: caps[i][1] },
+        label: { blockType: 'TEXT', textValue: caps[i][0] },
       })
     }
   }
@@ -320,13 +381,14 @@ async function seedOracleHcm(userId, CS_DEFAULT) {
   const svcSection = await upsertSection(userId, page.id, 'productisedService', 3)
   if (!(await hasRepeatableItems(svcSection.id))) {
     const services = [
-      { title: 'Oracle HCM Health Check', cta: 'Request a Healthcheck',    desc: 'Focused assessment of an existing Oracle HCM environment covering configuration, security, integrations, reporting, technical debt and operational risk.' },
-      { title: 'Oracle Rapid Response',   cta: 'Discuss an Oracle Problem', desc: 'For broken approvals, absence issues, security problems, reporting failures, integration defects, Redwood/VBCS issues and payroll/interface problems.' },
-      { title: 'Release Assurance',       cta: 'Discuss Release Support',   desc: 'Quarterly release assessment and regression support covering impact analysis, business-process testing, integrations, security validation, defect tracking and go/no-go reporting.' },
-      { title: 'Oracle Technology Pod',   cta: 'Discuss a Work Package',    desc: 'Flexible senior-led team supporting an agreed Oracle backlog across testing, reporting, configuration, VBCS, data, integrations, support and documentation.' },
+      { image: '/images/healthcheck.jpg', title: 'Oracle HCM Health Check', cta: 'Request a Healthcheck',    desc: 'Focused assessment of an existing Oracle HCM environment covering configuration, security, integrations, reporting, technical debt and operational risk.' },
+      { image: '/images/rapid-response.jpg', title: 'Oracle Rapid Response', cta: 'Discuss an Oracle Problem', desc: 'For broken approvals, absence issues, security problems, reporting failures, integration defects, Redwood/VBCS issues and payroll/interface problems.' },
+      { image: '/images/release-assurance.jpg', title: 'Release Assurance', cta: 'Discuss Release Support',   desc: 'Quarterly release assessment and regression support covering impact analysis, business-process testing, integrations, security validation, defect tracking and go/no-go reporting.' },
+      { image: '/images/oracle-tech-pod.jpg', title: 'Oracle Technology Pod', cta: 'Discuss a Work Package',    desc: 'Flexible senior-led team supporting an agreed Oracle backlog across testing, reporting, configuration, VBCS, data, integrations, support and documentation.' },
     ]
     for (let i = 0; i < services.length; i++) {
       await seedRepeatableItem(userId, svcSection.id, i, {
+        image:            { blockType: 'IMAGE', textValue: services[i].image },
         title:            { blockType: 'TEXT', textValue: services[i].title },
         ctaText:          { blockType: 'TEXT', textValue: services[i].cta },
         hoverDescription: { blockType: 'TEXT', textValue: services[i].desc },
@@ -341,17 +403,18 @@ async function seedOracleHcm(userId, CS_DEFAULT) {
   const carSection = await upsertSection(userId, page.id, 'serviceCarouselItem', 5)
   if (!(await hasRepeatableItems(carSection.id))) {
     const slides = [
-      { title: 'Configuration',   desc: "Configure Oracle HCM Cloud to align with your organization's business processes, workforce structures, roles, approvals, and HR requirements." },
-      { title: 'Testing',         desc: 'Ensure reliable HCM implementations through functional, integration, regression, and user acceptance testing before moving solutions into production.' },
-      { title: 'Reporting',       desc: 'Build meaningful HR insights using OTBI, BI Publisher, dashboards, and customized reports to support better workforce decisions.' },
-      { title: 'Data',            desc: 'Manage, validate, transform, and maintain employee and organizational data with accuracy across Oracle HCM Cloud.' },
-      { title: 'Integrations',    desc: 'Connect Oracle HCM with external applications and enterprise systems using reliable integrations, APIs, and data exchange solutions.' },
-      { title: 'VBCS',            desc: 'Develop modern, scalable business applications and extensions using Oracle Visual Builder Cloud Service while seamlessly working with Oracle HCM.' },
-      { title: 'Release Support', desc: "Stay ahead of Oracle's quarterly updates with impact analysis, testing, issue identification, and post-release validation." },
-      { title: 'Managed Support', desc: 'Get continuous technical and functional support for Oracle HCM, including troubleshooting, enhancements, monitoring, and day-to-day application assistance.' },
+      { image: '/images/config.png', title: 'Configuration', desc: "Configure Oracle HCM Cloud to align with your organization's business processes, workforce structures, roles, approvals, and HR requirements." },
+      { image: '/images/testing.jpg', title: 'Testing', desc: 'Ensure reliable HCM implementations through functional, integration, regression, and user acceptance testing before moving solutions into production.' },
+      { image: '/images/reporting.jpg', title: 'Reporting', desc: 'Build meaningful HR insights using OTBI, BI Publisher, dashboards, and customized reports to support better workforce decisions.' },
+      { image: '/images/data.jpg', title: 'Data', desc: 'Manage, validate, transform, and maintain employee and organizational data with accuracy across Oracle HCM Cloud.' },
+      { image: '/images/integration.jpg', title: 'Integrations', desc: 'Connect Oracle HCM with external applications and enterprise systems using reliable integrations, APIs, and data exchange solutions.' },
+      { image: '/images/vbcs.jpg', title: 'VBCS', desc: 'Develop modern, scalable business applications and extensions using Oracle Visual Builder Cloud Service while seamlessly working with Oracle HCM.' },
+      { image: '/images/support.jpg', title: 'Release Support', desc: "Stay ahead of Oracle's quarterly updates with impact analysis, testing, issue identification, and post-release validation." },
+      { image: '/images/manage-support.jpg', title: 'Managed Support', desc: 'Get continuous technical and functional support for Oracle HCM, including troubleshooting, enhancements, monitoring, and day-to-day application assistance.' },
     ]
     for (let i = 0; i < slides.length; i++) {
       await seedRepeatableItem(userId, carSection.id, i, {
+        image:       { blockType: 'IMAGE', textValue: slides[i].image },
         title:       { blockType: 'TEXT', textValue: slides[i].title },
         description: { blockType: 'TEXT', textValue: slides[i].desc },
       })
@@ -574,6 +637,9 @@ async function main() {
   console.log('CHC CMS — seeding content...\n')
 
   const userId = await getOrCreateSystemUser()
+
+  await registerPublicMedia(userId)
+  await seedSiteTemplates()
 
   await seedNavigation(userId)
   await seedFooter(userId)

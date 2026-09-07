@@ -2,6 +2,7 @@ import { requireAdmin } from '@/lib/cms/auth-helpers'
 import AdminShell from '@/app/(admin)/components/AdminShell'
 import SubmissionsInbox from './SubmissionsInbox'
 import prisma from '@/lib/prisma'
+import { databaseQuery } from '@/lib/cms/database-query'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Submissions' }
@@ -14,14 +15,14 @@ export default async function SubmissionsPage() {
   let unread = 0
 
   try {
-    ;[submissions, total, unread] = await Promise.all([
+    ;[submissions, total, unread] = await databaseQuery(Promise.all([
       prisma.formSubmission.findMany({
         orderBy: { submittedAt: 'desc' },
         take: 20,
       }),
       prisma.formSubmission.count(),
       prisma.formSubmission.count({ where: { isRead: false } }),
-    ])
+    ]))
   } catch { /* DB not connected */ }
 
   return (
