@@ -32,3 +32,6 @@ backups/
 next-env.d.ts
 
 /lib/generated/prisma
+
+.next-dev/
+git rm -r --cached .next-dev/

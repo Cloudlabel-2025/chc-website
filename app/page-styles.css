@@ -454,11 +454,6 @@ footer {
   margin-right: 0;
 }
 
-.chc-search-column {
-  flex: 0 0 57px;
-  justify-content: flex-end;
-}
-
 .chc-site-header .navbar-brand img.default-logo {
   display: block;
   width: auto;

@@ -175,27 +175,6 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
             </div>
           </div>
 
-          <div className="chc-search-column text-end d-none d-lg-flex">
-            <div className="header-icon">
-              <div className="header-search-icon icon">
-                <a href="#" className="search-form-icon header-search-form h-45px w-45px d-flex align-items-center justify-content-center border border-color-extra-medium-gray text-center rounded-circle" aria-label="Open search">
-                  <i className="feather icon-feather-search text-base-color" aria-hidden="true"></i>
-                </a>
-                <div className="search-form-wrapper">
-                  <button title="Close" type="button" className="search-close"></button>
-                  <form id="search-form" role="search" method="get" className="search-form text-left" action="#" onSubmit={(event) => event.preventDefault()}>
-                    <div className="search-form-box">
-                      <h2 className="text-dark-gray text-center fw-600 mb-4 ls-minus-2px">What are you looking for?</h2>
-                      <input className="search-input" id="search-form-input" placeholder="Enter your keywords..." name="s" defaultValue="" type="search" autoComplete="off" />
-                      <button type="submit" className="search-button" aria-label="Search">
-                        <i className="feather icon-feather-search" aria-hidden="true"></i>
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </nav>
     </header>

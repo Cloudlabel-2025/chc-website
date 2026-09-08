@@ -30,7 +30,11 @@ export default function LoginForm({ callbackUrl }) {
         // This client helper posts directly to Auth.js's credentials callback,
         // which is the request that creates the signed session cookie.
         const result = await signIn('credentials', { username, password, redirect: false, callbackUrl })
-        if (!result?.ok) {
+        if (!result?.ok || result.error) {
+          if (result?.error !== 'CredentialsSignin') {
+            setError('Unable to sign in right now. Please try again. If this continues, ask your administrator to check the authentication server logs.')
+            return
+          }
           const nextFailures = failedAttempts + 1
           setFailedAttempts(nextFailures)
           if (nextFailures >= 6) {

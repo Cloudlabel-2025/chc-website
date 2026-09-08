@@ -21,6 +21,8 @@ export async function middleware(request) {
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    // Auth.js prefixes session cookies with __Secure- on HTTPS.
+    secureCookie: request.nextUrl.protocol === 'https:',
   })
 
   const isAuthenticated = !!token?.id
