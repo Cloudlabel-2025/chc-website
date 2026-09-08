@@ -1985,3 +1985,27 @@ header.header-with-topbar.chc-site-header .navbar-brand img.default-logo {
     font-size: 11px;
   }
 }
+/* Contact page: full-width responsive Google Maps embed. */
+.chc-contact-map {
+  display: block;
+  width: 100%;
+  height: 700px;
+  border: 0;
+}
+
+/* The global page gutter is useful for content, but not for an edge-to-edge map. */
+.chc-page-content > #location > .container-fluid {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+#location > .container-fluid > .row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+@media (max-width: 767px) {
+  .chc-contact-map {
+    height: 380px;
+  }
+}

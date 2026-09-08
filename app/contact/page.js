@@ -17,14 +17,6 @@ export default async function ContactPage() {
     getContactData(),
   ])
 
-  const mapOptions = JSON.stringify({
-    lat: parseFloat(contact.mapLat),
-    lng: parseFloat(contact.mapLng),
-    style: 'Silver',
-    marker: { type: 'HTML', color: '#dd6531' },
-    popup: { defaultOpen: true, html: contact.mapPopupHtml },
-  })
-
   return (
     <>
       <PageHero {...hero} />
@@ -79,7 +71,14 @@ export default async function ContactPage() {
         <div className="container-fluid">
           <div className="row justify-content-center">
             <div className="col-12 p-0">
-              <div id="map" className="map" data-map-options={mapOptions}></div>
+              <iframe
+                className="chc-contact-map"
+                title="Cloudheard Consultancy location"
+                src="https://www.google.com/maps?q=9.725475490366358,77.27169737478984&z=17&output=embed"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
             </div>
           </div>
         </div>

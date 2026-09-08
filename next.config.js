@@ -20,6 +20,9 @@ const nextConfig = {
         value: [
           "default-src 'self'", "base-uri 'self'", "form-action 'self'",
           "frame-ancestors 'self'", "object-src 'none'",
+          // Public contact page embeds only Google Maps. Without this explicit
+          // allow-list, `default-src 'self'` blocks the map iframe entirely.
+          "frame-src 'self' https://www.google.com https://maps.google.com",
           // Next.js dev client chunks use eval-based source maps. Without this
           // development-only allowance, React cannot hydrate any interactive
           // component (including the CMS login form).

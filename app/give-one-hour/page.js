@@ -1,6 +1,7 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import CmsAdditionalSections from '@/components/CmsAdditionalSections'
+import { GiveOneHourForm } from '@/components/CmsForms'
 import { getInnerPageHero, getContentSection, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
@@ -38,49 +39,7 @@ export default async function GiveOneHourPage() {
           </div>
           <div className="row justify-content-center" data-chc-animate='{ "translateY": [100, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-xl-9 col-lg-11">
-              <form action="/api/public/give-one-hour" method="post" className="row contact-form-style-02">
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large input-name form-control required" type="text" name="full_name" placeholder="Your full name*" />
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control required" type="url" name="linkedin" placeholder="LinkedIn profile URL*" />
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control required" type="text" name="organisation" placeholder="Your organisation*" />
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control required" type="text" name="role" placeholder="Your role*" />
-                </div>
-                <div className="col-md-12 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control required" type="text" name="expertise" placeholder="Area of expertise*" />
-                </div>
-                <div className="col-md-12 mb-30px">
-                  <textarea className="box-shadow-quadruple-large form-control required" cols="40" rows="4" name="how_to_help" placeholder="How would you like to help?*"></textarea>
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control required" type="text" name="availability" placeholder="Preferred availability*" />
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <select className="box-shadow-quadruple-large form-control required form-select" name="format" defaultValue="">
-                    <option value="" disabled>Online / In person*</option>
-                    <option value="online">Online</option>
-                    <option value="in_person">In Person</option>
-                    <option value="both">Both</option>
-                  </select>
-                </div>
-                <div className="col-md-12 mb-30px">
-                  <textarea className="box-shadow-quadruple-large form-control" cols="40" rows="4" name="anything_else" placeholder="Anything you'd like us to know?"></textarea>
-                </div>
-                <div className="col-md-12 mt-10px mb-10px">
-                  <p className="text-center text-md-start fs-16">By submitting this form you agree to be contacted by CHC regarding volunteering opportunities.</p>
-                </div>
-                <div className="col-md-12 text-center">
-                  <button className="btn btn-medium btn-gradient-purple-pink btn-round-edge submit" type="submit">Give My One Hour</button>
-                </div>
-                <div className="col-12">
-                  <div className="form-results mt-20px d-none"></div>
-                </div>
-              </form>
+              <GiveOneHourForm />
             </div>
           </div>
         </div>

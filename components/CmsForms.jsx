@@ -83,11 +83,12 @@ export function ContactForm({ formFields = {} }) {
 export function GiveOneHourForm({ formFields = {} }) {
   const [status, setStatus] = useState(null)
   const [message, setMessage] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
 
   async function onSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
-    setStatus('loading'); setMessage('')
+    setStatus('loading'); setMessage(''); setFieldErrors({})
     const fd = new FormData(e.currentTarget)
     const body = Object.fromEntries(fd.entries())
     try {
@@ -99,7 +100,7 @@ export function GiveOneHourForm({ formFields = {} }) {
       const data = await res.json()
       if (!res.ok) {
         const msg = data.errors ? data.errors.join(', ') : (data.error ?? 'Failed to submit.')
-        setStatus('error'); setMessage(msg); return
+        setStatus('error'); setMessage(msg); setFieldErrors(data.fieldErrors ?? {}); return
       }
       setStatus('success'); setMessage(data.message ?? 'Thank you — we\'ll be in touch.')
       e.currentTarget.reset()
@@ -118,39 +119,50 @@ export function GiveOneHourForm({ formFields = {} }) {
     availabilityPlaceholder: formFields.availabilityPlaceholder ?? 'Preferred availability*',
     consentText: formFields.consentText ?? 'By submitting this form you agree to be contacted by CHC regarding volunteering opportunities.',
     buttonText: formFields.buttonText ?? 'Give My One Hour',
+    successText: formFields.successText ?? 'Thank you for your interest. We will be in touch shortly.',
     ...formFields,
   }
+
+  const errorFor = (name) => fieldErrors[name]?.[0]
 
   return (
     <form onSubmit={onSubmit} className="row contact-form-style-02" noValidate>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large input-name form-control required" type="text" name="full_name" placeholder={f.fullNamePlaceholder} required />
+        <input className="box-shadow-quadruple-large input-name form-control required" type="text" name="full_name" placeholder={f.fullNamePlaceholder} required aria-invalid={Boolean(errorFor('full_name'))} />
+        {errorFor('full_name') && <small className="text-danger d-block mt-5px">{errorFor('full_name')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="url" name="linkedin" placeholder={f.linkedinPlaceholder} required />
+        <input className="box-shadow-quadruple-large form-control required" type="url" name="linkedin" placeholder={f.linkedinPlaceholder} required aria-invalid={Boolean(errorFor('linkedin'))} />
+        {errorFor('linkedin') && <small className="text-danger d-block mt-5px">{errorFor('linkedin')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="organisation" placeholder={f.orgPlaceholder} required />
+        <input className="box-shadow-quadruple-large form-control required" type="text" name="organisation" placeholder={f.orgPlaceholder} required aria-invalid={Boolean(errorFor('organisation'))} />
+        {errorFor('organisation') && <small className="text-danger d-block mt-5px">{errorFor('organisation')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="role" placeholder={f.rolePlaceholder} required />
+        <input className="box-shadow-quadruple-large form-control required" type="text" name="role" placeholder={f.rolePlaceholder} required aria-invalid={Boolean(errorFor('role'))} />
+        {errorFor('role') && <small className="text-danger d-block mt-5px">{errorFor('role')}</small>}
       </div>
       <div className="col-md-12 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="expertise" placeholder={f.expertisePlaceholder} required />
+        <input className="box-shadow-quadruple-large form-control required" type="text" name="expertise" placeholder={f.expertisePlaceholder} required aria-invalid={Boolean(errorFor('expertise'))} />
+        {errorFor('expertise') && <small className="text-danger d-block mt-5px">{errorFor('expertise')}</small>}
       </div>
       <div className="col-md-12 mb-30px">
-        <textarea className="box-shadow-quadruple-large form-control required" cols="40" rows="4" name="how_to_help" placeholder={f.helpPlaceholder} required></textarea>
+        <textarea className="box-shadow-quadruple-large form-control required" cols="40" rows="4" name="how_to_help" placeholder={f.helpPlaceholder} required aria-invalid={Boolean(errorFor('how_to_help'))}></textarea>
+        {errorFor('how_to_help') && <small className="text-danger d-block mt-5px">{errorFor('how_to_help')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="availability" placeholder={f.availabilityPlaceholder} required />
+        <input className="box-shadow-quadruple-large form-control required" type="text" name="availability" placeholder={f.availabilityPlaceholder} required aria-invalid={Boolean(errorFor('availability'))} />
+        {errorFor('availability') && <small className="text-danger d-block mt-5px">{errorFor('availability')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <select className="box-shadow-quadruple-large form-control required form-select" name="format" defaultValue="">
+        <select className="box-shadow-quadruple-large form-control required form-select" name="format" defaultValue="" aria-invalid={Boolean(errorFor('format'))}>
           <option value="" disabled>Online / In person*</option>
           <option value="online">Online</option>
           <option value="in_person">In Person</option>
           <option value="both">Both</option>
         </select>
+        {errorFor('format') && <small className="text-danger d-block mt-5px">{errorFor('format')}</small>}
       </div>
       <div className="col-md-12 mb-30px">
         <textarea className="box-shadow-quadruple-large form-control" cols="40" rows="4" name="anything_else" placeholder="Anything you'd like us to know?"></textarea>

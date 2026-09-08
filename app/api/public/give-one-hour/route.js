@@ -18,7 +18,10 @@ export async function POST(request) {
   const parsed = giveOneHourSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { errors: parsed.error.errors.map((e) => e.message) },
+      {
+        errors: parsed.error.errors.map((e) => e.message),
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      },
       { status: 422 }
     )
   }
@@ -52,5 +55,8 @@ export async function POST(request) {
     }
   }
 
-  return NextResponse.json({ success: true }, { status: 201 })
+  return NextResponse.json({
+    success: true,
+    message: 'Thank you for your interest. We will be in touch shortly.',
+  }, { status: 201 })
 }
