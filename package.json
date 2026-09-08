@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test": "node --test tests/*.test.mjs",
     "security:audit": "node scripts/security-audit.mjs",
+    "cms:check": "node scripts/check-cms.mjs",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",

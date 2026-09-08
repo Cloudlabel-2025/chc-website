@@ -20,7 +20,7 @@ export async function middleware(request) {
   // Verify JWT token — Edge-compatible, no Node.js modules
   const token = await getToken({
     req: request,
-    secret: process.env.AUTH_SECRET,
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
     // Auth.js prefixes session cookies with __Secure- on HTTPS.
     secureCookie: request.nextUrl.protocol === 'https:',
   })

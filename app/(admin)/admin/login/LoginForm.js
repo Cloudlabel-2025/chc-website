@@ -10,7 +10,6 @@ export default function LoginForm({ callbackUrl }) {
   const [error, setError] = useState('')
   const [rateLimited, setRateLimited] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [failedAttempts, setFailedAttempts] = useState(0)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -35,9 +34,7 @@ export default function LoginForm({ callbackUrl }) {
             setError('Unable to sign in right now. Please try again. If this continues, ask your administrator to check the authentication server logs.')
             return
           }
-          const nextFailures = failedAttempts + 1
-          setFailedAttempts(nextFailures)
-          if (nextFailures >= 6) {
+          if (result.code === 'rate_limited') {
             setRateLimited(true)
             setError('Too many failed attempts. Please wait 15 minutes before trying again.')
             return
