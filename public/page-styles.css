@@ -371,12 +371,87 @@ header.header-with-topbar .navbar .navbar-toggler-line {
 }
 
 /* --- Oracle HCM delivery capacity carousel --- */
-.chc-delivery-carousel {
-  overflow: hidden;
-  cursor: grab;
-  padding: 18px 0;
-  touch-action: pan-y;
+.chc-delivery-process-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  column-gap: 0;
+  row-gap: 3rem;
+  width: 100%;
+  padding: 0 15px;
 }
+
+.chc-delivery-process-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+}
+
+/* Reserve equal space above each node: copy length must not move a node. */
+.chc-delivery-process-step > i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+}
+
+.chc-delivery-process-step > .alt-font {
+  display: flex !important;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 58px;
+}
+
+.chc-delivery-process-step > p {
+  min-height: 120px;
+  margin-bottom: 0;
+}
+
+.chc-delivery-process-step .process-step-icon-box {
+  width: 100%;
+  margin-top: auto !important;
+}
+
+/* A connector never crosses from the fourth node into the next row. */
+.chc-delivery-process-step:nth-child(4n) .progress-step-separator {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .chc-delivery-process-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 3rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .chc-delivery-process-steps {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2.5rem;
+  }
+
+  .chc-delivery-process-step .progress-step-separator {
+    display: none;
+  }
+
+  .chc-delivery-process-step > p {
+    min-height: 0;
+  }
+}
+
+.chc-delivery-carousel {
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  padding: 20px 0 26px;
+  touch-action: pan-y;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+
+.chc-delivery-carousel::-webkit-scrollbar { display: none; }
 
 .chc-delivery-carousel.is-dragging {
   cursor: grabbing;
@@ -389,16 +464,21 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   flex-wrap: nowrap !important;
   align-items: stretch;
   width: max-content;
-  animation: chc-delivery-carousel-loop 36s linear infinite;
-  will-change: transform;
+}
+
+/* Existing magic cursor, tuned to the CHC violet used by this drag surface. */
+.magic-drag-cursor.magic-cursor-base-color #ball-cursor {
+  background: rgba(92, 58, 162, .56);
+  border: 1px solid rgba(221, 214, 254, .8);
+  box-shadow: 0 14px 38px rgba(76, 29, 149, .25);
 }
 
 .chc-delivery-carousel-card {
-  flex: 0 0 clamp(240px, 22vw, 320px) !important;
-  width: clamp(240px, 22vw, 320px) !important;
-  min-height: 510px;
+  flex: 0 0 clamp(320px, 28vw, 410px) !important;
+  width: clamp(320px, 28vw, 410px) !important;
+  min-height: 470px;
   max-width: none !important;
-  padding: 0 15px;
+  padding: 0 12px;
 }
 
 .chc-delivery-carousel-card > .services-box-style-03 {
@@ -410,7 +490,7 @@ header.header-with-topbar .navbar .navbar-toggler-line {
 .chc-delivery-carousel-card .services-box-style-03 > .position-relative img {
   display: block;
   width: 100%;
-  height: 180px;
+  height: 205px;
   object-fit: cover;
 }
 
@@ -431,18 +511,18 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   height: 72px;
 }
 
-@keyframes chc-delivery-carousel-loop {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-33.333333%, 0, 0); }
-}
-
 /* /our-impact — standalone Experienced services loop, independent from Swiper. */
 .chc-impact-services-carousel {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 30px 0;
   cursor: grab;
   touch-action: pan-y;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
 }
+
+.chc-impact-services-carousel::-webkit-scrollbar { display: none; }
 
 .chc-impact-services-carousel.is-dragging {
   cursor: grabbing;
@@ -454,8 +534,6 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   flex-wrap: nowrap;
   align-items: stretch;
   width: max-content;
-  animation: chc-impact-services-loop 36s linear infinite;
-  will-change: transform;
 }
 
 .chc-impact-service-card {
@@ -509,11 +587,6 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   line-height: 1.65;
 }
 
-@keyframes chc-impact-services-loop {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-33.333333%, 0, 0); }
-}
-
 @media (max-width: 767px) {
   .chc-impact-service-card {
     flex-basis: min(78vw, 300px);
@@ -527,9 +600,9 @@ header.header-with-topbar .navbar .navbar-toggler-line {
 
 @media (max-width: 767px) {
   .chc-delivery-carousel-card {
-    flex-basis: min(82vw, 320px) !important;
-    width: min(82vw, 320px) !important;
-    min-height: 490px;
+    flex-basis: min(84vw, 360px) !important;
+    width: min(84vw, 360px) !important;
+    min-height: 455px;
   }
 }
 

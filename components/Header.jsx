@@ -156,12 +156,11 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
                     {whatWeDoItems.map((item) => (
                       <li key={item.href}>
                         <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined} onClick={closeNavigation}>
-                          <i className={item.icon} aria-hidden="true"></i>
-                          <span className="submenu-icon-content">
-                            <span>{item.label}</span>
-                            <span className="chc-submenu-description">{item.description}</span>
-                          </span>
-                        </a>
+        <i className={item.icon} aria-hidden="true"></i>
+        <span className="submenu-icon-content">
+          <span>{item.label}</span>
+        </span>
+      </a>
                       </li>
                     ))}
                   </ul>

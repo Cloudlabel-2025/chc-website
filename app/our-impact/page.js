@@ -2,7 +2,7 @@ import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import ImpactServicesCarousel from '@/components/ImpactServicesCarousel'
 import CmsAdditionalSections from '@/components/CmsAdditionalSections'
-import { getInnerPageHero, getContentSection, getImpactHeader, getImpactFooter, getOurImpactSlides, getPageSeo } from '@/lib/cms/public-data'
+import { getInnerPageHero, getContentSection, getImpactHeader, getOurImpactSlides, getPageSeo, getSectionBadge, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,12 +23,13 @@ export async function generateMetadata() {
 }
 
 export default async function OurImpactPage() {
-  const [hero, cs, ih, iFooter, impactServices] = await Promise.all([
+  const [hero, cs, ih, impactServices, servicesBadge, servicesHeading] = await Promise.all([
     getInnerPageHero('our-impact', { heading: 'Our Impact', subtitle: 'We deliver smart solutions that help your business grow successfully.' }),
     getContentSection('our-impact'),
     getImpactHeader(),
-    getImpactFooter(),
     getOurImpactSlides(),
+    getSectionBadge('our-impact', 'serviceSlide', ''),
+    getSectionHeading('our-impact', 'serviceSlide', ''),
   ])
 
   return (
@@ -41,10 +42,12 @@ export default async function OurImpactPage() {
         <div className="container-fluid overflow-hidden">
           <div className="row" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-12 text-center">
-              <span className="ps-20px pe-20px pt-5px pb-5px mb-15px text-uppercase alt-font text-base-color fs-12 lh-26 fw-600 alt-font border-radius-100px bg-gradient-very-light-gray-transparent d-inline-flex">
-                <i className="bi bi-box-seam fs-16 me-5px"></i>{ih.badge}
-              </span>
-              <h2 className="alt-font text-dark-gray fw-700 ls-minus-05px mb-30px sm-mb-0">{ih.heading}</h2>
+              {servicesBadge.trim() && (
+                <span className="ps-20px pe-20px pt-5px pb-5px mb-15px text-uppercase alt-font text-base-color fs-12 lh-26 fw-600 alt-font border-radius-100px bg-gradient-very-light-gray-transparent d-inline-flex">
+                  <i className="bi bi-box-seam fs-16 me-5px"></i>{servicesBadge}
+                </span>
+              )}
+              <h2 className="alt-font text-dark-gray fw-700 ls-minus-05px mb-30px sm-mb-0">{servicesHeading || ih.heading}</h2>
             </div>
           </div>
           <div className="row mb-25px sm-mb-0" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -52,12 +55,6 @@ export default async function OurImpactPage() {
               <div className="outside-box-right-15 outside-box-left-15 sm-outside-box-right-0 sm-outside-box-left-0">
                 <ImpactServicesCarousel services={impactServices} />
               </div>
-            </div>
-          </div>
-          <div className="row" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-            <div className="col-12 text-center">
-              <i className="bi bi-window-fullscreen text-dark-gray d-inline-block align-middle icon-extra-medium me-5px md-m-5px"></i>
-              <div className="fs-20 alt-font text-dark-gray d-inline-block align-middle fw-500 ls-minus-05px">{iFooter.note}</div>
             </div>
           </div>
         </div>

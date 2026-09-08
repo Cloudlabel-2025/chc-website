@@ -5,7 +5,7 @@ import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getOracleProductisedServices, getOracleHeadings, getOracleCapabilities,
-  getOracleDeliveryCapacity, getOracleServiceCarousel,
+  getOracleDeliveryCapacity, getOracleServiceCarousel, getSectionHeading,
 } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
@@ -49,7 +49,7 @@ export async function generateMetadata() {
 }
 
 export default async function OracleHCMPage() {
-  const [hero, cs, services, oHeadings, capabilities, deliveryCapacity, deliveryCarousel] = await Promise.all([
+  const [hero, cs, services, oHeadings, capabilities, deliveryCapacity, deliveryCarousel, capabilityHeading, productHeading, carouselHeading] = await Promise.all([
     getInnerPageHero('oracle-hcm', {
       heading: 'Oracle HCM',
       subtitle: 'CHC provides senior-led Oracle HCM delivery supported by trained functional and technical consultants.',
@@ -60,6 +60,9 @@ export default async function OracleHCMPage() {
     getOracleCapabilities(),
     getOracleDeliveryCapacity(),
     getOracleServiceCarousel(),
+    getSectionHeading('oracle-hcm', 'capabilityItem', ''),
+    getSectionHeading('oracle-hcm', 'productisedService', ''),
+    getSectionHeading('oracle-hcm', 'serviceCarouselItem', ''),
   ])
 
   return (
@@ -72,7 +75,7 @@ export default async function OracleHCMPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row">
             <div className="col-12 text-center mt-10px mb-30px">
-              <div className="alt-font core-capabilities-heading text-dark-gray ls-minus-05px">{oHeadings.capabilitiesHeading}</div>
+              <div className="alt-font core-capabilities-heading text-dark-gray ls-minus-05px">{capabilityHeading || oHeadings.capabilitiesHeading}</div>
             </div>
           </div>
           <div className="row position-relative clients-style-08">
@@ -96,7 +99,7 @@ export default async function OracleHCMPage() {
           <div className="row justify-content-center mb-3">
             <div className="col-lg-7 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="fw-600 ls-1px fs-16 alt-font mb-5px d-inline-block text-uppercase text-base-color">{oHeadings.servicesEyebrow}</span>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{oHeadings.servicesHeading}</h2>
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{productHeading || oHeadings.servicesHeading}</h2>
             </div>
           </div>
           <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 justify-content-center" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 800, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -128,6 +131,7 @@ export default async function OracleHCMPage() {
           </div>
           <div className="row align-items-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-12">
+              {carouselHeading && <h4 className="alt-font text-dark-gray fw-600 text-center mb-4">{carouselHeading}</h4>}
               <div className="outside-box-right-20 sm-outside-box-right-0">
                 <DeliveryCapacityCarousel>
                   <div className="chc-delivery-carousel-track" role="list" aria-label="Oracle delivery services">
@@ -135,15 +139,15 @@ export default async function OracleHCMPage() {
                       <div className="chc-delivery-carousel-card" key={`${service.title}-${index}`} role="listitem" aria-hidden={index < deliveryCarousel.length || index >= deliveryCarousel.length * 2}>
                         <div className="services-box-style-03 last-paragraph-no-margin border-radius-6px overflow-hidden">
                             <div className="position-relative">
-                            <a href={service.href || '/services'}><img src={service.img} alt="" /></a>
+                            <a href={service.href || '/services'} className="force-magic-cursor"><img src={service.img} alt="" draggable="false" /></a>
                           </div>
                           <div className="bg-white">
                             <div className="ps-65px pe-65px pt-30px pb-30px text-center sm-ps-25px sm-pe-25px">
-                              <a href={service.href || '/services'} className="d-inline-block fs-18 fw-700 text-dark-gray mb-5px">{service.title}</a>
+                              <a href={service.href || '/services'} className="d-inline-block fs-18 fw-700 text-dark-gray mb-5px force-magic-cursor">{service.title}</a>
                               <p>{service.desc}</p>
                             </div>
                             <div className="chc-carousel-link-row d-flex justify-content-center border-top border-color-extra-medium-gray pt-20px pb-20px ps-50px pe-50px position-relative text-center">
-                              <a href={service.href || '/services'} className="chc-carousel-service-link">{oHeadings.exploreLabel} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                              <a href={service.href || '/services'} className="chc-carousel-service-link force-magic-cursor">{oHeadings.exploreLabel} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                             </div>
                           </div>
                         </div>

@@ -1,63 +1,90 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
-/** CSS owns the endless loop; pointer events temporarily take over for a true mouse grab. */
+/** Infinite native-scroll carousel with link-safe pointer dragging. */
 export default function ImpactServicesCarousel({ services = [] }) {
   const viewportRef = useRef(null)
-  const dragRef = useRef({ active: false, moved: false, startX: 0, startTranslate: 0 })
+  const gestureRef = useRef({ active: false, dragging: false, pointerId: null, startX: 0, startY: 0, startScrollLeft: 0 })
+  const wrappingRef = useRef(false)
 
-  const startDrag = (event) => {
-    if (!event.isPrimary || event.button !== 0) return
+  useEffect(() => {
     const viewport = viewportRef.current
     const track = viewport?.firstElementChild
-    if (!viewport || !track) return
+    if (!viewport || !track || services.length === 0) return undefined
 
-    const transform = window.getComputedStyle(track).transform
-    const matrix = transform.match(/^matrix\((.+)\)$/)?.[1].split(',')
-    const matrix3d = transform.match(/^matrix3d\((.+)\)$/)?.[1].split(',')
-    const startTranslate = matrix3d ? Number(matrix3d[12]) : matrix ? Number(matrix[4]) : 0
-
-    dragRef.current = {
-      active: true,
-      moved: false,
-      startX: event.clientX,
-      startTranslate: Number.isFinite(startTranslate) ? startTranslate : 0,
+    const cycleWidth = () => track.scrollWidth / 3
+    const centerOnMiddleCopy = () => {
+      const width = cycleWidth()
+      if (width > 0) viewport.scrollLeft = width
     }
-    viewport.classList.add('is-dragging')
-    track.style.animation = 'none'
-    track.style.transform = `translate3d(${dragRef.current.startTranslate}px, 0, 0)`
-    viewport.setPointerCapture(event.pointerId)
+    const wrapScrollPosition = () => {
+      if (wrappingRef.current) return
+      const width = cycleWidth()
+      if (!width) return
+      let next = null
+      if (viewport.scrollLeft < width * 0.25) next = viewport.scrollLeft + width
+      if (viewport.scrollLeft > width * 1.75) next = viewport.scrollLeft - width
+      if (next === null) return
+      wrappingRef.current = true
+      viewport.scrollLeft = next
+      requestAnimationFrame(() => { wrappingRef.current = false })
+    }
+
+    const frame = requestAnimationFrame(centerOnMiddleCopy)
+    viewport.addEventListener('scroll', wrapScrollPosition, { passive: true })
+    window.addEventListener('resize', centerOnMiddleCopy)
+    return () => {
+      cancelAnimationFrame(frame)
+      viewport.removeEventListener('scroll', wrapScrollPosition)
+      window.removeEventListener('resize', centerOnMiddleCopy)
+    }
+  }, [services.length])
+
+  const startDrag = (event) => {
+    if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
+    const viewport = viewportRef.current
+    if (!viewport) return
+    gestureRef.current = {
+      active: true,
+      dragging: false,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startScrollLeft: viewport.scrollLeft,
+    }
   }
 
   const drag = (event) => {
     const viewport = viewportRef.current
-    const track = viewport?.firstElementChild
-    const state = dragRef.current
-    if (!viewport || !track || !state.active) return
-
-    const distance = event.clientX - state.startX
-    if (Math.abs(distance) > 4) state.moved = true
-    track.style.transform = `translate3d(${state.startTranslate + distance}px, 0, 0)`
+    const state = gestureRef.current
+    if (!viewport || !state.active || event.pointerId !== state.pointerId) return
+    const deltaX = event.clientX - state.startX
+    const deltaY = event.clientY - state.startY
+    if (!state.dragging) {
+      if (Math.abs(deltaX) < 6 || Math.abs(deltaX) <= Math.abs(deltaY)) return
+      state.dragging = true
+      viewport.classList.add('is-dragging')
+      viewport.setPointerCapture(event.pointerId)
+    }
+    viewport.scrollLeft = state.startScrollLeft - deltaX
+    event.preventDefault()
   }
 
   const endDrag = (event) => {
     const viewport = viewportRef.current
-    const track = viewport?.firstElementChild
-    if (!viewport || !track || !dragRef.current.active) return
-
-    dragRef.current.active = false
+    const state = gestureRef.current
+    if (!viewport || !state.active || event.pointerId !== state.pointerId) return
+    state.active = false
     viewport.classList.remove('is-dragging')
     if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId)
-    track.style.removeProperty('animation')
-    track.style.removeProperty('transform')
+    if (state.dragging) setTimeout(() => { state.dragging = false }, 0)
   }
 
   const preventDraggedLinkClick = (event) => {
-    if (!dragRef.current.moved) return
+    if (!gestureRef.current.dragging) return
     event.preventDefault()
     event.stopPropagation()
-    dragRef.current.moved = false
   }
 
   const loopedServices = [...services, ...services, ...services]
@@ -65,7 +92,7 @@ export default function ImpactServicesCarousel({ services = [] }) {
   return (
     <div
       ref={viewportRef}
-      className="chc-impact-services-carousel"
+      className="chc-impact-services-carousel magic-cursor base-color drag-cursor"
       role="region"
       aria-roledescription="carousel"
       aria-label="Experienced services"
@@ -84,11 +111,11 @@ export default function ImpactServicesCarousel({ services = [] }) {
             role="listitem"
             aria-hidden={index < services.length || index >= services.length * 2}
           >
-            <a href={service.href || '/'} className="chc-impact-service-image">
-              <img src={service.img} alt="" loading="lazy" />
+            <a href={service.href || '/'} className="chc-impact-service-image force-magic-cursor">
+              <img src={service.img} alt="" loading="lazy" draggable="false" />
             </a>
             <div className="chc-impact-service-content">
-              <a href={service.href || '/'} className="chc-impact-service-title">{service.title}</a>
+              <a href={service.href || '/'} className="chc-impact-service-title force-magic-cursor">{service.title}</a>
               <p>{service.desc}</p>
             </div>
           </article>

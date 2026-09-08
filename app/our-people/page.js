@@ -2,7 +2,7 @@ import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import LeadingExpertsCarousel from '@/components/LeadingExpertsCarousel'
 import CmsAdditionalSections from '@/components/CmsAdditionalSections'
-import { getInnerPageHero, getContentSection, getPeopleHeader, getPeopleData, getPageSeo } from '@/lib/cms/public-data'
+import { getInnerPageHero, getContentSection, getPeopleHeader, getPeopleData, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,11 +14,12 @@ export async function generateMetadata() {
 }
 
 export default async function OurPeoplePage() {
-  const [hero, cs, ph, people] = await Promise.all([
+  const [hero, cs, ph, people, peopleHeading] = await Promise.all([
     getInnerPageHero('our-people', { heading: 'Our People', subtitle: 'Meet the team behind CHC.' }),
     getContentSection('our-people'),
     getPeopleHeader(),
     getPeopleData(),
+    getSectionHeading('our-people', 'teamMember', ''),
   ])
 
   return (
@@ -33,7 +34,7 @@ export default async function OurPeoplePage() {
           <div className="row justify-content-center mb-3">
             <div className="col-lg-7 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="fw-600 ls-1px fs-16 alt-font mb-5px d-inline-block text-uppercase text-base-color">{ph.badge}</span>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{ph.heading}</h2>
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{peopleHeading || ph.heading}</h2>
             </div>
           </div>
           <LeadingExpertsCarousel people={people} />

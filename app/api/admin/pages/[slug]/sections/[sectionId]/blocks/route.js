@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { upsertBlock, reorderBlocks } from '@/lib/cms/content'
+import { createRepeatableItem, upsertBlock, reorderBlocks } from '@/lib/cms/content'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,6 +20,14 @@ export async function POST(request, { params }) {
   }
 
   try {
+    if (fieldKey === 'item' && !parentId) {
+      const item = await createRepeatableItem({
+        sectionId: params.sectionId,
+        sortOrder,
+      })
+      return NextResponse.json({ block: item.parent, children: item.children }, { status: 201 })
+    }
+
     const block = await upsertBlock({
       sectionId: params.sectionId,
       fieldKey,

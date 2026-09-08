@@ -1,7 +1,7 @@
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import CmsAdditionalSections from '@/components/CmsAdditionalSections'
-import { getInnerPageHero, getContentSection, getAboutFeatureCards, getCtaBanner, getPageSeo } from '@/lib/cms/public-data'
+import { getInnerPageHero, getContentSection, getAboutFeatureCards, getCtaBanner, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,11 +13,12 @@ export async function generateMetadata() {
 }
 
 export default async function AboutPage() {
-  const [hero, cs, cards, cta] = await Promise.all([
+  const [hero, cs, cards, cta, cardsHeading] = await Promise.all([
     getInnerPageHero('about', { heading: 'About', subtitle: 'We deliver smart solutions that help your business grow successfully.' }),
     getContentSection('about'),
     getAboutFeatureCards(),
     getCtaBanner('about'),
+    getSectionHeading('about', 'featureCards', 'Our capabilities'),
   ])
 
   return (
@@ -28,6 +29,7 @@ export default async function AboutPage() {
 
       <section className="position-relative">
         <div className="container-fluid px-5 lg-px-10">
+          <div className="row justify-content-center mb-4"><div className="col-lg-8 text-center"><h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{cardsHeading}</h2></div></div>
           <div className="row row-cols-1 row-cols-lg-3 row-cols-md-2" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             {cards.map((card) => (
               <div key={card.title} className="col icon-with-text-style-04 transition-inner-all mb-30px">

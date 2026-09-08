@@ -4,7 +4,7 @@ import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getDeliveryModelProcessSteps, getDeliveryModelFaqs,
-  getFaqHeader, getFaqFooter, getProcessHeader2,
+  getFaqHeader, getProcessHeader2, getSectionBadge, getSectionHeading,
 } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
@@ -17,15 +17,18 @@ export async function generateMetadata() {
 }
 
 export default async function OurDeliveryModelPage() {
-  const [hero, cs, steps1, steps2, faqs, fh, ff, ph2] = await Promise.all([
+  const [hero, cs, steps1, steps2, faqs, fh, ph2, steps1Heading, steps2Heading, faqBadge, faqHeading] = await Promise.all([
     getInnerPageHero('our-delivery-model', { heading: 'Our Delivery Model', subtitle: 'We deliver smart solutions that help your business grow successfully.' }),
     getContentSection('our-delivery-model'),
     getDeliveryModelProcessSteps('processSteps1'),
     getDeliveryModelProcessSteps('processSteps2'),
     getDeliveryModelFaqs(),
     getFaqHeader(),
-    getFaqFooter(),
     getProcessHeader2(),
+    getSectionHeading('our-delivery-model', 'processSteps1', 'Our delivery process'),
+    getSectionHeading('our-delivery-model', 'processSteps2', ''),
+    getSectionBadge('our-delivery-model', 'faqItem', ''),
+    getSectionHeading('our-delivery-model', 'faqItem', ''),
   ])
 
   return (
@@ -35,9 +38,10 @@ export default async function OurDeliveryModelPage() {
       <ContentSection {...cs} />
 
       {/* Process Steps Grid #1 */}
-      <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 mt-7 md-mt-50px" style={{ padding: '0 15px' }} data-chc-animate='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+      <div className="container-fluid px-5 lg-px-10"><div className="row justify-content-center mt-5"><div className="col-lg-8 text-center"><h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{steps1Heading}</h2></div></div></div>
+      <div className="chc-delivery-process-steps mt-7 md-mt-50px" data-chc-animate='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
         {steps1.map((step, i) => (
-          <div key={i} className={`col text-center process-step-style-02 hover-box last-paragraph-no-margin ${i < 4 ? 'md-mb-50px' : ''}`}>
+          <div key={i} className="chc-delivery-process-step text-center process-step-style-02 hover-box last-paragraph-no-margin">
             <i className={`${step.icon} text-base-color icon-double-large mb-20px`}></i>
             <span className="d-block alt-font text-dark-gray mb-5px fs-20 fw-600">{step.label}</span>
             <p className="d-inline-block w-75 lg-w-85">{step.description}</p>
@@ -57,8 +61,8 @@ export default async function OurDeliveryModelPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
             <div className="col-lg-7 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-              <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">{fh.eyebrow}</span>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{fh.heading}</h2>
+              {faqBadge.trim() && <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">{faqBadge}</span>}
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{faqHeading || fh.heading}</h2>
             </div>
           </div>
           <div className="row justify-content-center">
@@ -75,11 +79,6 @@ export default async function OurDeliveryModelPage() {
               </div>
             </div>
           </div>
-          <div className="row justify-content-center" data-chc-animate='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 100, "staggervalue": 100, "easing": "easeOutQuad" }'>
-            <div className="col-12 text-center mt-6">
-              <h6 className="alt-font text-dark-gray ls-minus-1px mb-0">{ff.text} <a href={ff.href} className="text-decoration-line-bottom-medium text-dark-gray fw-600 d-inline-block">{ff.label}</a></h6>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -88,12 +87,12 @@ export default async function OurDeliveryModelPage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center justify-content-center text-center text-lg-start" data-chc-animate='{ "el": "childs", "translateX": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-lg-5 col-md-10 md-mb-50px xs-mb-40px">
-              <h2 className="fw-600 text-dark-gray ls-minus-2px mb-0">{ph2.heading}</h2>
+              <h2 className="fw-600 text-dark-gray ls-minus-2px mb-0">{steps2Heading || ph2.heading}</h2>
             </div>
           </div>
-          <div className="row row-cols-1 row-cols-lg-4 row-cols-sm-2 mt-7 md-mt-50px" data-chc-animate='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
+          <div className="chc-delivery-process-steps mt-7 md-mt-50px" data-chc-animate='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             {steps2.map((step, i) => (
-              <div key={i} className={`col text-center process-step-style-02 hover-box last-paragraph-no-margin ${i < 4 ? 'md-mb-50px' : i === 5 ? 'xs-mb-50px' : ''}`}>
+              <div key={i} className="chc-delivery-process-step text-center process-step-style-02 hover-box last-paragraph-no-margin">
                 <i className={`${step.icon} text-base-color icon-double-large mb-20px`}></i>
                 <span className="d-block alt-font text-dark-gray mb-5px fs-20 fw-600">{step.label}</span>
                 <p className="d-inline-block w-75 lg-w-85">{step.description}</p>
@@ -109,7 +108,7 @@ export default async function OurDeliveryModelPage() {
           </div>
         </div>
       </section>
-      <CmsAdditionalSections slug="our-delivery-model" skipFirst={{ innerPageHero: 1, contentSection: 1, processSteps1: 1, processSteps2: 1, faqItem: 1, faqHeader: 1, faqFooter: 1, processHeader2: 1 }} />
+      <CmsAdditionalSections slug="our-delivery-model" skipFirst={{ innerPageHero: 1, contentSection: 1, processSteps1: Number.MAX_SAFE_INTEGER, processSteps2: Number.MAX_SAFE_INTEGER, faqItem: Number.MAX_SAFE_INTEGER, faqHeader: 1, faqFooter: 1, processHeader2: 1 }} />
     </>
   )
 }

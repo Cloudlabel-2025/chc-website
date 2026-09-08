@@ -2,7 +2,7 @@ import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import StackCardGroup from '@/components/StackCardGroup'
 import CmsAdditionalSections from '@/components/CmsAdditionalSections'
-import { getInnerPageHero, getContentSection, getApplicationsStackCards, getPageSeo } from '@/lib/cms/public-data'
+import { getInnerPageHero, getContentSection, getApplicationsStackCards, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,10 +14,11 @@ export async function generateMetadata() {
 }
 
 export default async function ApplicationsPage() {
-  const [hero, contentSection, cards] = await Promise.all([
+  const [hero, contentSection, cards, cardsHeading] = await Promise.all([
     getInnerPageHero('applications', { heading: 'Applications', subtitle: 'We deliver smart solutions that help your business grow successfully.' }),
     getContentSection('applications'),
     getApplicationsStackCards('stackCards1'),
+    getSectionHeading('applications', 'stackCards1', 'Our approach'),
   ])
 
   return (
@@ -27,6 +28,7 @@ export default async function ApplicationsPage() {
       <ContentSection {...contentSection} />
       <section>
         <div className="container-fluid px-5 lg-px-10">
+          <div className="row justify-content-center mb-4"><div className="col-lg-8 text-center"><h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{cardsHeading}</h2></div></div>
           <div className="row"><div className="col-12"><StackCardGroup cards={cards} /></div></div>
         </div>
       </section>

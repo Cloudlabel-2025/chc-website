@@ -28,7 +28,7 @@ function Modal({ title, onClose, children, wide = false }) {
 
 // ─── Block field editor ───────────────────────────────────────────────────────
 
-function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, required, parentId, onSaved }) {
+function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, required, options, parentId, onSaved }) {
   const [value, setValue]   = useState(block?.textValue ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved]   = useState(false)
@@ -37,6 +37,11 @@ function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, r
 
   const isImage = blockType === 'IMAGE'
   const asset   = block?.mediaAsset ?? null
+  // Existing content may use an older icon class. Keep it selectable so
+  // opening the editor never silently replaces a saved icon.
+  const selectOptions = options?.some((option) => option.value === value)
+    ? options
+    : options ? [{ value, label: `Current icon — ${value || 'not set'}` }, ...options] : []
 
   async function save() {
     setSaving(true)
@@ -99,6 +104,16 @@ function BlockField({ sectionId, block, fieldKey, blockType, label, maxLength, r
             <p className="admin-text-muted admin-text-sm" style={{ marginTop: 2 }}>Click to change</p>
           </div>
         </div>
+      ) : options?.length ? (
+        <select
+          className="admin-input"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+        >
+          {selectOptions.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
       ) : maxLength > 120 ? (
         <>
           <textarea
@@ -194,7 +209,7 @@ function RepeatableItemEditor({ sectionId, slug, sectionKey, initialBlocks = [],
       })
       const data = await res.json()
       if (!res.ok) { setErr(data.error ?? 'Failed to add item.'); return }
-      setAllBlocks((prev) => [...prev, data.block])
+      setAllBlocks((prev) => [...prev, data.block, ...(data.children ?? [])])
       setExpandedId(data.block.id)
     } catch { setErr('Network error — item not added.') }
     finally { setAdding(false) }
@@ -339,6 +354,11 @@ const SECTION_FIELDS = {
     { fieldKey: 'badge',      blockType: 'TEXT',  label: 'Badge text',  maxLength: 60,  required: true },
     { fieldKey: 'heading',    blockType: 'TEXT',  label: 'Heading',     maxLength: 80,  required: true },
     { fieldKey: 'paragraph',  blockType: 'TEXT',  label: 'Paragraph',   maxLength: 400, required: true },
+    { fieldKey: 'buttonLabel', blockType: 'TEXT', label: 'Primary button label', maxLength: 50 },
+    { fieldKey: 'buttonHref',  blockType: 'URL',  label: 'Primary button URL',   maxLength: 200 },
+    { fieldKey: 'linkLabel',   blockType: 'TEXT', label: 'Secondary link label', maxLength: 50 },
+    { fieldKey: 'linkHref',    blockType: 'URL',  label: 'Secondary link URL',   maxLength: 200 },
+    { fieldKey: 'note',        blockType: 'TEXT', label: 'Supporting note',      maxLength: 160 },
   ],
   contentSection: [
     { fieldKey: 'leftImage',  blockType: 'IMAGE', label: 'Left image',  required: true },
@@ -439,6 +459,30 @@ const SECTION_FIELDS = {
 
 // ─── Repeatable item field definitions (per-card fields, Class D) ────────────
 
+const PROCESS_ICON_OPTIONS = [
+  { value: 'line-icon-Computer', label: 'Technology — Computer' },
+  { value: 'line-icon-Laptop', label: 'Technology — Laptop' },
+  { value: 'line-icon-Monitor', label: 'Technology — Monitor' },
+  { value: 'line-icon-Server', label: 'Technology — Server' },
+  { value: 'line-icon-Cloud', label: 'Technology — Cloud' },
+  { value: 'line-icon-Network', label: 'Technology — Network' },
+  { value: 'line-icon-Wifi', label: 'Technology — Connectivity' },
+  { value: 'line-icon-Gear', label: 'Technology — Configuration' },
+  { value: 'line-icon-Light-Bulb', label: 'Innovation — Light bulb' },
+  { value: 'line-icon-Idea-5', label: 'Innovation — Idea' },
+  { value: 'line-icon-Idea', label: 'Innovation — Idea (alternate)' },
+  { value: 'line-icon-Rocket', label: 'Delivery — Rocket' },
+  { value: 'line-icon-Target', label: 'Delivery — Target' },
+  { value: 'line-icon-Bar-Chart', label: 'Delivery — Performance' },
+  { value: 'line-icon-Check', label: 'Quality — Check' },
+  { value: 'line-icon-Shield', label: 'Quality — Shield' },
+  { value: 'line-icon-Medal', label: 'Leadership — Medal' },
+  { value: 'line-icon-User', label: 'Leadership — People' },
+  { value: 'line-icon-Headset', label: 'Leadership — Support' },
+  { value: 'line-icon-Brain', label: 'Learning — Knowledge' },
+  { value: 'line-icon-Book', label: 'Learning — Book' },
+]
+
 const REPEATABLE_FIELDS = {
   whatWeDo: [
     { fieldKey: 'image',       blockType: 'IMAGE', label: 'Card image',       required: true },
@@ -507,12 +551,12 @@ const REPEATABLE_FIELDS = {
     { fieldKey: 'paragraph', blockType: 'TEXT',  label: 'Card paragraph', maxLength: 300, required: true },
   ],
   processSteps1: [
-    { fieldKey: 'icon',        blockType: 'TEXT', label: 'Icon class (line-icon-*)', maxLength: 80,  required: true },
+    { fieldKey: 'icon',        blockType: 'TEXT', label: 'Process icon', options: PROCESS_ICON_OPTIONS, required: true },
     { fieldKey: 'label',       blockType: 'TEXT', label: 'Step label',               maxLength: 60,  required: true },
     { fieldKey: 'description', blockType: 'TEXT', label: 'Step description',         maxLength: 200, required: true },
   ],
   processSteps2: [
-    { fieldKey: 'icon',        blockType: 'TEXT', label: 'Icon class (line-icon-*)', maxLength: 80,  required: true },
+    { fieldKey: 'icon',        blockType: 'TEXT', label: 'Process icon', options: PROCESS_ICON_OPTIONS, required: true },
     { fieldKey: 'label',       blockType: 'TEXT', label: 'Step label',               maxLength: 60,  required: true },
     { fieldKey: 'description', blockType: 'TEXT', label: 'Step description',         maxLength: 200, required: true },
   ],
@@ -529,14 +573,20 @@ const REPEATABLE_SECTION_FIELDS = {
   capabilityItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   productisedService: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   serviceCarouselItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
-  serviceSlide: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  serviceSlide: [
+    { fieldKey: 'sectionBadge', blockType: 'TEXT', label: 'Eyebrow badge', maxLength: 60 },
+    { fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 },
+  ],
   teamMember: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   stackCards1: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   stackCards2: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   stackCards3: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   processSteps1: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   processSteps2: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
-  faqItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  faqItem: [
+    { fieldKey: 'sectionBadge', blockType: 'TEXT', label: 'Eyebrow badge', maxLength: 60 },
+    { fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 },
+  ],
 }
 
 // ─── Add-section library (sectionKey → label + default animation) ────────────

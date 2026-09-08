@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma'
 import { cloudinaryUrl } from '@/lib/cms/cloudinary-url'
+import StackCardGroup from '@/components/StackCardGroup'
 
 /**
  * Renders CMS section instances that are not claimed by a page's dedicated
@@ -39,13 +40,41 @@ export default async function CmsAdditionalSections({ slug, skipFirst = {} }) {
       || section.sectionKey.replace(/([A-Z])/g, ' $1')
     const content = (field('content')?.textValue ?? field('paragraph')?.textValue ?? '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
     const sectionFields = new Set([
-      'sectionHeading', 'sectionSubheading', 'heading', 'paragraph', 'content',
+      'sectionHeading', 'sectionSubheading', 'sectionBadge', 'heading', 'paragraph', 'content',
       'badge', 'eyebrow', 'capabilitiesHeading', 'servicesEyebrow',
       'servicesHeading', 'exploreLabel', 'formBadge', 'submitLabel',
       'successMessage', 'buttonLabel', 'buttonHref', 'cta1Label', 'cta1Href',
       'cta2Label', 'cta2Href', 'backgroundImage', 'leftImage', 'rightImage',
     ])
     const items = blocks.filter((block) => !block.parentId && !sectionFields.has(block.fieldKey))
+
+    // Reusable Why CHC sections retain the real stack-card treatment when
+    // placed on any page; they must never degrade into generic CMS cards.
+    if (section.sectionKey === 'whyChc') {
+      const cards = items.map((item) => {
+        const children = blocks.filter((block) => block.parentId === item.id)
+        const child = (key) => children.find((block) => block.fieldKey === key)
+        return {
+          img: cloudinaryUrl(child('image')?.mediaAsset?.publicUrl || child('image')?.textValue || '', 'card'),
+          badge: child('badge')?.textValue || '',
+          heading: child('heading')?.textValue || '',
+          paragraph: child('paragraph')?.textValue || '',
+        }
+      }).filter((card) => card.heading || card.paragraph || card.img)
+
+      return (
+        <section key={section.id} className="chc-why-section chc-cms-stack-section">
+          <div className="container-fluid px-5 lg-px-10">
+            <div className="row justify-content-center mb-3" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+              <div className="col-xl-5 col-lg-7 col-md-8 text-center">
+                <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{title}</h2>
+              </div>
+            </div>
+            <div className="row"><div className="col-12"><StackCardGroup cards={cards} showButton={false} /></div></div>
+          </div>
+        </section>
+      )
+    }
 
     return <section key={section.id} className="chc-cms-section py-5"><div className="container-fluid px-5 lg-px-10"><div className="row justify-content-center mb-4"><div className="col-lg-8 text-center"><h2 className="alt-font text-dark-gray fw-600">{title}</h2>{content && <p className="text-medium-gray mb-0">{content}</p>}</div></div><div className="row justify-content-center g-4">{items.map((item) => {
       const children = blocks.filter((block) => block.parentId === item.id)

@@ -1,4 +1,6 @@
-import { getHomeHero, getHomeIntro, getHomeWhatWeDo, getHomeWhyChc, getPageSeo } from '@/lib/cms/public-data'
+import { getHomeHero, getHomeIntro, getHomeWhatWeDo, getHomeWhyChc, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return getPageSeo('home', {
@@ -8,7 +10,11 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const [hero, intro, whatWeDo, whyChc] = await Promise.all([getHomeHero(), getHomeIntro(), getHomeWhatWeDo(), getHomeWhyChc()])
+  const [hero, intro, whatWeDo, whyChc, whatWeDoHeading, whyChcHeading] = await Promise.all([
+    getHomeHero(), getHomeIntro(), getHomeWhatWeDo(), getHomeWhyChc(),
+    getSectionHeading('home', 'whatWeDo', 'What we do'),
+    getSectionHeading('home', 'whyChc', 'Why CHC?'),
+  ])
 
   return (
     <>
@@ -78,10 +84,10 @@ export default async function HomePage() {
               <p className="mb-35px sm-mb-25px w-85 md-w-90">{intro.paragraph}</p>
               <div className="progress-bar-style-02 w-90">
                 <div className="d-inline-block">
-                  <a href="#contact" className="btn btn-medium btn-dark-gray btn-box-shadow me-25px btn-round-edge">Discuss Tech Requirement</a>
-                  <a href="/services" className="btn btn-link btn-large text-dark-gray xs-mt-15px xs-mb-15px">Explore our services</a>
+                  <a href={intro.buttonHref} className="btn btn-medium btn-dark-gray btn-box-shadow me-25px btn-round-edge">{intro.buttonLabel}</a>
+                  <a href={intro.linkHref} className="btn btn-link btn-large text-dark-gray xs-mt-15px xs-mb-15px">{intro.linkLabel}</a>
                 </div>
-                <div className="fs-14 lh-24 mt-15px text-dark-gray">Reliable insights powered by the latest data.</div>
+                <div className="fs-14 lh-24 mt-15px text-dark-gray">{intro.note}</div>
               </div>
             </div>
           </div>
@@ -94,7 +100,7 @@ export default async function HomePage() {
           <div className="row justify-content-center mb-3">
             <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
               <span className="fw-600 ls-1px fs-16 alt-font d-inline-block text-uppercase mb-5px text-base-color">Innovative solutions</span>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">What we do</h2>
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{whatWeDoHeading}</h2>
             </div>
           </div>
           <div className="row row-cols-1 row-cols-xl-4 row-cols-md-2 row-cols-sm-2 justify-content-center" data-chc-animate='{ "el": "childs", "translateX": [30, 0], "opacity": [0,1], "duration": 800, "delay": 200, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -125,7 +131,7 @@ export default async function HomePage() {
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
             <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
-              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">Why CHC?</h2>
+              <h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{whyChcHeading}</h2>
             </div>
           </div>
           <div className="row">
