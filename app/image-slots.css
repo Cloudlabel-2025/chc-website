@@ -1,0 +1,53 @@
+/* Image geometry belongs to the section, not to the uploaded asset.
+   Keep responsive widths while normalising replacement image proportions. */
+.chc-page-content img.chc-content-image-left {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 750 / 800;
+  object-fit: cover;
+}
+
+.chc-page-content img.chc-content-image-right {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.chc-page-content .team-style-05 img {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 600 / 756;
+  object-fit: cover;
+  object-position: center;
+}
+
+.chc-page-content .services-box-style-03 > .position-relative > :is(a, span) > img,
+.chc-page-content img.chc-cms-card-image {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 674 / 452;
+  object-fit: cover;
+}
+
+.chc-page-content img.chc-cms-card-image {
+  height: 240px !important;
+}
+
+.chc-page-content .feature-box-icon img {
+  width: 100%;
+  max-width: 244px;
+  height: 150px !important;
+  object-fit: contain;
+}
+
+.chc-page-content .chc-core-capability img {
+  width: 100%;
+  max-width: 100px;
+  height: 75px !important;
+  object-fit: contain;
+}

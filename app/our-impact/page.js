@@ -1,7 +1,7 @@
+import CmsPageLayout from '@/components/CmsPageLayout'
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import ImpactServicesCarousel from '@/components/ImpactServicesCarousel'
-import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContentSection, getImpactHeader, getOurImpactSlides, getPageSeo, getSectionBadge, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
@@ -33,12 +33,12 @@ export default async function OurImpactPage() {
   ])
 
   return (
-    <>
-      <PageHero {...hero} />
+    <CmsPageLayout slug="our-impact">
+      <PageHero data-cms-template="innerPageHero" {...hero} />
 
-      <ContentSection {...cs} />
+      <ContentSection data-cms-template="contentSection" {...cs} />
 
-      <section className="cover-background border-radius-10px overflow-visible" style={{ backgroundImage: "url('/images/demo-modern-business-services-bg-01.jpg')" }}>
+      <section data-cms-template="serviceSlide" className="cover-background border-radius-10px overflow-visible" style={{ backgroundImage: "url('/images/demo-modern-business-services-bg-01.jpg')" }}>
         <div className="container-fluid overflow-hidden">
           <div className="row" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-12 text-center">
@@ -59,7 +59,6 @@ export default async function OurImpactPage() {
           </div>
         </div>
       </section>
-      <CmsAdditionalSections slug="our-impact" skipFirst={{ innerPageHero: 1, contentSection: 1, impactHeader: 1, impactFooter: 1, serviceSlide: 1 }} />
-    </>
+    </CmsPageLayout>
   )
 }

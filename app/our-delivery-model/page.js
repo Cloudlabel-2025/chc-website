@@ -1,6 +1,6 @@
+import CmsPageLayout from '@/components/CmsPageLayout'
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
-import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getDeliveryModelProcessSteps, getDeliveryModelFaqs,
@@ -32,12 +32,12 @@ export default async function OurDeliveryModelPage() {
   ])
 
   return (
-    <>
-      <PageHero {...hero} />
+    <CmsPageLayout slug="our-delivery-model">
+      <PageHero data-cms-template="innerPageHero" {...hero} />
 
-      <ContentSection {...cs} />
+      <ContentSection data-cms-template="contentSection" {...cs} />
 
-      {/* Process Steps Grid #1 */}
+      <section data-cms-template="processSteps1">
       <div className="container-fluid px-5 lg-px-10"><div className="row justify-content-center mt-5"><div className="col-lg-8 text-center"><h2 className="alt-font text-dark-gray fw-600 ls-minus-2px">{steps1Heading}</h2></div></div></div>
       <div className="chc-delivery-process-steps mt-7 md-mt-50px" data-chc-animate='{ "el": "childs", "translateX": [-50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
         {steps1.map((step, i) => (
@@ -56,8 +56,10 @@ export default async function OurDeliveryModelPage() {
         ))}
       </div>
 
+      </section>
+
       {/* FAQ Section */}
-      <section className="bg-very-light-gray">
+      <section data-cms-template="faqItem" className="bg-very-light-gray">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
             <div className="col-lg-7 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -83,7 +85,7 @@ export default async function OurDeliveryModelPage() {
       </section>
 
       {/* Process Steps Grid #2 */}
-      <section className="bg-very-light-gray big-section" id="down-section">
+      <section data-cms-template="processSteps2" className="bg-very-light-gray big-section" id="down-section">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center justify-content-center text-center text-lg-start" data-chc-animate='{ "el": "childs", "translateX": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-lg-5 col-md-10 md-mb-50px xs-mb-40px">
@@ -108,7 +110,6 @@ export default async function OurDeliveryModelPage() {
           </div>
         </div>
       </section>
-      <CmsAdditionalSections slug="our-delivery-model" skipFirst={{ innerPageHero: 1, contentSection: 1, processSteps1: Number.MAX_SAFE_INTEGER, processSteps2: Number.MAX_SAFE_INTEGER, faqItem: Number.MAX_SAFE_INTEGER, faqHeader: 1, faqFooter: 1, processHeader2: 1 }} />
-    </>
+    </CmsPageLayout>
   )
 }

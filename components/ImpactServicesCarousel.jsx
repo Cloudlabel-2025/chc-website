@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import SlideLink from '@/components/SlideLink'
 
 /** Infinite native-scroll carousel with link-safe pointer dragging. */
 export default function ImpactServicesCarousel({ services = [] }) {
@@ -111,11 +112,11 @@ export default function ImpactServicesCarousel({ services = [] }) {
             role="listitem"
             aria-hidden={index < services.length || index >= services.length * 2}
           >
-            <a href={service.href || '/'} className="chc-impact-service-image force-magic-cursor">
+            <SlideLink href={service.href} className="chc-impact-service-image force-magic-cursor">
               <img src={service.img} alt="" loading="lazy" draggable="false" />
-            </a>
+            </SlideLink>
             <div className="chc-impact-service-content">
-              <a href={service.href || '/'} className="chc-impact-service-title force-magic-cursor">{service.title}</a>
+              <SlideLink href={service.href} className="chc-impact-service-title force-magic-cursor">{service.title}</SlideLink>
               <p>{service.desc}</p>
             </div>
           </article>

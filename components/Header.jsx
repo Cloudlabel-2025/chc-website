@@ -1,5 +1,7 @@
 'use client'
 
+import SlideLink from '@/components/SlideLink'
+
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
@@ -127,10 +129,10 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
               <ul className="navbar-nav">
                 {navItems.slice(0, 4).map((item) => (
                   <li className={`nav-item${isActive(item.href) ? ' active' : ''}`} key={item.href}>
-                    <a href={item.href} className="nav-link" aria-current={isActive(item.href) ? 'page' : undefined} onClick={closeNavigation}>
+                    <SlideLink href={item.href} className="nav-link" aria-current={isActive(item.href) ? 'page' : undefined} onClick={closeNavigation}>
                       {item.label}
                       {item.badge && <span className="label border-radius-100px bg-light-medium-gray fw-700 alt-font text-base-color text-uppercase">{item.badge}</span>}
-                    </a>
+                    </SlideLink>
                   </li>
                 ))}
 
@@ -155,12 +157,12 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
                   <ul className="dropdown-menu" id="what-we-do-menu">
                     {whatWeDoItems.map((item) => (
                       <li key={item.href}>
-                        <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined} onClick={closeNavigation}>
+                        <SlideLink href={item.href} aria-current={isActive(item.href) ? 'page' : undefined} onClick={closeNavigation}>
         <i className={item.icon} aria-hidden="true"></i>
         <span className="submenu-icon-content">
           <span>{item.label}</span>
         </span>
-      </a>
+      </SlideLink>
                       </li>
                     ))}
                   </ul>
@@ -168,7 +170,7 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
 
                 {navItems.slice(4).map((item) => (
                   <li className={`nav-item${isActive(item.href) ? ' active' : ''}`} key={item.href}>
-                    <a href={item.href} className="nav-link" aria-current={isActive(item.href) ? 'page' : undefined} onClick={closeNavigation}>{item.label}</a>
+                    <SlideLink href={item.href} className="nav-link" aria-current={isActive(item.href) ? 'page' : undefined} onClick={closeNavigation}>{item.label}</SlideLink>
                   </li>
                 ))}
               </ul>

@@ -1,7 +1,8 @@
+import CmsPageLayout from '@/components/CmsPageLayout'
+import SlideLink from '@/components/SlideLink'
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import DeliveryCapacityCarousel from '@/components/DeliveryCapacityCarousel'
-import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import {
   getInnerPageHero, getContentSection, getPageSeo,
   getOracleProductisedServices, getOracleHeadings, getOracleCapabilities,
@@ -66,12 +67,12 @@ export default async function OracleHCMPage() {
   ])
 
   return (
-    <>
-      <PageHero {...hero} />
+    <CmsPageLayout slug="oracle-hcm">
+      <PageHero data-cms-template="innerPageHero" {...hero} />
 
-      <ContentSection {...cs} />
+      <ContentSection data-cms-template="contentSection" {...cs} />
 
-      <section className="border-bottom border-color-extra-medium-gray half-section" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+      <section data-cms-template="capabilityItem" className="border-bottom border-color-extra-medium-gray half-section" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
         <div className="container-fluid px-5 lg-px-10">
           <div className="row">
             <div className="col-12 text-center mt-10px mb-30px">
@@ -93,7 +94,7 @@ export default async function OracleHCMPage() {
         </div>
       </section>
 
-      <section className="position-relative">
+      <section data-cms-template="productisedService" className="position-relative">
         <div id="particles-03" data-particle="true" data-particle-options='{"particles":{"number":{"value":5,"density":{"enable":true,"value_area":1000}},"color":{"value":["#b7b9be","#dd6531"]},"shape":{"type":"circle","stroke":{"width":0,"color":"#000000"}},"opacity":{"value":0.5,"random":false,"anim":{"enable":false,"speed":1,"sync":false}},"size":{"value":8,"random":true,"anim":{"enable":false,"sync":true}},"move":{"enable":true,"speed":2,"direction":"right","random":false,"straight":false}},"interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":false,"mode":"repulse"},"onclick":{"enable":false,"mode":"push"},"resize":true}},"retina_detect":false}' className="position-absolute h-100 top-0 left-0 z-index-minus-1"></div>
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
@@ -119,9 +120,9 @@ export default async function OracleHCMPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden bg-very-light-gray position-relative">
+      <section data-cms-template="serviceCarouselItem" className="overflow-hidden bg-very-light-gray position-relative">
         <div className="container-fluid px-5 lg-px-10">
-          <div className="row align-items-center mb-5 sm-mb-30px text-center text-lg-start" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
+          <div data-cms-template="deliveryCapacity" className="row align-items-center mb-5 sm-mb-30px text-center text-lg-start" data-chc-animate='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-lg-5 md-mb-30px">
               <h3 className="text-dark-gray fw-700 ls-minus-2px mb-0">{deliveryCapacity.heading}</h3>
             </div>
@@ -139,15 +140,15 @@ export default async function OracleHCMPage() {
                       <div className="chc-delivery-carousel-card" key={`${service.title}-${index}`} role="listitem" aria-hidden={index < deliveryCarousel.length || index >= deliveryCarousel.length * 2}>
                         <div className="services-box-style-03 last-paragraph-no-margin border-radius-6px overflow-hidden">
                             <div className="position-relative">
-                            <a href={service.href || '/services'} className="force-magic-cursor"><img src={service.img} alt="" draggable="false" /></a>
+                            <SlideLink href={service.href} className="force-magic-cursor"><img src={service.img} alt="" draggable="false" /></SlideLink>
                           </div>
                           <div className="bg-white">
                             <div className="ps-65px pe-65px pt-30px pb-30px text-center sm-ps-25px sm-pe-25px">
-                              <a href={service.href || '/services'} className="d-inline-block fs-18 fw-700 text-dark-gray mb-5px force-magic-cursor">{service.title}</a>
+                              <SlideLink href={service.href} className="d-inline-block fs-18 fw-700 text-dark-gray mb-5px force-magic-cursor">{service.title}</SlideLink>
                               <p>{service.desc}</p>
                             </div>
                             <div className="chc-carousel-link-row d-flex justify-content-center border-top border-color-extra-medium-gray pt-20px pb-20px ps-50px pe-50px position-relative text-center">
-                              <a href={service.href || '/services'} className="chc-carousel-service-link force-magic-cursor">{oHeadings.exploreLabel} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                              <SlideLink href={service.href} className="chc-carousel-service-link force-magic-cursor">{oHeadings.exploreLabel} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></SlideLink>
                             </div>
                           </div>
                         </div>
@@ -160,7 +161,6 @@ export default async function OracleHCMPage() {
           </div>
         </div>
       </section>
-      <CmsAdditionalSections slug="oracle-hcm" skipFirst={{ innerPageHero: 1, contentSection: 1, oracleHeadings: 1, capabilityItem: 1, deliveryCapacity: 1, productisedService: 1, serviceCarouselItem: 1 }} />
-    </>
+    </CmsPageLayout>
   )
 }

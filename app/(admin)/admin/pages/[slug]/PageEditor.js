@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { resolveContentBlocks } from '@/lib/cms/content-blocks'
 import MediaLibrary from '@/app/(admin)/admin/media/MediaLibrary'
 import { Delete, Edit, MoveDown, MoveUp } from '@/app/(admin)/components/AdminIcons'
 
@@ -390,10 +391,6 @@ const SECTION_FIELDS = {
     { fieldKey: 'sectionHeading',    blockType: 'TEXT', label: 'Section heading',    maxLength: 100, required: true },
     { fieldKey: 'sectionSubheading', blockType: 'TEXT', label: 'Section subheading', maxLength: 150 },
   ],
-  deliveryCapacity: [
-    { fieldKey: 'heading',   blockType: 'TEXT', label: 'Section heading',   maxLength: 100, required: true },
-    { fieldKey: 'paragraph', blockType: 'TEXT', label: 'Section paragraph', maxLength: 500, required: true },
-  ],
   ctaBanner: [
     { fieldKey: 'heading',     blockType: 'TEXT', label: 'Banner heading',  maxLength: 100 },
     { fieldKey: 'paragraph',   blockType: 'TEXT', label: 'Banner text',     maxLength: 200 },
@@ -450,6 +447,9 @@ const SECTION_FIELDS = {
     { fieldKey: 'heading',        blockType: 'TEXT', label: 'Form heading',    maxLength: 80 },
     { fieldKey: 'placeholder',    blockType: 'TEXT', label: 'Placeholder',     maxLength: 60 },
     { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
+  ],
+  cmsForm: [
+    { fieldKey: 'formSlug', blockType: 'TEXT', label: 'Form slug (created in Admin → Forms)', maxLength: 60, required: true },
   ],
   richText: [
     { fieldKey: 'sectionHeading', blockType: 'TEXT',      label: 'Section heading', maxLength: 100, required: true },
@@ -572,7 +572,11 @@ const REPEATABLE_SECTION_FIELDS = {
   featureCards: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   capabilityItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
   productisedService: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
-  serviceCarouselItem: [{ fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 }],
+  serviceCarouselItem: [
+    { fieldKey: 'heading',    blockType: 'TEXT', label: 'Delivery capacity heading',   maxLength: 100 },
+    { fieldKey: 'paragraph',  blockType: 'TEXT', label: 'Delivery capacity paragraph', maxLength: 500 },
+    { fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 },
+  ],
   serviceSlide: [
     { fieldKey: 'sectionBadge', blockType: 'TEXT', label: 'Eyebrow badge', maxLength: 60 },
     { fieldKey: 'sectionHeading', blockType: 'TEXT', label: 'Section heading', maxLength: 100 },
@@ -601,7 +605,6 @@ const SECTION_LIBRARY = [
   { key: 'featureCards', label: 'Feature cards', animation: 'fadeIn' },
   { key: 'capabilityItem', label: 'Capabilities carousel', animation: 'fadeIn' },
   { key: 'productisedService', label: 'Productised services', animation: 'fadeIn' },
-  { key: 'deliveryCapacity', label: 'Delivery capacity', animation: 'fadeIn' },
   { key: 'serviceCarouselItem', label: 'Service carousel', animation: 'fadeIn' },
   { key: 'serviceSlide', label: 'Impact service slides', animation: 'fadeIn' },
   { key: 'stackCards1', label: 'Stack cards group 1', animation: 'stack' },
@@ -625,12 +628,13 @@ const SECTION_LIBRARY = [
   { key: 'giveOneHour', label: 'Give one hour intro', animation: 'fadeIn' },
   { key: 'giveOneHourForm', label: 'Give One Hour form copy', animation: 'fadeIn' },
   { key: 'newsletterForm', label: 'Newsletter form copy', animation: 'fadeIn' },
+  { key: 'cmsForm', label: 'CMS form (embed a created form)', animation: 'fadeIn' },
   { key: 'richText', label: 'Rich text content', animation: 'fadeIn' },
 ]
 
 function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
   const [open, setOpen]     = useState(true)
-  const [blocks, setBlocks] = useState(section.blocks ?? [])
+  const [blocks, setBlocks] = useState(() => resolveContentBlocks(section.blocks))
   const [visible, setVisible] = useState(section.isVisible)
   const [toggling, setToggling] = useState(false)
   const [restoring, setRestoring] = useState(false)
@@ -672,7 +676,7 @@ function SectionPanel({ section, slug, index, total, onMove, onDelete }) {
       const response = await fetch(`/api/admin/pages/${slug}/sections/${section.id}`, { method: 'POST' })
       const data = await response.json()
       if (!response.ok) { setRestoreError(data.error ?? 'Could not restore default content.'); return }
-      setBlocks(data.section?.blocks ?? [])
+      setBlocks(resolveContentBlocks(data.section?.blocks))
       setOpen(true)
     } catch { setRestoreError('Network error — default content was not restored.') }
     finally { setRestoring(false) }

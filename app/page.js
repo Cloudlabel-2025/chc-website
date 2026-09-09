@@ -1,3 +1,5 @@
+import SlideLink from '@/components/SlideLink'
+import CmsPageLayout from '@/components/CmsPageLayout'
 import { getHomeHero, getHomeIntro, getHomeWhatWeDo, getHomeWhyChc, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
@@ -17,9 +19,9 @@ export default async function HomePage() {
   ])
 
   return (
-    <>
+    <CmsPageLayout slug="home">
       {/* Hero Section */}
-      <section className="chc-home-hero cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px">
+      <section data-cms-template="hero" className="chc-home-hero cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px">
         <img
           src={hero.backgroundImage}
           alt=""
@@ -44,15 +46,15 @@ export default async function HomePage() {
               <h1 className="text-white fw-600 ls-minus-2px mb-25px">{hero.heading}</h1>
               <div><p className="fw-300 fs-18 w-85 sm-w-95 text-white opacity-6">{hero.paragraph}</p></div>
               <div className="chc-hero-ctas">
-                <a href={hero.cta1Href} className="btn btn-extra-large btn-switch-text btn-gradient-purple-pink btn-rounded ls-0px home-marketplace">
+                <SlideLink href={hero.cta1Href} className="btn btn-extra-large btn-switch-text btn-gradient-purple-pink btn-rounded ls-0px home-marketplace">
                   <span><span className="btn-double-text" data-text={hero.cta1Label}>{hero.cta1Label}</span></span>
-                </a>
-                <a href={hero.cta2Href} className="btn btn-extra-large btn-switch-text btn-transparent-white-light btn-rounded border-1 ls-0px">
+                </SlideLink>
+                <SlideLink href={hero.cta2Href} className="btn btn-extra-large btn-switch-text btn-transparent-white-light btn-rounded border-1 ls-0px">
                   <span>
                     <span className="btn-double-text" data-text={hero.cta2Label}>{hero.cta2Label}</span>
                     <span><i className="fa-regular fa-envelope"></i></span>
                   </span>
-                </a>
+                </SlideLink>
               </div>
             </div>
           </div>
@@ -60,7 +62,7 @@ export default async function HomePage() {
       </section>
 
       {/* About/Intro Section */}
-      <section className="chc-home-intro position-relative overflow-hidden">
+      <section data-cms-template="intro" className="chc-home-intro position-relative overflow-hidden">
         <img src="/images/demo-modern-business-elements-02.png" alt="" className="position-absolute right-10px top-70px lg-top-40px animation-rotation d-none d-md-block" />
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center justify-content-center mb-5 sm-mb-0">
@@ -84,8 +86,8 @@ export default async function HomePage() {
               <p className="mb-35px sm-mb-25px w-85 md-w-90">{intro.paragraph}</p>
               <div className="progress-bar-style-02 w-90">
                 <div className="d-inline-block">
-                  <a href={intro.buttonHref} className="btn btn-medium btn-dark-gray btn-box-shadow me-25px btn-round-edge">{intro.buttonLabel}</a>
-                  <a href={intro.linkHref} className="btn btn-link btn-large text-dark-gray xs-mt-15px xs-mb-15px">{intro.linkLabel}</a>
+                  <SlideLink href={intro.buttonHref} className="btn btn-medium btn-dark-gray btn-box-shadow me-25px btn-round-edge">{intro.buttonLabel}</SlideLink>
+                  <SlideLink href={intro.linkHref} className="btn btn-link btn-large text-dark-gray xs-mt-15px xs-mb-15px">{intro.linkLabel}</SlideLink>
                 </div>
                 <div className="fs-14 lh-24 mt-15px text-dark-gray">{intro.note}</div>
               </div>
@@ -95,7 +97,7 @@ export default async function HomePage() {
       </section>
 
       {/* What We Do Section */}
-      <section className="section-what-we-do ps-7 pe-7 xxl-ps-3 xxl-pe-3 xs-px-0">
+      <section data-cms-template="whatWeDo" className="section-what-we-do ps-7 pe-7 xxl-ps-3 xxl-pe-3 xs-px-0">
         <div className="container-fluid">
           <div className="row justify-content-center mb-3">
             <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -107,7 +109,7 @@ export default async function HomePage() {
             {whatWeDo.map((card, i) => (
               <div className="col interactive-banner-style-05 lg-mb-30px position-relative z-index-1" key={i}>
                 <div className="atropos" data-atropos data-atropos-perspective="1450">
-                  <a href={card.href} className="position-absolute z-index-1 top-0px left-0px h-100 w-100"></a>
+                  <SlideLink href={card.href} className="position-absolute z-index-1 top-0px left-0px h-100 w-100"></SlideLink>
                   <div className="atropos-scale"><div className="atropos-rotate"><div className="atropos-inner">
                     <figure className="m-0 hover-box border-radius-4px overflow-hidden position-relative" data-atropos-offset="3" style={{ aspectRatio: '600/815' }}>
                       <img className="w-100 h-100" src={card.image} alt="" style={{ objectFit: 'cover' }} />
@@ -127,7 +129,7 @@ export default async function HomePage() {
       </section>
 
       {/* Stack Cards Section */}
-      <section className="chc-why-section">
+      <section data-cms-template="whyChc" className="chc-why-section">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
             <div className="col-xl-5 col-lg-7 col-md-8 text-center" data-chc-animate='{ "opacity": [0,1], "duration": 800, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
@@ -160,6 +162,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-    </>
+    </CmsPageLayout>
   )
 }

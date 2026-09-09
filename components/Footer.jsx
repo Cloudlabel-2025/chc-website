@@ -1,3 +1,4 @@
+import SlideLink from '@/components/SlideLink'
 const DEFAULTS = {
   address1Label: '',
   address1Text:  '',
@@ -32,10 +33,10 @@ export default function Footer({ footer = DEFAULTS }) {
             </a>
             <div className="elements-social social-text-style-01 mt-auto">
               <ul className="small-icon light">
-                {f.facebookUrl  && <li><a className="facebook"  href={f.facebookUrl}  target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-facebook-f"></i></a></li>}
-                {f.instagramUrl && <li><a className="instagram" href={f.instagramUrl} target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-instagram"></i></a></li>}
-                {f.youtubeUrl   && <li><a className="youtube"   href={f.youtubeUrl}   target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-youtube"></i></a></li>}
-                {f.linkedinUrl  && <li><a className="linkedin"  href={f.linkedinUrl}  target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-linkedin-in"></i></a></li>}
+                {f.facebookUrl  && <li><SlideLink className="facebook"  href={f.facebookUrl}  target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-facebook-f"></i></SlideLink></li>}
+                {f.instagramUrl && <li><SlideLink className="instagram" href={f.instagramUrl} target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-instagram"></i></SlideLink></li>}
+                {f.youtubeUrl   && <li><SlideLink className="youtube"   href={f.youtubeUrl}   target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-youtube"></i></SlideLink></li>}
+                {f.linkedinUrl  && <li><SlideLink className="linkedin"  href={f.linkedinUrl}  target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-linkedin-in"></i></SlideLink></li>}
               </ul>
             </div>
           </div>
@@ -50,7 +51,7 @@ export default function Footer({ footer = DEFAULTS }) {
           {(f.ctaText || f.ctaLinkText) && (
             <div className="col-12 col-xl-3 col-md-6 last-paragraph-no-margin order-xl-3 order-4 sm-mb-30px">
               {f.ctaText     && <p className="mb-0">{f.ctaText}</p>}
-              {f.ctaLinkText && <a href={f.ctaLinkHref || '#'} className="text-white text-decoration-line-bottom d-inline-block">{f.ctaLinkText}</a>}
+              {f.ctaLinkText && <SlideLink href={f.ctaLinkHref} className="text-white text-decoration-line-bottom d-inline-block">{f.ctaLinkText}</SlideLink>}
             </div>
           )}
 

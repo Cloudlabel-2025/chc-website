@@ -5,7 +5,7 @@ import { useState } from 'react'
 const FIELD_TYPES = ['text', 'textarea', 'email', 'url', 'tel', 'number', 'select', 'radio', 'checkbox', 'date']
 
 function emptyField() {
-  return { key: '', type: 'text', label: '', placeholder: '', required: false, minLength: '', maxLength: '', options: [], helpText: '' }
+  return { key: '', type: 'text', label: '', placeholder: '', required: false, minLength: '', maxLength: '', pattern: '', patternMessage: '', options: [], helpText: '' }
 }
 
 function FieldEditor({ field, onChange, onRemove }) {
@@ -44,6 +44,18 @@ function FieldEditor({ field, onChange, onRemove }) {
           <input className="admin-input" value={(field.options ?? []).join(', ')} onChange={(e) => set('options', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))} placeholder="e.g. online, in_person, both" />
         </div>
       )}
+      {['text', 'textarea', 'email', 'tel', 'url'].includes(field.type) && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+          <div>
+            <label className="admin-label">Pattern (regex)</label>
+            <input className="admin-input" value={field.pattern} onChange={(e) => set('pattern', e.target.value)} placeholder="e.g. ^[A-Za-z ]+$" />
+          </div>
+          <div>
+            <label className="admin-label">Pattern message</label>
+            <input className="admin-input" value={field.patternMessage} onChange={(e) => set('patternMessage', e.target.value)} placeholder="e.g. Letters and spaces only" />
+          </div>
+        </div>
+      )}
       <div><label className="admin-label">Help text</label><input className="admin-input" value={field.helpText} onChange={(e) => set('helpText', e.target.value)} placeholder="Optional help text" /></div>
     </div>
   )
@@ -77,6 +89,8 @@ function FormEditor({ form, onSaved, onCancel }) {
         required: !!f.required,
         minLength: f.minLength ? parseInt(f.minLength, 10) : undefined,
         maxLength: f.maxLength ? parseInt(f.maxLength, 10) : undefined,
+        pattern: f.pattern?.trim() || undefined,
+        patternMessage: f.patternMessage?.trim() || undefined,
         options: f.options ?? [],
         helpText: f.helpText ?? '',
       })).filter((f) => f.key),

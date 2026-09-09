@@ -12,7 +12,7 @@ export async function GET(request, { params }) {
   if (!def) return NextResponse.json({ error: 'Form not found.' }, { status: 404 })
   // Public GET only exposes active forms and strips internal fields
   if (!def.isActive) return NextResponse.json({ error: 'Form not available.' }, { status: 404 })
-  return NextResponse.json({ form: { slug: def.slug, title: def.title, fields: def.fields, buttonText: def.buttonText, successMessage: def.successMessage } })
+  return NextResponse.json({ form: { slug: def.slug, title: def.title, fields: def.fields, buttonText: def.buttonText, successMessage: def.successMessage, isActive: true } })
 }
 
 export async function POST(request, { params }) {
@@ -35,7 +35,12 @@ export async function POST(request, { params }) {
   const schema = buildDynamicFormSchema(def.fields ?? [])
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ errors: parsed.error.issues.map((e) => e.message) }, { status: 422 })
+    const fieldErrors = {}
+    for (const issue of parsed.error.issues) {
+      const key = issue.path?.[0] ?? '_general'
+      fieldErrors[key] = [...(fieldErrors[key] ?? []), issue.message]
+    }
+    return NextResponse.json({ errors: parsed.error.issues.map((e) => e.message), fieldErrors }, { status: 422 })
   }
 
   const knownEnum = ['CONTACT', 'GIVE_ONE_HOUR', 'NEWSLETTER']

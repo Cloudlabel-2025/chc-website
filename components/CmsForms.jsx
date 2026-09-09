@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { validateGiveOneHour, GIVE_ONE_HOUR_AVAILABILITY, validateContact, CONTACT_SUBJECTS } from '@/lib/cms/form-validation'
 
 function Field({ label, error }) {
   return null // helper placeholder
@@ -9,14 +10,24 @@ function Field({ label, error }) {
 export function ContactForm({ formFields = {} }) {
   const [status, setStatus] = useState(null) // null | 'loading' | 'success' | 'error'
   const [message, setMessage] = useState('')
-  const [formError, setFormError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  useEffect(() => { if (status === 'success') setShowSuccessModal(true) }, [status])
 
   async function onSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
-    setStatus('loading'); setMessage(''); setFormError('')
-    const fd = new FormData(e.currentTarget)
+    setStatus(null); setMessage(''); setFieldErrors({})
+    const form = e.currentTarget
+    const fd = new FormData(form)
     const body = Object.fromEntries(fd.entries())
+    const clientErrors = validateContact(body)
+    if (Object.keys(clientErrors).length) {
+      setStatus('error'); setFieldErrors(clientErrors)
+      form.querySelector(`[name="${Object.keys(clientErrors)[0]}"]`)?.focus()
+      return
+    }
+    setStatus('loading')
     try {
       const res = await fetch('/api/public/contact', {
         method: 'POST',
@@ -26,11 +37,11 @@ export function ContactForm({ formFields = {} }) {
       const data = await res.json()
       if (!res.ok) {
         const msg = data.errors ? data.errors.join(', ') : (data.error ?? 'Failed to send message.')
-        setStatus('error'); setMessage(msg); setFormError(msg)
+        setStatus('error'); setMessage(msg); setFieldErrors(data.fieldErrors ?? {})
         return
       }
-      setStatus('success'); setMessage(data.message ?? 'Message sent — we\'ll be in touch.')
-      e.currentTarget.reset()
+      setStatus('success'); setMessage(data.message ?? 'Thanks — your message has been sent.')
+      form.reset()
     } catch {
       setStatus('error'); setMessage('Network error — please try again.')
     }
@@ -48,22 +59,32 @@ export function ContactForm({ formFields = {} }) {
     ...formFields,
   }
 
+  const errorFor = (name) => fieldErrors[name]?.[0]
+
   return (
     <form onSubmit={onSubmit} className="row contact-form-style-02" noValidate>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large input-name form-control required" type="text" name="name" placeholder={f.namePlaceholder} required />
+        <input maxLength="100" className="box-shadow-quadruple-large input-name form-control required" type="text" name="name" placeholder={f.namePlaceholder} required aria-invalid={Boolean(errorFor('name'))} />
+        {errorFor('name') && <small className="text-danger d-block mt-5px">{errorFor('name')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="email" name="email" placeholder={f.emailPlaceholder} required />
+        <input maxLength="254" className="box-shadow-quadruple-large form-control required" type="email" name="email" placeholder={f.emailPlaceholder} required aria-invalid={Boolean(errorFor('email'))} />
+        {errorFor('email') && <small className="text-danger d-block mt-5px">{errorFor('email')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control" type="tel" name="phone" placeholder={f.phonePlaceholder} />
+        <input maxLength="25" className="box-shadow-quadruple-large form-control" type="tel" name="phone" placeholder={f.phonePlaceholder} aria-invalid={Boolean(errorFor('phone'))} />
+        {errorFor('phone') && <small className="text-danger d-block mt-5px">{errorFor('phone')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control" type="text" name="subject" placeholder={f.subjectPlaceholder} />
+        <select className="box-shadow-quadruple-large form-control required form-select" name="subject" defaultValue="" required aria-invalid={Boolean(errorFor('subject'))}>
+          <option value="" disabled>{f.subjectPlaceholder}</option>
+          {CONTACT_SUBJECTS.map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
+        {errorFor('subject') && <small className="text-danger d-block mt-5px">{errorFor('subject')}</small>}
       </div>
       <div className="col-md-12 mb-30px">
-        <textarea className="box-shadow-quadruple-large form-control" cols="40" rows="4" name="comment" placeholder={f.commentPlaceholder}></textarea>
+        <textarea maxLength="2000" className="box-shadow-quadruple-large form-control" cols="40" rows="4" name="comment" placeholder={f.commentPlaceholder} aria-invalid={Boolean(errorFor('comment'))}></textarea>
+        {errorFor('comment') && <small className="text-danger d-block mt-5px">{errorFor('comment')}</small>}
       </div>
       <div className="col-md-7 last-paragraph-no-margin">
         <p className="text-center text-md-start fs-16">{f.privacyText}</p>
@@ -73,8 +94,18 @@ export function ContactForm({ formFields = {} }) {
           {status === 'loading' ? 'sending…' : f.buttonText}
         </button>
       </div>
-      {message && (
-        <div className="col-12"><div className={`form-results mt-20px ${status === 'success' ? 'text-success' : 'text-danger'}`}>{message}</div></div>
+      {message && status === 'error' && (
+        <div className="col-12"><div className="form-results mt-20px text-danger">{message}</div></div>
+      )}
+      {showSuccessModal && (
+        <div role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setShowSuccessModal(false) }} style={{ position: 'fixed', inset: 0, zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, background: 'rgba(12, 16, 36, .72)' }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="contact-success-title" style={{ width: 'min(520px, 100%)', background: '#fff', borderRadius: 16, padding: '36px 30px 30px', textAlign: 'center', boxShadow: '0 24px 80px rgba(0,0,0,.28)' }}>
+            <div aria-hidden="true" style={{ width: 56, height: 56, margin: '0 auto 18px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: '#e8f7ef', color: '#16834b', fontSize: 28 }}>✓</div>
+            <h2 id="contact-success-title" style={{ marginBottom: 12, color: '#202338' }}>Thank you</h2>
+            <p style={{ marginBottom: 24, color: '#555b70', lineHeight: 1.65 }}>{f.successText}</p>
+            <button type="button" className="btn btn-medium btn-gradient-purple-pink btn-round-edge" onClick={() => setShowSuccessModal(false)}>Close</button>
+          </div>
+        </div>
       )}
     </form>
   )
@@ -84,13 +115,23 @@ export function GiveOneHourForm({ formFields = {} }) {
   const [status, setStatus] = useState(null)
   const [message, setMessage] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  useEffect(() => { if (status === 'success') setShowSuccessModal(true) }, [status])
 
   async function onSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
-    setStatus('loading'); setMessage(''); setFieldErrors({})
-    const fd = new FormData(e.currentTarget)
+    setStatus(null); setMessage(''); setFieldErrors({})
+    const form = e.currentTarget
+    const fd = new FormData(form)
     const body = Object.fromEntries(fd.entries())
+    const clientErrors = validateGiveOneHour(body)
+    if (Object.keys(clientErrors).length) {
+      setStatus('error'); setFieldErrors(clientErrors)
+      form.querySelector(`[name="${Object.keys(clientErrors)[0]}"]`)?.focus()
+      return
+    }
+    setStatus('loading')
     try {
       const res = await fetch('/api/public/give-one-hour', {
         method: 'POST',
@@ -103,7 +144,7 @@ export function GiveOneHourForm({ formFields = {} }) {
         setStatus('error'); setMessage(msg); setFieldErrors(data.fieldErrors ?? {}); return
       }
       setStatus('success'); setMessage(data.message ?? 'Thank you — we\'ll be in touch.')
-      e.currentTarget.reset()
+      form.reset()
     } catch {
       setStatus('error'); setMessage('Network error — please try again.')
     }
@@ -128,7 +169,7 @@ export function GiveOneHourForm({ formFields = {} }) {
   return (
     <form onSubmit={onSubmit} className="row contact-form-style-02" noValidate>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large input-name form-control required" type="text" name="full_name" placeholder={f.fullNamePlaceholder} required aria-invalid={Boolean(errorFor('full_name'))} />
+        <input maxLength="80" className="box-shadow-quadruple-large input-name form-control required" type="text" name="full_name" placeholder={f.fullNamePlaceholder} required aria-invalid={Boolean(errorFor('full_name'))} />
         {errorFor('full_name') && <small className="text-danger d-block mt-5px">{errorFor('full_name')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
@@ -136,23 +177,26 @@ export function GiveOneHourForm({ formFields = {} }) {
         {errorFor('linkedin') && <small className="text-danger d-block mt-5px">{errorFor('linkedin')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="organisation" placeholder={f.orgPlaceholder} required aria-invalid={Boolean(errorFor('organisation'))} />
+        <input maxLength="120" className="box-shadow-quadruple-large form-control required" type="text" name="organisation" placeholder={f.orgPlaceholder} required aria-invalid={Boolean(errorFor('organisation'))} />
         {errorFor('organisation') && <small className="text-danger d-block mt-5px">{errorFor('organisation')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="role" placeholder={f.rolePlaceholder} required aria-invalid={Boolean(errorFor('role'))} />
+        <input maxLength="80" className="box-shadow-quadruple-large form-control required" type="text" name="role" placeholder={f.rolePlaceholder} required aria-invalid={Boolean(errorFor('role'))} />
         {errorFor('role') && <small className="text-danger d-block mt-5px">{errorFor('role')}</small>}
       </div>
       <div className="col-md-12 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="expertise" placeholder={f.expertisePlaceholder} required aria-invalid={Boolean(errorFor('expertise'))} />
+        <input maxLength="160" className="box-shadow-quadruple-large form-control required" type="text" name="expertise" placeholder={f.expertisePlaceholder} required aria-invalid={Boolean(errorFor('expertise'))} />
         {errorFor('expertise') && <small className="text-danger d-block mt-5px">{errorFor('expertise')}</small>}
       </div>
       <div className="col-md-12 mb-30px">
-        <textarea className="box-shadow-quadruple-large form-control required" cols="40" rows="4" name="how_to_help" placeholder={f.helpPlaceholder} required aria-invalid={Boolean(errorFor('how_to_help'))}></textarea>
+        <textarea maxLength="1000" className="box-shadow-quadruple-large form-control required" cols="40" rows="4" name="how_to_help" placeholder={f.helpPlaceholder} required aria-invalid={Boolean(errorFor('how_to_help'))}></textarea>
         {errorFor('how_to_help') && <small className="text-danger d-block mt-5px">{errorFor('how_to_help')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
-        <input className="box-shadow-quadruple-large form-control required" type="text" name="availability" placeholder={f.availabilityPlaceholder} required aria-invalid={Boolean(errorFor('availability'))} />
+        <select className="box-shadow-quadruple-large form-control required form-select" name="availability" defaultValue="" required aria-invalid={Boolean(errorFor('availability'))}>
+          <option value="" disabled>{f.availabilityPlaceholder}</option>
+          {GIVE_ONE_HOUR_AVAILABILITY.map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
         {errorFor('availability') && <small className="text-danger d-block mt-5px">{errorFor('availability')}</small>}
       </div>
       <div className="col-md-6 mb-30px">
@@ -165,7 +209,7 @@ export function GiveOneHourForm({ formFields = {} }) {
         {errorFor('format') && <small className="text-danger d-block mt-5px">{errorFor('format')}</small>}
       </div>
       <div className="col-md-12 mb-30px">
-        <textarea className="box-shadow-quadruple-large form-control" cols="40" rows="4" name="anything_else" placeholder="Anything you'd like us to know?"></textarea>
+        <textarea maxLength="1000" className="box-shadow-quadruple-large form-control" cols="40" rows="4" name="anything_else" placeholder="Anything you'd like us to know?"></textarea>
       </div>
       <div className="col-md-12 mt-10px mb-10px">
         <p className="text-center text-md-start fs-16">{f.consentText}</p>
@@ -177,6 +221,16 @@ export function GiveOneHourForm({ formFields = {} }) {
       </div>
       {message && (
         <div className="col-12"><div className={`form-results mt-20px text-center ${status === 'success' ? 'text-success' : 'text-danger'}`}>{message}</div></div>
+      )}
+      {showSuccessModal && (
+        <div role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setShowSuccessModal(false) }} style={{ position: 'fixed', inset: 0, zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, background: 'rgba(12, 16, 36, .72)' }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="give-one-hour-success-title" style={{ width: 'min(520px, 100%)', background: '#fff', borderRadius: 16, padding: '36px 30px 30px', textAlign: 'center', boxShadow: '0 24px 80px rgba(0,0,0,.28)' }}>
+            <div aria-hidden="true" style={{ width: 56, height: 56, margin: '0 auto 18px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: '#e8f7ef', color: '#16834b', fontSize: 28 }}>✓</div>
+            <h2 id="give-one-hour-success-title" style={{ marginBottom: 12, color: '#202338' }}>Thank you</h2>
+            <p style={{ marginBottom: 24, color: '#555b70', lineHeight: 1.65 }}>A member of CHC will contact you to arrange the most useful session based on your experience and availability.</p>
+            <button type="button" className="btn btn-medium btn-gradient-purple-pink btn-round-edge" onClick={() => setShowSuccessModal(false)}>Close</button>
+          </div>
+        </div>
       )}
     </form>
   )

@@ -1,9 +1,9 @@
 import { cloudinaryUrl } from '@/lib/cms/cloudinary-url'
 import HeroScrollButton from '@/components/HeroScrollButton'
 
-export default function PageHero({ backgroundImage, heading, subtitle }) {
+export default function PageHero({ backgroundImage, heading, subtitle, id }) {
   return (
-    <section className="chc-page-hero cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px">
+    <section id={id} className="chc-page-hero cover-background full-screen ipad-top-space-margin py-0px md-h-750px sm-h-650px">
       <img src={cloudinaryUrl(backgroundImage, 'hero')} alt="" className="chc-hero-background" fetchPriority="high" aria-hidden="true" />
       <div className="hero-overlay-animated"></div>
       <div className="shape-image-animation bottom-0 p-0 w-100 d-none d-md-block">

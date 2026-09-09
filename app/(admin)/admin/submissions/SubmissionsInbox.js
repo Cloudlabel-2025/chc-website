@@ -6,6 +6,16 @@ const FORM_LABELS = {
   CONTACT:      'Contact',
   GIVE_ONE_HOUR:'Give One Hour',
   NEWSLETTER:   'Newsletter',
+  CUSTOM:       'Custom form',
+}
+
+function typeLabel(sub) {
+  if (sub.formType === 'CUSTOM') return sub.formDefinition?.title ?? 'Custom form'
+  return FORM_LABELS[sub.formType] ?? sub.formType
+}
+
+function isGiveOneHour(sub) {
+  return sub.formType === 'GIVE_ONE_HOUR' || sub.formType === 'CUSTOM' && sub.formDefinition?.slug === 'give-one-hour'
 }
 
 function formatDate(d) {
@@ -19,7 +29,7 @@ function DetailPanel({ submission, onClose, onDelete, onMarkRead }) {
       <div className="admin-card" style={{ maxWidth: 560, width: '100%', maxHeight: '90vh', overflow: 'auto' }}>
         <div className="admin-card-header">
           <div>
-            <span className="admin-card-title">{FORM_LABELS[submission.formType] ?? submission.formType}</span>
+            <span className="admin-card-title">{typeLabel(submission)}</span>
             <span className="admin-text-muted admin-text-sm" style={{ marginLeft: 8 }}>{formatDate(submission.submittedAt)}</span>
           </div>
           <button className="admin-btn admin-btn-secondary admin-btn-sm" onClick={onClose}>✕</button>
@@ -147,7 +157,10 @@ export default function SubmissionsInbox({ initialSubmissions, initialTotal }) {
                         {!sub.isRead && <span className="admin-unread-dot" />}
                       </td>
                       <td>
-                        <span className="admin-badge admin-badge-draft">{FORM_LABELS[sub.formType] ?? sub.formType}</span>
+                        <span className="admin-badge admin-badge-draft">
+                          {isGiveOneHour(sub) && <span className="admin-form-dot admin-form-dot--red" />}
+                          {typeLabel(sub)}
+                        </span>
                       </td>
                       <td style={{ fontWeight: sub.isRead ? 400 : 600 }}>{from}</td>
                       <td className="admin-text-muted admin-text-sm">{formatDate(sub.submittedAt)}</td>

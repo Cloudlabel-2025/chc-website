@@ -470,11 +470,7 @@ async function seedOracleHcm(userId, CS_DEFAULT) {
     }
   }
 
-  const dcSection = await upsertSection(userId, page.id, 'deliveryCapacity', 4)
-  await seedBlock(userId, dcSection.id, 'heading',   'TEXT', 'Looking for Oracle Delivery Capacity?')
-  await seedBlock(userId, dcSection.id, 'paragraph', 'TEXT', 'CHC can operate as a specialist subcontracting and delivery partner for larger Oracle consultancies and implementation partners. We can take responsibility for defined work packages or provide supervised functional and technical delivery capacity under your program.')
-
-  const carSection = await upsertSection(userId, page.id, 'serviceCarouselItem', 5)
+  const carSection = await upsertSection(userId, page.id, 'serviceCarouselItem', 4)
   if (!(await hasRepeatableItems(carSection.id))) {
     const slides = [
       { image: '/images/config.png', title: 'Configuration', desc: "Configure Oracle HCM Cloud to align with your organization's business processes, workforce structures, roles, approvals, and HR requirements." },
@@ -494,6 +490,48 @@ async function seedOracleHcm(userId, CS_DEFAULT) {
       })
     }
   }
+
+  // The delivery-capacity heading + paragraph live inside the carousel
+  // section (they render as its intro row). Heal older databases that stored
+  // them as a separate section instead of leaving a duplicated row.
+  // NOTE: MongoDB docs created without a `parentId` field don't match a
+  // `parentId: null` filter, so query top-level blocks by fieldKey instead.
+  const dcSection = await prisma.section.findFirst({
+    where: { pageId: page.id, sectionKey: 'deliveryCapacity' },
+    include: { blocks: true },
+  })
+  if (dcSection) {
+    for (const block of dcSection.blocks) {
+      if (block.fieldKey !== 'heading' && block.fieldKey !== 'paragraph') continue
+      const existing = await prisma.contentBlock.findFirst({
+        where: { sectionId: carSection.id, fieldKey: block.fieldKey },
+      })
+      if (!existing) {
+        await prisma.contentBlock.create({
+          data: {
+            sectionId: carSection.id,
+            fieldKey: block.fieldKey,
+            blockType: block.blockType,
+            textValue: block.textValue,
+            parentId: null,
+            isPublished: true,
+            sortOrder: 0,
+            createdById: userId,
+            updatedById: userId,
+            updatedAt: new Date(),
+          },
+        })
+      }
+    }
+    for (const block of dcSection.blocks) {
+      await prisma.contentBlock.delete({ where: { id: block.id } })
+    }
+    await prisma.section.delete({ where: { id: dcSection.id } })
+    console.log('  oracle-hcm: merged deliveryCapacity into serviceCarouselItem')
+  }
+
+  await seedBlock(userId, carSection.id, 'heading', 'TEXT', 'Looking for Oracle Delivery Capacity?')
+  await seedBlock(userId, carSection.id, 'paragraph', 'TEXT', 'CHC can operate as a specialist subcontracting and delivery partner for larger Oracle consultancies and implementation partners. We can take responsibility for defined work packages or provide supervised functional and technical delivery capacity under your program.')
 }
 
 // ─── Applications ─────────────────────────────────────────────────────────────

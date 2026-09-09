@@ -18,7 +18,10 @@ export async function POST(request) {
   const parsed = contactFormSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { errors: parsed.error.errors.map((e) => e.message) },
+      {
+        errors: parsed.error.issues.map((e) => e.message),
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      },
       { status: 422 }
     )
   }

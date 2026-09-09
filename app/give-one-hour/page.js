@@ -1,6 +1,6 @@
+import CmsPageLayout from '@/components/CmsPageLayout'
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
-import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { GiveOneHourForm } from '@/components/CmsForms'
 import { getInnerPageHero, getContentSection, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
 
@@ -24,12 +24,12 @@ export default async function GiveOneHourPage() {
   ])
 
   return (
-    <>
-      <PageHero {...hero} />
+    <CmsPageLayout slug="give-one-hour">
+      <PageHero data-cms-template="innerPageHero" {...hero} />
 
-      <ContentSection {...cs} />
+      <ContentSection data-cms-template="contentSection" {...cs} />
 
-      <section className="bg-very-light-gray">
+      <section data-cms-template="giveOneHourForm" className="bg-very-light-gray">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center">
             <div className="col-lg-7 text-center mb-2" data-chc-animate='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
@@ -44,7 +44,6 @@ export default async function GiveOneHourPage() {
           </div>
         </div>
       </section>
-      <CmsAdditionalSections slug="give-one-hour" skipFirst={{ innerPageHero: 1, contentSection: 1, giveOneHour: 1, giveOneHourForm: 1 }} />
-    </>
+    </CmsPageLayout>
   )
 }

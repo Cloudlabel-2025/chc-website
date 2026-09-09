@@ -19,6 +19,7 @@ export default async function SubmissionsPage() {
       prisma.formSubmission.findMany({
         orderBy: { submittedAt: 'desc' },
         take: 20,
+        include: { formDefinition: { select: { id: true, title: true, slug: true } } },
       }),
       prisma.formSubmission.count(),
       prisma.formSubmission.count({ where: { isRead: false } }),

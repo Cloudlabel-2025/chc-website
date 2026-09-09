@@ -10,7 +10,9 @@ export default function HeroScrollButton() {
     if (!anchor) return
     const heroSection = anchor.closest('section')
     if (!heroSection) return
-    const target = document.getElementById('down-section') ?? (heroSection.nextElementSibling ?? null)
+    const instance = heroSection.closest('[data-cms-section]')
+    const next = instance?.nextElementSibling
+    const target = next?.querySelector('section') ?? next ?? heroSection.nextElementSibling ?? document.getElementById('down-section')
     if (!target) return
     event.preventDefault()
     const headerHeight = document.querySelector('.chc-site-header')?.offsetHeight ?? 0

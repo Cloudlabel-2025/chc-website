@@ -16,7 +16,7 @@ test('database reads time out with a diagnostic code', async () => {
 })
 
 test('public CMS reads allow cold connections and report safe fallback diagnostics', async () => {
-  const publicSource = readFileSync('lib/cms/public-data.js', 'utf8')
+  const publicSource = readFileSync('lib/cms/public-data.js', 'utf8').replace(/\r\n/g, '\n')
   const wrapperSource = publicSource.slice(publicSource.indexOf('const PUBLIC_DATA_TIMEOUT_MS'), publicSource.indexOf('//', publicSource.indexOf('\n}\n', publicSource.indexOf('function withPublicDataTimeout')) + 3))
   const calls = []
   const warnings = []

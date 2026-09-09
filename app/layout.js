@@ -1,6 +1,7 @@
 import Script from 'next/script'
 import { headers } from 'next/headers'
 import './globals.css'
+import './image-slots.css'
 import 'swiper/css/bundle'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'

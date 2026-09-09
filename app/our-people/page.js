@@ -1,7 +1,7 @@
+import CmsPageLayout from '@/components/CmsPageLayout'
 import PageHero from '@/components/PageHero'
 import ContentSection from '@/components/ContentSection'
 import LeadingExpertsCarousel from '@/components/LeadingExpertsCarousel'
-import CmsAdditionalSections from '@/components/CmsAdditionalSections'
 import { getInnerPageHero, getContentSection, getPeopleHeader, getPeopleData, getPageSeo, getSectionHeading } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
@@ -23,12 +23,12 @@ export default async function OurPeoplePage() {
   ])
 
   return (
-    <>
-      <PageHero {...hero} />
+    <CmsPageLayout slug="our-people">
+      <PageHero data-cms-template="innerPageHero" {...hero} />
 
-      <ContentSection {...cs} />
+      <ContentSection data-cms-template="contentSection" {...cs} />
 
-      <section className="position-relative">
+      <section data-cms-template="teamMember" className="position-relative">
         <div id="particles-03" data-particle="true" data-particle-options='{"particles":{"number":{"value":5,"density":{"enable":true,"value_area":1000}},"color":{"value":["#b7b9be","#dd6531"]},"shape":{"type":"circle","stroke":{"width":0,"color":"#000000"}},"opacity":{"value":0.5,"random":false,"anim":{"enable":false,"speed":1,"sync":false}},"size":{"value":8,"random":true,"anim":{"enable":false,"sync":true}},"move":{"enable":true,"speed":2,"direction":"right","random":false,"straight":false}},"interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":false,"mode":"repulse"},"onclick":{"enable":false,"mode":"push"},"resize":true}},"retina_detect":false}' className="position-absolute h-100 top-0 left-0 z-index-minus-1"></div>
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center mb-3">
@@ -40,7 +40,6 @@ export default async function OurPeoplePage() {
           <LeadingExpertsCarousel people={people} />
         </div>
       </section>
-      <CmsAdditionalSections slug="our-people" skipFirst={{ innerPageHero: 1, contentSection: 1, peopleHeader: 1, teamMember: 1 }} />
-    </>
+    </CmsPageLayout>
   )
 }

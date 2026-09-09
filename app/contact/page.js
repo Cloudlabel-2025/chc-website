@@ -1,5 +1,6 @@
+import CmsPageLayout from '@/components/CmsPageLayout'
 import PageHero from '@/components/PageHero'
-import CmsAdditionalSections from '@/components/CmsAdditionalSections'
+import { ContactForm } from '@/components/CmsForms'
 import { getInnerPageHero, getContactData, getPageSeo } from '@/lib/cms/public-data'
 
 export const dynamic = 'force-dynamic'
@@ -18,10 +19,10 @@ export default async function ContactPage() {
   ])
 
   return (
-    <>
-      <PageHero {...hero} />
+    <CmsPageLayout slug="contact">
+      <PageHero data-cms-template="innerPageHero" {...hero} />
 
-      <section id="down-section">
+      <section data-cms-template="contact" id="down-section">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row row-cols-1 row-cols-md-3 row-cols-sm-2 justify-content-center" data-chc-animate='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
             <div className="col icon-with-text-style-04 sm-mb-40px">
@@ -67,7 +68,7 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="p-0" id="location" data-chc-animate='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
+      <section data-cms-template="contactMap" className="p-0" id="location" data-chc-animate='{ "translateY": [0, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
         <div className="container-fluid">
           <div className="row justify-content-center">
             <div className="col-12 p-0">
@@ -84,7 +85,7 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="bg-very-light-gray">
+      <section data-cms-template="contactForm" className="bg-very-light-gray">
         <div className="container-fluid px-5 lg-px-10">
           <div className="row justify-content-center">
             <div className="col-lg-7 text-center mb-2" data-chc-animate='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
@@ -94,37 +95,11 @@ export default async function ContactPage() {
           </div>
           <div className="row row-cols-md-1 justify-content-center" data-chc-animate='{ "translateY": [100, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 100, "easing": "easeOutQuad" }'>
             <div className="col-xl-9 col-lg-11">
-              <form action="/api/public/contact" method="post" className="row contact-form-style-02">
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large input-name form-control required" type="text" name="name" placeholder="Your name*" />
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control required" type="email" name="email" placeholder="Your email address*" />
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control" type="tel" name="phone" placeholder="Your phone" />
-                </div>
-                <div className="col-md-6 mb-30px">
-                  <input className="box-shadow-quadruple-large form-control" type="text" name="subject" placeholder="Your subject" />
-                </div>
-                <div className="col-md-12 mb-30px">
-                  <textarea className="box-shadow-quadruple-large form-control" cols="40" rows="4" name="comment" placeholder="Your message"></textarea>
-                </div>
-                <div className="col-md-7 last-paragraph-no-margin">
-                  <p className="text-center text-md-start fs-16">We are committed to protecting your privacy. We will never collect information about you without your explicit consent.</p>
-                </div>
-                <div className="col-md-5 text-center text-md-end sm-mt-20px">
-                  <button className="btn btn-medium btn-dark-gray btn-box-shadow btn-round-edge submit" type="submit">send message</button>
-                </div>
-                <div className="col-12">
-                  <div className="form-results mt-20px d-none"></div>
-                </div>
-              </form>
+              <ContactForm />
             </div>
           </div>
         </div>
       </section>
-      <CmsAdditionalSections slug="contact" skipFirst={{ innerPageHero: 1, contact: 1, contactForm: 1 }} />
-    </>
+    </CmsPageLayout>
   )
 }
