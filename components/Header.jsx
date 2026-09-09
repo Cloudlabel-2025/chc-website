@@ -100,7 +100,7 @@ export default function Header({ navItems = NAV_FALLBACK, whatWeDoItems = WHAT_W
         <div className="container-fluid chc-header-inner">
           <div className="chc-brand-column">
             <a className="navbar-brand" href="/" aria-label="CHC home" onClick={closeNavigation}>
-              <img src="/images/chc-logo.png" alt="CHC" className="default-logo" />
+              <img src="/images/chc-logo.png" alt="CHC" data-no-retina className="default-logo" />
             </a>
           </div>
 

@@ -1,7 +1,7 @@
 import { Children, cloneElement, isValidElement } from 'react'
 import { withSectionContext } from '@/lib/cms/section-context'
 import { findSectionView } from '@/lib/cms/section-layout'
-import { ContactForm, GiveOneHourForm, NewsletterForm } from '@/components/CmsForms'
+import { ContactForm, GiveOneHourForm } from '@/components/CmsForms'
 import DynamicForm from '@/components/DynamicForm'
 import SlideLink from '@/components/SlideLink'
 import { resolveContentBlocks } from '@/lib/cms/content-blocks'
@@ -78,7 +78,6 @@ export default async function CmsSection({ section, siblings = [] }) {
           {(values.buttonLabel || values.label) && <SlideLink href={values.buttonHref || values.href} className="btn btn-dark-gray btn-rounded">{values.buttonLabel || values.label}</SlideLink>}
           {section.sectionKey === 'contactForm' && <ContactForm formFields={values} />}
           {section.sectionKey === 'giveOneHourForm' && <GiveOneHourForm formFields={values} />}
-          {section.sectionKey === 'newsletterForm' && <NewsletterForm placeholder={values.placeholder} successMessage={values.successMessage} />}
           {section.sectionKey === 'cmsForm' && (values.formSlug
             ? <DynamicForm slug={values.formSlug} />
             : <p className="admin-text-muted">Set a form slug on this section to embed a form.</p>)}

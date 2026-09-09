@@ -568,11 +568,6 @@ footer {
   overflow-wrap: anywhere;
 }
 
-.chc-site-footer .newsletter-style-02 input {
-  min-height: var(--chc-touch-target);
-}
-
-.chc-site-footer .newsletter-style-02 .submit,
 .chc-site-footer .elements-social a {
   min-width: var(--chc-touch-target);
   min-height: var(--chc-touch-target);
@@ -946,8 +941,7 @@ footer {
   }
 
   .contact-form-style-02 .form-control,
-  .contact-form-style-02 .form-select,
-  .newsletter-style-02 .form-control {
+  .contact-form-style-02 .form-select {
     min-height: 48px;
     font-size: 16px !important;
   }

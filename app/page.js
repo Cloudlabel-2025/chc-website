@@ -63,15 +63,15 @@ export default async function HomePage() {
 
       {/* About/Intro Section */}
       <section data-cms-template="intro" className="chc-home-intro position-relative overflow-hidden">
-        <img src="/images/demo-modern-business-elements-02.png" alt="" className="position-absolute right-10px top-70px lg-top-40px animation-rotation d-none d-md-block" />
+        <img src="/images/demo-modern-business-elements-02.png" alt="" data-no-retina className="position-absolute right-10px top-70px lg-top-40px animation-rotation d-none d-md-block" />
         <div className="container-fluid px-5 lg-px-10">
           <div className="row align-items-center justify-content-center mb-5 sm-mb-0">
             <div className="col-lg-6 position-relative md-mb-15 sm-mb-25">
               <div className="w-70 xs-w-80" data-chc-animate style={{ aspectRatio: '470/566' }}>
                 <img src={intro.leftImage} alt="" className="border-radius-10px w-100 h-100" style={{ objectFit: 'cover' }} />
                 <div className="position-absolute left-60px bottom-minus-60px hero-spinner-wrap" style={{ width: '150px', height: '150px' }} aria-hidden="true">
-                  <img src="/images/chc-spin-support.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100px', height: 'auto', borderRadius: '50%' }} />
-                  <img src="/images/chc-spinner.png" alt="" className="animation-rotation" style={{ position: 'absolute', top: '50%', left: '50%', marginTop: '-75px', marginLeft: '-75px', width: '150px', height: 'auto' }} />
+                  <img src="/images/chc-spin-support.png" alt="" data-no-retina style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100px', height: 'auto', borderRadius: '50%' }} />
+                  <img src="/images/chc-spinner.png" alt="" data-no-retina className="animation-rotation" style={{ position: 'absolute', top: '50%', left: '50%', marginTop: '-75px', marginLeft: '-75px', width: '150px', height: 'auto' }} />
                 </div>
               </div>
               <div className="w-50 overflow-hidden position-absolute right-20px xs-right-15px xs-w-60 bottom-minus-50px" data-chc-animate style={{ aspectRatio: '350/419' }}>
@@ -141,9 +141,9 @@ export default async function HomePage() {
               <div className="stack-card cards" data-scale="true" data-top-space="35">
                 {whyChc.map((card, i) => (
                   <div className="stack-item mb-50px" data-index={i} key={i}>
-                    <img src="/images/demo-modern-business-object-blur-01.jpg" className="position-absolute left-minus-100px bottom-minus-80px sm-bottom-minus-30px" alt="" />
+                    <img src="/images/demo-modern-business-object-blur-01.jpg" data-no-retina className="position-absolute left-minus-100px bottom-minus-80px sm-bottom-minus-30px" alt="" />
                     <div className="stack-card-item p-70px xl-p-50px sm-p-30px cover-background" style={{ backgroundImage: "url('/images/demo-modern-business-gradient-bg-01.jpg')" }}>
-                      <img src="/images/demo-modern-business-bg-01.png" alt="" className="position-absolute z-index-1 left-0px top-0px h-100 d-none d-lg-block" data-bottom-top="transform:rotate(0deg); filter: blur(0px)" data-top-bottom={`transform:rotate(${card.rotate}); filter: blur(${card.blur})`} />
+                      <img src="/images/demo-modern-business-bg-01.png" alt="" data-no-retina className="position-absolute z-index-1 left-0px top-0px h-100 d-none d-lg-block" data-bottom-top="transform:rotate(0deg); filter: blur(0px)" data-top-bottom={`transform:rotate(${card.rotate}); filter: blur(${card.blur})`} />
                       <div className="row z-index-9 position-relative align-items-center">
                         <div className="col-xl-8 col-lg-6 md-mb-30px">
                           <img src={card.image} className="w-100 h-100" style={{ aspectRatio: '674/452', objectFit: 'cover' }} alt="" />

@@ -13,10 +13,11 @@ test('admin APIs are protected and mutations require same origin', () => {
   assert.match(middleware, /Invalid request origin/)
   assert.match(middleware, /ADMIN.*SUPER_ADMIN/s)
 })
-test('public form rate limiting uses an atomic PostgreSQL counter', () => {
+test('public form rate limiting uses an atomic MongoDB counter', () => {
   const limiter = readFileSync('lib/cms/form-rate-limit.js', 'utf8')
-  assert.match(limiter, /prisma\.\$queryRaw/)
-  assert.match(limiter, /ON CONFLICT/)
+  assert.match(limiter, /prisma\.\$runCommandRaw/)
+  assert.match(limiter, /findAndModify/)
+  assert.match(limiter, /\$inc/)
   assert.doesNotMatch(limiter, /new Map/)
 })
 test('unsafe SVG/spoofed raster uploads are rejected and public reads require published pages', () => {

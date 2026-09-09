@@ -10,14 +10,14 @@ export default function ContentSection({
 }) {
   return (
     <section id={id} className="chc-content-section position-relative overflow-hidden">
-      <img src="/images/demo-modern-business-elements-02.png" alt="" className="position-absolute right-20px top-70px animation-rotation d-none d-md-block" />
+      <img src="/images/demo-modern-business-elements-02.png" alt="" data-no-retina className="position-absolute right-20px top-70px animation-rotation d-none d-md-block" />
       <div className="container-fluid px-5 lg-px-10">
         <div className="row align-items-center justify-content-center">
           <div className="col-xxl-7 col-lg-6 position-relative md-mb-15 sm-mb-20">
             <div className="w-70 lg-w-80" data-chc-animate>
               <img src={cloudinaryUrl(leftImage, 'contentLeft')} alt="" className="chc-content-image-left border-radius-10px w-100" width="750" height="800" />
-              <img src="/images/chc-spin-support.png" alt="" className="position-absolute left-60px bottom-minus-60px d-none d-md-block" style={{ width: '98px', height: 'auto', borderRadius: '50%', marginBottom: '26px', marginLeft: '28px' }} />
-              <img src="/images/chc-spinner.png" alt="" className="position-absolute left-60px bottom-minus-60px animation-rotation d-none d-md-block" style={{ width: '150px', height: 'auto' }} />
+              <img src="/images/chc-spin-support.png" alt="" data-no-retina className="position-absolute left-60px bottom-minus-60px d-none d-md-block" style={{ width: '98px', height: 'auto', borderRadius: '50%', marginBottom: '26px', marginLeft: '28px' }} />
+              <img src="/images/chc-spinner.png" alt="" data-no-retina className="position-absolute left-60px bottom-minus-60px animation-rotation d-none d-md-block" style={{ width: '150px', height: 'auto' }} />
             </div>
             <div className="w-50 overflow-hidden position-absolute right-90px lg-right-50px sm-right-15px xs-w-60 bottom-minus-50px" data-chc-animate>
               <img src={cloudinaryUrl(rightImage, 'contentRight')} alt="" className="chc-content-image-right border-radius-10px w-100 box-shadow-quadruple-large" width="600" height="600" />

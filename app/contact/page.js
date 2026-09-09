@@ -75,7 +75,7 @@ export default async function ContactPage() {
               <iframe
                 className="chc-contact-map"
                 title="Cloudheard Consultancy location"
-                src="https://www.google.com/maps?q=9.725475490366358,77.27169737478984&z=17&output=embed"
+                src={`https://www.google.com/maps?q=${contact.mapLat},${contact.mapLng}&z=17&output=embed`}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="strict-origin-when-cross-origin"

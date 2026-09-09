@@ -443,11 +443,6 @@ const SECTION_FIELDS = {
     { fieldKey: 'paragraph',      blockType: 'TEXT', label: 'Form paragraph',  maxLength: 300 },
     { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
   ],
-  newsletterForm: [
-    { fieldKey: 'heading',        blockType: 'TEXT', label: 'Form heading',    maxLength: 80 },
-    { fieldKey: 'placeholder',    blockType: 'TEXT', label: 'Placeholder',     maxLength: 60 },
-    { fieldKey: 'successMessage', blockType: 'TEXT', label: 'Success message', maxLength: 200 },
-  ],
   cmsForm: [
     { fieldKey: 'formSlug', blockType: 'TEXT', label: 'Form slug (created in Admin → Forms)', maxLength: 60, required: true },
   ],
@@ -627,7 +622,6 @@ const SECTION_LIBRARY = [
   { key: 'homeStackHeader', label: 'Homepage stack header', animation: 'fadeIn' },
   { key: 'giveOneHour', label: 'Give one hour intro', animation: 'fadeIn' },
   { key: 'giveOneHourForm', label: 'Give One Hour form copy', animation: 'fadeIn' },
-  { key: 'newsletterForm', label: 'Newsletter form copy', animation: 'fadeIn' },
   { key: 'cmsForm', label: 'CMS form (embed a created form)', animation: 'fadeIn' },
   { key: 'richText', label: 'Rich text content', animation: 'fadeIn' },
 ]

@@ -13,9 +13,9 @@ export default function StackCardGroup({ cards, showButton = true }) {
         const blur = card.blur ?? decoration.blur
         return (
         <div className={`stack-item ${i < cards.length - 1 ? 'mb-50px' : ''}`} data-index={i} key={i}>
-          <img src="/images/demo-modern-business-object-blur-01.jpg" className="position-absolute left-minus-100px bottom-minus-80px sm-bottom-minus-30px" alt="" />
+          <img src="/images/demo-modern-business-object-blur-01.jpg" data-no-retina className="position-absolute left-minus-100px bottom-minus-80px sm-bottom-minus-30px" alt="" />
           <div className="stack-card-item p-70px xl-p-50px sm-p-30px cover-background" style={{ backgroundImage: "url('/images/demo-modern-business-gradient-bg-01.jpg')" }}>
-            <img src="/images/demo-modern-business-bg-01.png" alt="" className="position-absolute z-index-1 left-0px top-0px h-100 d-none d-lg-block" data-bottom-top="transform:rotate(0deg); filter: blur(0px)" data-top-bottom={`transform:rotate(${rotate}); filter: blur(${blur})`} />
+            <img src="/images/demo-modern-business-bg-01.png" alt="" data-no-retina className="position-absolute z-index-1 left-0px top-0px h-100 d-none d-lg-block" data-bottom-top="transform:rotate(0deg); filter: blur(0px)" data-top-bottom={`transform:rotate(${rotate}); filter: blur(${blur})`} />
             <div className="row z-index-9 position-relative align-items-center">
               <div className="col-xl-8 col-lg-6 md-mb-30px">
                 <img src={card.img} className="w-100 h-100" style={{ aspectRatio: '674/452', objectFit: 'cover' }} alt="" />

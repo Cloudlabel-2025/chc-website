@@ -52,7 +52,7 @@ export default async function RootLayout({ children }) {
         {!isAdmin && <div className="crafto-progressive-blur crafto-progressive-blur-bottom" blur-bottom="yes" style={{ '--progressive-blur-height': '15vh' }}></div>}
         {!isAdmin && <Script src="/js/jquery.js" strategy="beforeInteractive" />}
         {!isAdmin && <Script src="/js/vendors.min.js" strategy="beforeInteractive" />}
-        {!isAdmin && <Script id="disable-retina" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `try{if(window.Retina){Retina.isRetina=function(){return false;};} if(window.Retina&&window.RetinaImage&&RetinaImage.prototype){RetinaImage.prototype.check_2x_variant=function(cb){cb(false);};} }catch(e){}` }} />}
+        {!isAdmin && <Script id="disable-retina" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `try{if(window.Retina){Retina.isRetina=function(){return false;};} if(window.RetinaImagePath&&window.RetinaImagePath.prototype){window.RetinaImagePath.prototype.check_2x_variant=function(cb){cb(false);};} }catch(e){}` }} />}
         {!isAdmin && <Script src="/js/chc-animations.js" strategy="afterInteractive" />}
         {!isAdmin && <Script src="/js/chc-header-state.js" strategy="beforeInteractive" />}
       </body>

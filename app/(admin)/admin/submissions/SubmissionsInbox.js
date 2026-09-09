@@ -5,7 +5,6 @@ import { useState } from 'react'
 const FORM_LABELS = {
   CONTACT:      'Contact',
   GIVE_ONE_HOUR:'Give One Hour',
-  NEWSLETTER:   'Newsletter',
   CUSTOM:       'Custom form',
 }
 
@@ -113,7 +112,7 @@ export default function SubmissionsInbox({ initialSubmissions, initialTotal }) {
     load(1, type)
   }
 
-  const TYPES = ['', 'CONTACT', 'GIVE_ONE_HOUR', 'NEWSLETTER']
+  const TYPES = ['', 'CONTACT', 'GIVE_ONE_HOUR']
 
   return (
     <div>

@@ -43,7 +43,7 @@ export async function POST(request, { params }) {
     return NextResponse.json({ errors: parsed.error.issues.map((e) => e.message), fieldErrors }, { status: 422 })
   }
 
-  const knownEnum = ['CONTACT', 'GIVE_ONE_HOUR', 'NEWSLETTER']
+  const knownEnum = ['CONTACT', 'GIVE_ONE_HOUR']
   const normalized = def.slug.toUpperCase().replace(/-/g, '_')
   const formType = knownEnum.includes(normalized) ? normalized : 'CUSTOM'
   try {

@@ -236,45 +236,4 @@ export function GiveOneHourForm({ formFields = {} }) {
   )
 }
 
-export function NewsletterForm({ placeholder, successMessage: cmsSuccess }) {
-  const [status, setStatus] = useState(null)
-  const [message, setMessage] = useState('')
 
-  async function onSubmit(e) {
-    e.preventDefault()
-    e.stopPropagation()
-    setStatus('loading'); setMessage('')
-    const fd = new FormData(e.currentTarget)
-    const email = fd.get('email')?.toString() ?? ''
-    try {
-      const res = await fetch('/api/public/newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        const msg = data.errors ? data.errors.join(', ') : (data.error ?? 'Failed to subscribe.')
-        setStatus('error'); setMessage(msg); return
-      }
-      setStatus('success'); setMessage(data.message ?? cmsSuccess ?? 'Subscribed — thank you!')
-      e.currentTarget.reset()
-    } catch {
-      setStatus('error'); setMessage('Network error — please try again.')
-    }
-  }
-
-  return (
-    <form onSubmit={onSubmit} className="position-relative w-100" noValidate>
-      <input className="bg-transparent border-color-transparent-white-light w-100 form-control required" type="email" name="email" placeholder={placeholder ?? 'Enter your email...'} required />
-      <button type="submit" className="btn submit" aria-label="submit" disabled={status === 'loading'}>
-        <i className="icon bi bi-envelope icon-small text-white"></i>
-      </button>
-      {message && (
-        <div className={`form-results border-radius-4px pt-5px pb-5px ps-15px pe-15px fs-14 lh-22 mt-10px w-100 text-center ${status === 'success' ? 'bg-success text-white' : 'bg-danger text-white'}`}>
-          {message}
-        </div>
-      )}
-    </form>
-  )
-}

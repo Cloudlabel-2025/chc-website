@@ -709,14 +709,14 @@ async function seedContact(userId) {
   await seedBlock(userId, heroSection.id, 'subtitle', 'TEXT', 'Get in touch with CHC.')
 
   const contactSection = await upsertSection(userId, page.id, 'contact', 1)
-  await seedBlock(userId, contactSection.id, 'officeAddress', 'TEXT', '401 Broadway, 24th Floor, Orchard View, London, UK')
+  await seedBlock(userId, contactSection.id, 'officeAddress', 'TEXT', 'Nanthagopalansamy Nagar, Manthaiyamman Kovil, Cumbum, Tamil Nadu 625516')
   await seedBlock(userId, contactSection.id, 'phone',         'TEXT', '1-800-222-000')
   await seedBlock(userId, contactSection.id, 'fax',           'TEXT', '1-800-222-002')
   await seedBlock(userId, contactSection.id, 'email1',        'TEXT', 'info@yourdomain.com')
   await seedBlock(userId, contactSection.id, 'email2',        'TEXT', 'hr@yourdomain.com')
-  await seedBlock(userId, contactSection.id, 'mapLat',        'TEXT', '-37.805688')
-  await seedBlock(userId, contactSection.id, 'mapLng',        'TEXT', '144.962312')
-  await seedBlock(userId, contactSection.id, 'mapPopupHtml',  'TEXT', '<div class=infowindow><strong class="mb-3 d-inline-block alt-font">CHC Consulting</strong><p class="alt-font">16122 Collins street, Melbourne, Australia</p></div>')
+  await seedBlock(userId, contactSection.id, 'mapLat',        'TEXT', '9.7255116')
+  await seedBlock(userId, contactSection.id, 'mapLng',        'TEXT', '77.2723335')
+  await seedBlock(userId, contactSection.id, 'mapPopupHtml',  'TEXT', '<div class=infowindow><strong class="mb-3 d-inline-block alt-font">Cloudheard Consultancy Pvt Ltd</strong><p class="alt-font">Nanthagopalansamy Nagar, Manthaiyamman Kovil, Cumbum, Tamil Nadu 625516</p></div>')
 
   console.log('  contact: seeded')
 }

@@ -241,7 +241,6 @@ model FormSubmission {
 enum FormType {
   CONTACT
   GIVE_ONE_HOUR
-  NEWSLETTER
   CUSTOM
 }
 
