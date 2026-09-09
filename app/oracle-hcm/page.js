@@ -133,7 +133,7 @@ export default async function OracleHCMPage() {
           <div className="row align-items-center" data-chc-animate='{ "opacity": [0,1], "duration": 600, "delay":0, "staggervalue": 300, "easing": "easeOutQuad" }'>
             <div className="col-12">
               {carouselHeading && <h4 className="alt-font text-dark-gray fw-600 text-center mb-4">{carouselHeading}</h4>}
-              <div className="outside-box-right-20 sm-outside-box-right-0">
+              <div className="outside-box-right-20 outside-box-left-20 sm-outside-box-right-0 sm-outside-box-left-0">
                 <DeliveryCapacityCarousel>
                   <div className="chc-delivery-carousel-track" role="list" aria-label="Oracle delivery services">
                     {[...deliveryCarousel, ...deliveryCarousel, ...deliveryCarousel].map((service, index) => (

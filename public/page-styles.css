@@ -209,11 +209,21 @@ section.cover-background.full-screen {
 .chc-home-hero > .container-fluid,
 .chc-page-hero > .row {
   position: relative;
-  z-index: 2;
+  z-index: 4;
 }
 .chc-home-hero > .shape-image-animation,
 .chc-page-hero > .shape-image-animation {
   z-index: 3;
+  pointer-events: none;
+}
+/* Hero CTAs must stay above the dark overlay (2) and animated wave (3). */
+.chc-home-hero .chc-hero-ctas {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
 }
 @keyframes overlayPulse {
   0%   { opacity: 0.5; }
@@ -1983,6 +1993,23 @@ header.header-with-topbar.chc-site-header .navbar-brand img.default-logo {
   .chc-home-hero .chc-hero-ctas .btn.btn-extra-large i {
     margin-left: 5px;
     font-size: 11px;
+  }
+}
+/* Desktop "Contact us" hero CTA: white button with black text, inverts on
+   hover. Phones keep the compact text-link treatment above. */
+@media (min-width: 576px) {
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn,
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:focus-visible {
+    background-color: #f5f5f5 !important;
+    border-color: #f5f5f5 !important;
+    color: #000000 !important;
+  }
+
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:hover,
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:active {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
   }
 }
 /* Contact page: full-width responsive Google Maps embed. */
