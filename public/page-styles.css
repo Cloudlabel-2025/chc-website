@@ -1714,8 +1714,8 @@ header.header-with-topbar.chc-site-header.chc-header-scrolled > .navbar.bg-trans
 body.chc-page-scrolled header.header-with-topbar.chc-site-header,
 body.chc-page-scrolled header.header-with-topbar.chc-site-header > .navbar.sticky-header,
 body.chc-page-scrolled header.header-with-topbar.chc-site-header > .navbar.bg-transparent {
-  background-color: rgba(43, 24, 73, 0.94) !important;
-  background-image: linear-gradient(90deg, rgba(30, 16, 55, 0.96), rgba(58, 31, 93, 0.92)) !important;
+  background-color: rgba(43, 24, 73, 0.78) !important;
+  background-image: linear-gradient(90deg, rgba(30, 16, 55, 0.82), rgba(58, 31, 93, 0.74)) !important;
   backdrop-filter: blur(16px) saturate(130%);
   -webkit-backdrop-filter: blur(16px) saturate(130%);
   box-shadow: 0 8px 28px rgba(19, 8, 39, 0.34);
