@@ -1745,6 +1745,31 @@ header.header-with-topbar.chc-site-header .navbar-brand img.default-logo {
   max-height: 54px;
 }
 
+/* Desktop: fully transparent header at page origin. Once scrolled, the
+   existing .chc-header-scrolled opaque violet block above takes over.
+   Scoped to >=992px so mobile keeps its 0.82 gradient. */
+@media (min-width: 992px) {
+  header.header-with-topbar.chc-site-header:not(.chc-header-scrolled),
+  header.header-with-topbar.chc-site-header:not(.chc-header-scrolled) > .navbar,
+  header.header-with-topbar.chc-site-header:not(.chc-header-scrolled) > .navbar.bg-transparent,
+  header.header-with-topbar.chc-site-header:not(.chc-header-scrolled) > .navbar.sticky-header {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+
+  header.header-with-topbar.chc-site-header:not(.chc-header-scrolled) .chc-header-inner,
+  header.header-with-topbar.chc-site-header:not(.chc-header-scrolled) .container-fluid {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+}
+
 /* Footer signature stays deliberately on one line without overflowing on phones. */
 .chc-footer-wordmark {
   display: block;
