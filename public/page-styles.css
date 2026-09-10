@@ -1970,20 +1970,32 @@ header.header-with-topbar.chc-site-header .navbar-brand img.default-logo {
 
   .chc-home-hero .chc-hero-ctas .home-marketplace,
   .chc-home-hero .chc-hero-ctas .home-marketplace:hover,
+  .chc-home-hero .chc-hero-ctas .home-marketplace:active,
   .chc-home-hero .chc-hero-ctas .home-marketplace:focus-visible {
-    background-image: linear-gradient(90deg, #9a53ff, #ef71b6) !important;
+    /* Outer link stays link-coloured for hit-area; gradient lives on the
+       actual text nodes below (background-clip:text only paints where the
+       background-image is set). */
+    color: #8b14b1 !important;
+    -webkit-text-fill-color: #8b14b1 !important;
+    background: transparent !important;
+    background-image: none !important;
+  }
+
+  /* Paint gradient where text actually lives (incl. the :before slide clone). */
+  .chc-home-hero .chc-hero-ctas .home-marketplace > span .btn-double-text,
+  .chc-home-hero .chc-hero-ctas .home-marketplace > span .btn-double-text:before {
+    background-image: linear-gradient(to right, #8b14b1, #d53d6e, #8b14b1) !important;
+    background-size: 200% auto !important;
+    background-position: right center !important;
     -webkit-background-clip: text !important;
     background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
-    color: #bc63e8 !important;
-  }
-
-  .chc-home-hero .chc-hero-ctas .home-marketplace .btn-double-text {
-    color: inherit !important;
+    color: transparent !important;
   }
 
   .chc-home-hero .chc-hero-ctas .home-marketplace + .btn,
   .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:hover,
+  .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:active,
   .chc-home-hero .chc-hero-ctas .home-marketplace + .btn:focus-visible,
   .chc-home-hero .chc-hero-ctas .home-marketplace + .btn i {
     color: #4e73ff !important;
@@ -1993,6 +2005,11 @@ header.header-with-topbar.chc-site-header .navbar-brand img.default-logo {
   .chc-home-hero .chc-hero-ctas .btn.btn-extra-large i {
     margin-left: 5px;
     font-size: 11px;
+    transition: transform .2s ease;
+  }
+
+  .chc-home-hero .chc-hero-ctas .btn.btn-extra-large:active i {
+    transform: translateX(2px);
   }
 }
 /* Desktop "Contact us" hero CTA: white button with black text, inverts on
