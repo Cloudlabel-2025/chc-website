@@ -199,8 +199,8 @@ section.cover-background.full-screen {
   left: 0;
   width: 100%;
   z-index: 2;
-  top: -76px;
-  height: calc(100% + 76px);
+  top: calc(-1 * var(--chc-header-h, 76px));
+  height: calc(100% + var(--chc-header-h, 76px));
   background-color: #000;
   pointer-events: none;
   animation: overlayPulse 5s ease-in-out infinite;
@@ -229,6 +229,18 @@ section.cover-background.full-screen {
   0%   { opacity: 0.5; }
   50%  { opacity: 0.6; }
   100% { opacity: 0.5; }
+}
+
+/* Fluid hero height (1A): one svh/dvh model with clamp floors/ceilings.
+   Wins over vendor fixed .md-h-750px/.sm-h-650px without editing vendor CSS. */
+.chc-home-hero,
+.chc-page-hero {
+  min-height: clamp(520px, calc(100svh - var(--chc-header-h, 66px)), 880px) !important;
+  height: auto !important;
+}
+.full-screen.md-h-750px,
+.full-screen.sm-h-650px {
+  height: auto !important;
 }
 
 /* --- Header Dark Overlay + Sticky --- */
@@ -766,6 +778,8 @@ header.header-with-topbar .navbar .navbar-toggler-line {
   --chc-section-space: clamp(64px, 8vw, 120px);
   --chc-section-space-small: clamp(42px, 6vw, 80px);
   --chc-mobile-header-height: 68px;
+  --chc-header-h: 66px;
+  --chc-header-h-mobile: 76px;
   --chc-touch-target: 44px;
   --chc-nav-bg: #2d2247;
 }
@@ -1027,9 +1041,14 @@ footer {
   }
 
   section.cover-background.full-screen {
-    min-height: min(760px, 100svh) !important;
+    min-height: clamp(520px, calc(100svh - var(--chc-header-h, 66px)), 760px) !important;
     height: auto !important;
     overflow: hidden !important;
+  }
+
+  .chc-home-hero,
+  .chc-page-hero {
+    min-height: clamp(520px, calc(100svh - var(--chc-header-h, 66px)), 760px) !important;
   }
 
   .stack-card .stack-item,
@@ -1322,6 +1341,43 @@ footer {
   }
 }
 
+/* Intro "Explore" link: no text underline — the hr travels with the link. */
+.chc-home-intro .chc-link-with-rule .btn-link {
+  border-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+.chc-link-with-rule {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.chc-link-with-rule .chc-hr {
+  margin: 0;
+  height: 2px;
+  border: 0;
+  background: var(--dark-gray, #232323);
+  width: 100%;
+  align-self: stretch;
+}
+
+/* Intermediate widths: wrap gracefully instead of snapping to a stack. */
+@media (min-width: 768px) and (max-width: 991px) {
+  .chc-home-intro .progress-bar-style-02 > div:first-child {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  .chc-home-intro .progress-bar-style-02 .btn {
+    margin: 0 !important;
+    width: auto;
+  }
+  .chc-link-with-rule {
+    width: auto;
+  }
+}
+
 @media (max-width: 767px) {
   h1,
   .h1,
@@ -1343,13 +1399,18 @@ footer {
   .full-screen,
   .md-h-750px,
   .sm-h-650px {
-    min-height: calc(100svh - var(--chc-mobile-header-height)) !important;
+    min-height: clamp(420px, calc(100dvh - var(--chc-header-h-mobile, 76px)), 720px) !important;
     height: auto !important;
+  }
+
+  .chc-home-hero,
+  .chc-page-hero {
+    min-height: clamp(420px, calc(100dvh - var(--chc-header-h-mobile, 76px)), 720px) !important;
   }
 
   .full-screen .container-fluid,
   .full-screen > .row {
-    min-height: calc(100svh - var(--chc-mobile-header-height));
+    min-height: inherit;
     height: auto !important;
   }
 
@@ -1460,7 +1521,7 @@ footer {
     display: flex !important;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 12px;
   }
 
   .chc-home-intro .progress-bar-style-02 .btn {
@@ -1468,6 +1529,16 @@ footer {
     margin: 0 !important;
     justify-content: center;
     text-align: center;
+  }
+
+  .chc-home-intro .chc-link-with-rule {
+    width: 100%;
+    align-items: center;
+  }
+
+  .chc-home-intro .chc-link-with-rule .chc-hr {
+    width: 100%;
+    max-width: 100%;
   }
 
   .interactive-banner-style-05 figure {
@@ -1555,6 +1626,11 @@ footer {
 @media (max-width: 575px) {
   :root {
     --chc-page-gutter: 16px;
+  }
+
+  .chc-home-hero,
+  .chc-page-hero {
+    min-height: clamp(420px, calc(100dvh - var(--chc-header-h-mobile, 76px) - 12px), 640px) !important;
   }
 
   .section-what-we-do {

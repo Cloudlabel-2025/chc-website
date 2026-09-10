@@ -51,6 +51,7 @@ body {
   display: grid;
   grid-template-columns: var(--admin-sidebar-w) 1fr;
   grid-template-rows: var(--admin-header-h) minmax(0, 1fr);
+  height: 100vh;
   height: 100dvh;
   min-height: 0;
   overflow: hidden;

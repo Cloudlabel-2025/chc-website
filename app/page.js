@@ -85,9 +85,12 @@ export default async function HomePage() {
               <h2 className="alt-font text-dark-gray fw-700 mb-20px md-w-90">{intro.heading}</h2>
               <p className="mb-35px sm-mb-25px w-85 md-w-90">{intro.paragraph}</p>
               <div className="progress-bar-style-02 w-90">
-                <div className="d-inline-block">
-                  <SlideLink href={intro.buttonHref} className="btn btn-medium btn-dark-gray btn-box-shadow me-25px btn-round-edge">{intro.buttonLabel}</SlideLink>
-                  <SlideLink href={intro.linkHref} className="btn btn-link btn-large text-dark-gray xs-mt-15px xs-mb-15px">{intro.linkLabel}</SlideLink>
+                <div className="d-flex flex-wrap align-items-center gap-3">
+                  <SlideLink href={intro.buttonHref} className="btn btn-medium btn-dark-gray btn-box-shadow btn-round-edge">{intro.buttonLabel}</SlideLink>
+                  <span className="chc-link-with-rule">
+                    <SlideLink href={intro.linkHref} className="btn btn-link btn-large text-dark-gray border-0 p-0">{intro.linkLabel}</SlideLink>
+                    <hr className="chc-hr" aria-hidden="true" />
+                  </span>
                 </div>
                 <div className="fs-14 lh-24 mt-15px text-dark-gray">{intro.note}</div>
               </div>
