@@ -21,8 +21,12 @@ export async function middleware(request) {
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
-    // Auth.js prefixes session cookies with __Secure- on HTTPS.
-    secureCookie: request.nextUrl.protocol === 'https:',
+    // Auth.js prefixes session cookies with __Secure- on HTTPS. Behind Vercel
+    // (or any TLS-terminating proxy) request.nextUrl.protocol can be http:
+    // while x-forwarded-proto is https:, so check both.
+    secureCookie:
+      request.headers.get('x-forwarded-proto') === 'https:' ||
+      request.nextUrl.protocol === 'https:',
   })
 
   const isAuthenticated = !!token?.id
